@@ -1,0 +1,12 @@
+#Ignore .class files
+*.class
+
+#Ignore Maven target directory
+cobertura/target/
+
+#Ignore IDE files
+.project  
+.classpath
+.settings/
+.idea
+*.iml
