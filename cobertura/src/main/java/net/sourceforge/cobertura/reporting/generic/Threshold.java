@@ -41,4 +41,8 @@ public class Threshold {
     public String getCriteria() {
         return criteria;
     }
+
+    public double getThreshold(){
+        return threshold;
+    }
 }
