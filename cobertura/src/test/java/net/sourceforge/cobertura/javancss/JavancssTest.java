@@ -21,6 +21,6 @@
  * USA
  */
 
-package net.sourceforge.cobertura.javancss.test;
+package net.sourceforge.cobertura.javancss;
 
 public class JavancssTest{}

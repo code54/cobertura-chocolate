@@ -58,7 +58,9 @@ public class SwitchData implements BranchCoverageData, Comparable, Serializable,
 
 
     /*   This is needed for xml serialization   */
-    public SwitchData(){}
+    public SwitchData(){
+        initLock();
+    }
 
 	public SwitchData(int switchNumber, int[] keys){
 		super();

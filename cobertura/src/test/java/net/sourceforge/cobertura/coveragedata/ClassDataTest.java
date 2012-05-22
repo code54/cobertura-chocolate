@@ -27,16 +27,14 @@ import java.util.Collection;
 
 import junit.framework.TestCase;
 
-public class ClassDataTest extends TestCase
-{
+public class ClassDataTest extends TestCase{
 
 	private final ClassData a = new ClassData("com.example.HelloWorld");
 	private final ClassData b = new ClassData("com.example.HelloWorld");
 	private final ClassData c = new ClassData("com.example.HelloWorld");
 	private final ClassData defPckg = new ClassData("DefaultPackageClass");
 
-	public void setUp()
-	{
+	public void setUp(){
 		a.setSourceFileName("com/example/HelloWorld.java");
 		b.setSourceFileName("com/example/HelloWorld.java");
 		c.setSourceFileName("com/example/HelloWorld.java");

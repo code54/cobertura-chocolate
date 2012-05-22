@@ -53,7 +53,9 @@ public class JumpData implements
 
 
     /*   This is needed for xml serialization   */
-    public JumpData(){}
+    public JumpData(){
+        initLock();
+    }
 
 	JumpData(int conditionNumber){
 		super();

@@ -66,7 +66,9 @@ public class LineData
 	private String methodName;
 
     /*   This is needed for xml serialization   */
-    public LineData(){}
+    public LineData(){
+        initLock();
+    }
 
 	LineData(int lineNumber){
 		this(lineNumber, null, null);

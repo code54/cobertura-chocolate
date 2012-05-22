@@ -26,12 +26,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import org.apache.log4j.Logger;
 import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
-public class JUnitXMLHelper
-{
+public class JUnitXMLHelper{
+
+    private static final Logger log = Logger.getLogger(JUnitXMLHelper.class);
 
 	private final static String BASEDIR = (System.getProperty("basedir") != null) ? System
 			.getProperty("basedir") : ".";
@@ -48,17 +50,15 @@ public class JUnitXMLHelper
 	 *         valid.
 	 */
 	public static Document readXmlFile(File file, boolean validate) throws FileNotFoundException,
-			IOException, JDOMException
-	{
-		System.out.println("Reading " + file.getAbsolutePath());
+			IOException, JDOMException{
+		log.info("Reading " + file.getAbsolutePath());
 
 		// First create an XML document parser
 		SAXBuilder saxBuilder = new SAXBuilder();
 		saxBuilder.setValidation(validate);
 		saxBuilder.setEntityResolver(new JUnitXMLParserEntityResolver(
-				new File(BASEDIR, "/etc/dtds")));
+				new File(BASEDIR, "/src/test/resources/integration/dtds/")));
 		saxBuilder.setErrorHandler(new JUnitXMLParserErrorHandler());
 		return saxBuilder.build(file);
 	}
-
 }
