@@ -34,6 +34,9 @@ import junit.framework.TestCase;
  */
 public class CommandLineBuilderTest extends TestCase {
 
+    private static final String someOption = "--someoption";
+    private static final String optionValue = "optionValue";
+
 	private String[] testArguments( String[] args) throws Exception {
 		CommandLineBuilder builder = new CommandLineBuilder();
 		for( int i=0; i<args.length; i++)
@@ -46,7 +49,7 @@ public class CommandLineBuilderTest extends TestCase {
 		
 		String[] result = 
 		CommandLineBuilder.preprocessCommandLineArguments(
-				new String[] { "--commandsfile", builder.getCommandLineFile()});
+				new String[] { Constants.commandsfile, builder.getCommandLineFile()});
 		builder.dispose();
 		
 		return result;
@@ -54,31 +57,31 @@ public class CommandLineBuilderTest extends TestCase {
 	
 	public void testExample() throws Exception {
 		CommandLineBuilder builder = new CommandLineBuilder();
-		builder.addArg("--someoption");
-		builder.addArg("optionValue");
+		builder.addArg(someOption);
+		builder.addArg(optionValue);
 		builder.saveArgs();
 		
 		String[] args = 
 		CommandLineBuilder.preprocessCommandLineArguments(
-				new String[] { "--commandsfile", builder.getCommandLineFile()});
+				new String[] { Constants.commandsfile, builder.getCommandLineFile()});
 
-		assertEquals( "--someoption", args[0]);
-		assertEquals( "optionValue", args[1]);
+		assertEquals(someOption, args[0]);
+		assertEquals(optionValue, args[1]);
 		
 		builder.dispose();
 	}
 
 	public void testExample_2() throws Exception {
 		CommandLineBuilder builder = new CommandLineBuilder();
-		builder.addArg("--someoption", "optionValue");
+		builder.addArg(someOption, optionValue);
 		builder.saveArgs();
 		
 		String[] args = 
 		CommandLineBuilder.preprocessCommandLineArguments(
-				new String[] { "--commandsfile", builder.getCommandLineFile()});
+				new String[] {Constants.commandsfile, builder.getCommandLineFile()});
 
-		assertEquals( "--someoption", args[0]);
-		assertEquals( "optionValue", args[1]);
+		assertEquals(someOption, args[0]);
+		assertEquals(optionValue, args[1]);
 		
 		builder.dispose();
 	}
@@ -140,7 +143,7 @@ public class CommandLineBuilderTest extends TestCase {
 		} catch( NullPointerException ex) {}
 
 		try {
-			CommandLineBuilder.preprocessCommandLineArguments(new String[] { "--commandsfile", "hello", null });
+			CommandLineBuilder.preprocessCommandLineArguments(new String[] {Constants.commandsfile, "hello", null });
 			fail( "NullPointerException expected");
 		} catch( NullPointerException ex) {}
 	}
@@ -151,14 +154,14 @@ public class CommandLineBuilderTest extends TestCase {
 		assertSame( args, result);
 		
 		try {
-			args = new String[]{ "Hello", "--commandsfile" };
+			args = new String[]{ "Hello", Constants.commandsfile};
 			CommandLineBuilder.preprocessCommandLineArguments( args);
 			fail( "IllegalArgumentException expected");
 		} catch( IllegalArgumentException ex) {}
 
 		try {
-			args = new String[]{ "Hello", "--commandsfile", "hello.cmd" };
-			CommandLineBuilder.preprocessCommandLineArguments( args);
+			args = new String[]{ "Hello", Constants.commandsfile, "hello.cmd" };
+			CommandLineBuilder.preprocessCommandLineArguments(args);
 			fail( "IO Exception expected");
 		} catch( IOException ex) {}
 	}

@@ -98,8 +98,7 @@ public class ComplexityCalculator {
 		}
 		Javancss javancss = new Javancss(source.getInputStream());
 
-		if (javancss.getLastErrorMessage() != null)
-		{
+		if (javancss.getLastErrorMessage() != null){
 			//there is an error while parsing the java file. log it
 			logger.warn("JavaNCSS got an error while parsing the java " + source.getOriginDesc() + "\n" 
 						+ javancss.getLastErrorMessage());
@@ -107,8 +106,7 @@ public class ComplexityCalculator {
 
 		List methodMetrics = javancss.getFunctionMetrics();
 		int classCcn = 0;
-        for( Iterator method = methodMetrics.iterator(); method.hasNext();)
-        {
+        for( Iterator method = methodMetrics.iterator(); method.hasNext();){
         	FunctionMetric singleMethodMetrics = (FunctionMetric)method.next();
         	classCcn += singleMethodMetrics.ccn;
         }
@@ -131,14 +129,10 @@ public class ComplexityCalculator {
 	 */
 	private Complexity getAccumlatedCCNForSingleFile(String sourceFileName) throws IOException {
 		Source source = finder.getSource(sourceFileName);
-		try
-		{
+		try{
 	        return getAccumlatedCCNForSource(sourceFileName, source);
-		}
-		finally
-		{
-			if (source != null)
-			{
+		}finally{
+			if (source != null){
 				source.close();
 			}
 		}
@@ -258,7 +252,7 @@ public class ComplexityCalculator {
 			}
 			return accumlatedCCN/methodsNum;
 		}
-		public void add( Complexity second) {
+		public void add(Complexity second) {
 			accumlatedCCN += second.accumlatedCCN;
 			methodsNum += second.methodsNum;
 		}

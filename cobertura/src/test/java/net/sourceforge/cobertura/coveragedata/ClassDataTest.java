@@ -243,8 +243,7 @@ public class ClassDataTest extends TestCase
 		assertEquals( "$strangeClass.java", f.getSourceFileName());
 	}
 
-	public void testTouch()
-	{
+	public void testTouch(){
 		int line = 3;
 
 		assertFalse(a.isValidSourceLineNumber(line));

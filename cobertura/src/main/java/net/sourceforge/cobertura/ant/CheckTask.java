@@ -58,6 +58,7 @@
 
 package net.sourceforge.cobertura.ant;
 
+import net.sourceforge.cobertura.util.Constants;
 import org.apache.tools.ant.BuildException;
 
 import java.util.HashSet;
@@ -92,57 +93,48 @@ public class CheckTask extends CommonMatchingTask{
 	private boolean haltOnFailure = true;
 
 	public CheckTask() {
-		super("net.sourceforge.cobertura.check.Main");
+		super(Constants.check_main);
 	}
 	
-	public void execute() throws BuildException
-	{
-		if (dataFile != null)
-		{
-			getJava().createArg().setValue("--datafile");
+	public void execute() throws BuildException{
+		if (dataFile != null){
+			getJava().createArg().setValue(Constants.datafile);
 			getJava().createArg().setValue(dataFile);
 		}
 
-		if (branchRate != null)
-		{
-			getJava().createArg().setValue("--branch");
+		if (branchRate != null){
+			getJava().createArg().setValue(Constants.branch);
 			getJava().createArg().setValue(branchRate);
 		}
 
-		if (lineRate != null)
-		{
-			getJava().createArg().setValue("--line");
+		if (lineRate != null){
+			getJava().createArg().setValue(Constants.line);
 			getJava().createArg().setValue(lineRate);
 		}
 
-		if (packageBranchRate != null)
-		{
-			getJava().createArg().setValue("--packagebranch");
+		if (packageBranchRate != null){
+			getJava().createArg().setValue(Constants.packagebranch);
 			getJava().createArg().setValue(packageBranchRate);
 		}
 
-		if (packageLineRate != null)
-		{
-			getJava().createArg().setValue("--packageline");
+		if (packageLineRate != null){
+			getJava().createArg().setValue(Constants.packageline);
 			getJava().createArg().setValue(packageLineRate);
 		}
 
-		if (totalBranchRate != null)
-		{
-			getJava().createArg().setValue("--totalbranch");
+		if (totalBranchRate != null){
+			getJava().createArg().setValue(Constants.totalbranch);
 			getJava().createArg().setValue(totalBranchRate);
 		}
 
-		if (totalLineRate != null)
-		{
-			getJava().createArg().setValue("--totalline");
+		if (totalLineRate != null){
+			getJava().createArg().setValue(Constants.totalline);
 			getJava().createArg().setValue(totalLineRate);
 		}
 
 		Iterator iter = regexes.iterator();
-		while (iter.hasNext())
-		{
-			getJava().createArg().setValue("--regex");
+		while (iter.hasNext()){
+			getJava().createArg().setValue(Constants.regex);
 			getJava().createArg().setValue(iter.next().toString());
 		}
 
@@ -150,72 +142,58 @@ public class CheckTask extends CommonMatchingTask{
 		int returnCode = getJava().executeJava();
 
 		// Check the return code and print a message
-		if (returnCode == 0)
-		{
-			System.out.println("All checks passed.");
-		}
-		else
-		{
+		if (returnCode == 0){
+			log("All checks passed.");
+		}else{
 			if (haltOnFailure)
 				throw new BuildException(
 						"Coverage check failed. See messages above.");
 			else if (failureProperty != null)
 				getProject().setProperty(failureProperty, "true");
 			else
-				System.err
-						.println("Coverage check failed. See messages above.");
+				log("Coverage check failed. See messages above.");
 		}
 	}
 
-	public Regex createRegex()
-	{
+	public Regex createRegex(){
 		Regex regex = new Regex();
 		regexes.add(regex);
 		return regex;
 	}
 
-	public void setDataFile(String dataFile)
-	{
+	public void setDataFile(String dataFile){
 		this.dataFile = dataFile;
 	}
 
-	public void setBranchRate(String branchRate)
-	{
+	public void setBranchRate(String branchRate){
 		this.branchRate = branchRate;
 	}
 
-	public void setLineRate(String lineRate)
-	{
+	public void setLineRate(String lineRate){
 		this.lineRate = lineRate;
 	}
 
-	public void setPackageBranchRate(String packageBranchRate)
-	{
+	public void setPackageBranchRate(String packageBranchRate){
 		this.packageBranchRate = packageBranchRate;
 	}
 
-	public void setPackageLineRate(String packageLineRate)
-	{
+	public void setPackageLineRate(String packageLineRate){
 		this.packageLineRate = packageLineRate;
 	}
 
-	public void setTotalBranchRate(String totalBranchRate)
-	{
+	public void setTotalBranchRate(String totalBranchRate){
 		this.totalBranchRate = totalBranchRate;
 	}
 
-	public void setTotalLineRate(String totalLineRate)
-	{
+	public void setTotalLineRate(String totalLineRate){
 		this.totalLineRate = totalLineRate;
 	}
 
-	public void setFailureProperty(String failureProperty)
-	{
+	public void setFailureProperty(String failureProperty){
 		this.failureProperty = failureProperty;
 	}
 
-	public void setHaltOnFailure(boolean haltOnFailure)
-	{
+	public void setHaltOnFailure(boolean haltOnFailure){
 		this.haltOnFailure = haltOnFailure;
 	}
 

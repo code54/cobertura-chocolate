@@ -38,9 +38,9 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 
-public class Main {
+public class BuildReportMain {
 
-	private static final Logger log = Logger.getLogger(Main.class);
+	private static final Logger log = Logger.getLogger(BuildReportMain.class);
 
 	private String format = Constants.report_html;
 	private File dataFile = null;
@@ -73,15 +73,13 @@ public class Main {
 		if (dataFile == null)
 			dataFile = CoverageDataFileHandler.getDefaultDataFile();
 
-		if (destinationDir == null)
-		{
-			System.err.println("Error: destination directory must be set");
+		if (destinationDir == null){
+			log.error("Error: destination directory must be set");
 			System.exit(1);
 		}
 
-		if (format == null)
-		{
-			System.err.println("Error: format must be set");
+		if (format == null){
+			log.error("Error: format must be set");
 			System.exit(1);
 		}
 		
@@ -153,16 +151,16 @@ public class Main {
 
 		long startTime = System.currentTimeMillis();
 
-		Main main = new Main();
+		BuildReportMain buildReportMain = new BuildReportMain();
 
 		try {
-			args = CommandLineBuilder.preprocessCommandLineArguments( args);
+			args = CommandLineBuilder.preprocessCommandLineArguments(args);
 		}catch( Exception ex) {
 			log.error( "Error: Cannot process arguments: " + ex.getMessage());
 			System.exit(1);
 		}
 		
-		main.parseArguments(args);
+		buildReportMain.parseArguments(args);
 
 		long stopTime = System.currentTimeMillis();
 		log.info("Report time: " + (stopTime - startTime) + "ms");

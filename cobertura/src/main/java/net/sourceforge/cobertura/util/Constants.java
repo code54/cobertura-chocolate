@@ -49,4 +49,11 @@ public class Constants {
     public static final String helphtml = "help.html";
     public static final String indexhtml = "index.html";
 
+
+    /*   Some hardcoded classes names used for Ant   */
+    public static final String check_main = "net.sourceforge.cobertura.check.Main";
+    public static final String instrument_main = "net.sourceforge.cobertura.instrument.Main";
+    public static final String merge_main = "net.sourceforge.cobertura.merge.Main";
+    public static final String reporting_main = "net.sourceforge.cobertura.reporting.BuildReportMain";
+
 }

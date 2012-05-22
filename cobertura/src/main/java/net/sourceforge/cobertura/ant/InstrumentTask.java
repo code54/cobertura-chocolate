@@ -101,7 +101,7 @@ public class InstrumentTask extends CommonMatchingTask{
 	private HashMap fileSetMap = new HashMap();
 
 	public InstrumentTask(){
-		super("net.sourceforge.cobertura.instrument.Main");
+		super(Constants.instrument_main);
 	}
 
 	public Ignore createIgnore(){

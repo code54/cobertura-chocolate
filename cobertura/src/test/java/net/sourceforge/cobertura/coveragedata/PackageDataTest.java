@@ -29,14 +29,12 @@ public class PackageDataTest extends TestCase
 
 	private PackageData packageData;
 
-	public void setUp()
-	{
+	public void setUp(){
 		packageData = new PackageData("com.example");
 		assertEquals("com.example", packageData.getName());
 	}
 
-	public void testAddClass()
-	{
+	public void testAddClass(){
 		ClassData classData;
 
 		assertEquals(0, packageData.getNumberOfChildren());

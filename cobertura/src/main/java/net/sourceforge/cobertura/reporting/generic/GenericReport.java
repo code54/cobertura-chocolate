@@ -5,9 +5,11 @@ import net.sourceforge.cobertura.coveragedata.PackageData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.coveragedata.SourceFileData;
 import net.sourceforge.cobertura.reporting.ComplexityCalculator;
+import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.ElementList;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -17,12 +19,16 @@ import java.util.List;
  */
 public class GenericReport {
 
+    @Attribute
+    private Date created;
+
     @ElementList(inline=true)
     List<GenericReportEntry> projectsReport;
 
     public GenericReport(){}
 
     public GenericReport(List<ProjectData> projects, ComplexityCalculator complexity){
+        created = new Date();
         projectsReport = new ArrayList<GenericReportEntry>();
 
         for(ProjectData project : projects){

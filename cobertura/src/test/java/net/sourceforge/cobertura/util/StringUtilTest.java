@@ -29,8 +29,7 @@ import junit.framework.TestCase;
 public class StringUtilTest extends TestCase
 {
 
-	public void testReplace()
-	{
+	public void testReplace(){
 		String result;
 		result = StringUtil.replaceAll(
 				"cobertura is a very, very cool coverage tool", "very",

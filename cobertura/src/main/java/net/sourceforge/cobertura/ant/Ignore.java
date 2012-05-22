@@ -56,18 +56,15 @@
 
 package net.sourceforge.cobertura.ant;
 
-public class Ignore
-{
+public class Ignore{
 
 	String regex;
 
-	public void setRegex(String regex)
-	{
+	public void setRegex(String regex){
 		this.regex = regex;
 	}
 
-	public String getRegex()
-	{
+	public String getRegex(){
 		return regex;
 	}
 

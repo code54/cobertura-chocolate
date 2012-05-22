@@ -29,8 +29,7 @@ public class JumpDataTest extends TestCase
 	private final JumpData a = new JumpData(0);
 	private final JumpData b = new JumpData(1);
 
-	public void testEquals()
-	{
+	public void testEquals(){
 		assertFalse(a.equals(null));
 		assertFalse(a.equals(new Integer(4)));
 
@@ -41,28 +40,24 @@ public class JumpDataTest extends TestCase
 		assertTrue(a.equals(aPrime));
 	}
 
-	public void testHashCode()
-	{
+	public void testHashCode(){
 		assertEquals(a.hashCode(), a.hashCode());
 
 		JumpData aPrime = new JumpData(0);
 		assertEquals(a.hashCode(), aPrime.hashCode());
 	}
 
-	public void testGetBranchNumber()
-	{
+	public void testGetBranchNumber(){
 		assertEquals(0, a.getConditionNumber());
 		assertEquals(1, b.getConditionNumber());
 	}
 
-	public void testGetNumbers()
-	{
+	public void testGetNumbers(){
 		assertEquals(0, a.getBranchCoverageRate(), 0);
 		assertEquals(2, a.getNumberOfValidBranches());
 		assertEquals(0, a.getNumberOfCoveredBranches());
 
-		for (int i = 0; i < 5; i++)
-		{
+		for (int i = 0; i < 5; i++){
 			a.touchBranch(true,1);
 			assertEquals(0.5, a.getBranchCoverageRate(), 0);
 			assertEquals(2, a.getNumberOfValidBranches());
@@ -75,8 +70,7 @@ public class JumpDataTest extends TestCase
 		assertEquals(2, a.getNumberOfCoveredBranches());
 	}
 
-	public void testTouchBranch()
-	{
+	public void testTouchBranch(){
 		assertEquals(0, a.getTrueHits());
 		for (int i = 0; i < 400; i++)
 			a.touchBranch(true,1);

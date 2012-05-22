@@ -29,6 +29,7 @@ import junit.framework.TestCase;
 import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
+import net.sourceforge.cobertura.util.Constants;
 
 /**
  * Tests merging feature by launching Main class.
@@ -84,7 +85,7 @@ public class MergeMainTest extends TestCase {
 		CoverageDataFileHandler.saveCoverageData(redProject, redFile);
 		
 		// Run merge task
-		String[] args = {"--datafile", dataFile.getAbsolutePath(), 
+		String[] args = {Constants.datafile, dataFile.getAbsolutePath(),
 				greenFile.getAbsolutePath(), redFile.getAbsolutePath()};
 		
 		Main.main(args);
@@ -114,7 +115,7 @@ public class MergeMainTest extends TestCase {
 		CoverageDataFileHandler.saveCoverageData( redProject, dataFile);
 		
 		// Run merge task
-		String[] args = {"--datafile", dataFile.getAbsolutePath(), 
+		String[] args = {Constants.datafile, dataFile.getAbsolutePath(),
 				greenFile.getAbsolutePath()};
 		
 		Main.main( args);
@@ -148,9 +149,9 @@ public class MergeMainTest extends TestCase {
 		CoverageDataFileHandler.saveCoverageData( blueProject, blueFile);
 		
 		// Run merge task
-		String[] args = {"--datafile", dataFile.getAbsolutePath(), 
+		String[] args = {Constants.datafile, dataFile.getAbsolutePath(),
 				greenFile.getAbsolutePath(), 
-				"--basedir", redFile.getParent(), redFile.getName(), blueFile.getName()};
+				Constants.basedir, redFile.getParent(), redFile.getName(), blueFile.getName()};
 		
 		Main.main( args);
 		

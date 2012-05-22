@@ -26,8 +26,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import junit.framework.TestCase;
 
-public class LineDataTest extends TestCase
-{
+public class LineDataTest extends TestCase{
 
 	private final LineData a = new LineData(10, "test1", "(I)B");
 	private final LineData b = new LineData(11, "test1", "(I)B");
@@ -36,8 +35,7 @@ public class LineDataTest extends TestCase
 	private final LineData e = new LineData(14);
 	private final LineData f = new LineData(15);
 
-	public void testEquals()
-	{
+	public void testEquals(){
 		assertFalse(a.equals(null));
 		assertFalse(a.equals(new Integer(4)));
 
@@ -52,16 +50,14 @@ public class LineDataTest extends TestCase
 		assertTrue(a.equals(aPrime));
 	}
 
-	public void testHashCode()
-	{
+	public void testHashCode(){
 		assertEquals(a.hashCode(), a.hashCode());
 
 		LineData aPrime = new LineData(10, "test1", "(I)B");
 		assertEquals(a.hashCode(), aPrime.hashCode());
 	}
 
-	public void testGetLineNumber()
-	{
+	public void testGetLineNumber(){
 		assertEquals(10, a.getLineNumber());
 		assertEquals(11, b.getLineNumber());
 		assertEquals(12, c.getLineNumber());
@@ -70,8 +66,7 @@ public class LineDataTest extends TestCase
 		assertEquals(15, f.getLineNumber());
 	}
 
-	public void testGetNumbers()
-	{
+	public void testGetNumbers(){
 		assertEquals(1, a.getBranchCoverageRate(), 0);
 		assertEquals(0, a.getLineCoverageRate(), 0);
 		assertEquals(0, a.getNumberOfCoveredLines());
@@ -88,8 +83,7 @@ public class LineDataTest extends TestCase
 		assertEquals(4, a.getNumberOfValidBranches());
 		assertEquals(1, a.getNumberOfValidLines());
 
-		for (int i = 0; i < 5; i++)
-		{
+		for (int i = 0; i < 5; i++){
 			a.touch(1);
 			assertEquals(0, a.getBranchCoverageRate(), 0);
 			assertEquals(1, a.getLineCoverageRate(), 0);
@@ -132,8 +126,7 @@ public class LineDataTest extends TestCase
 		assertEquals(1, a.getNumberOfValidLines());
 	}
 
-	public void testSetConditional()
-	{
+	public void testSetConditional(){
 		assertFalse(c.hasBranch());
 		c.addJump(0);
 		assertTrue(c.hasBranch());
@@ -141,8 +134,7 @@ public class LineDataTest extends TestCase
 		assertTrue(c.hasBranch());
 	}
 
-	public void testSetMethodNameAndDescriptor()
-	{
+	public void testSetMethodNameAndDescriptor(){
 		e.setMethodNameAndDescriptor("test3", "(I)B");
 		assertEquals("test3", e.getMethodName());
 		assertEquals("(I)B", e.getMethodDescriptor());
@@ -152,23 +144,20 @@ public class LineDataTest extends TestCase
 		assertEquals("(I)B", f.getMethodDescriptor());
 	}
 
-	public void testTouch()
-	{
+	public void testTouch(){
 		assertEquals(0, a.getHits());
 		for (int i = 0; i < 400; i++)
 			a.touch(2);
 		assertEquals(800, a.getHits());
 	}
 
-	private static void getSwitchDataIteratively(LineData data)
-	{
+	private static void getSwitchDataIteratively(LineData data){
 		/*
 		 * When this test fails, it usually does so well before 2000 iterations.   If it
 		 * gets past 2000, it will usually pass, so there is not much need in going much
 		 * past 2000.
 		 */
-		for (int i=0; i<2000; i++)
-		{
+		for (int i=0; i<2000; i++){
 			/*
 			 * The following yield is needed to make sure the other thread gets
 			 * some CPU.  Otherwise, this thread will get too much of a jump ahead
@@ -180,14 +169,12 @@ public class LineDataTest extends TestCase
 		}
 	}
 	
-	private void runGetSwitchDataTestWithTwoThreads() throws Throwable
-	{
+	private void runGetSwitchDataTestWithTwoThreads() throws Throwable{
 		final LineData data = new LineData(2);
 		final AtomicReference<Throwable> possibleThrowable = new AtomicReference<Throwable>();
 		
 		ThreadGroup threadGroup = new ThreadGroup("TestThreadGroup") {
-			public void uncaughtException(Thread thread, Throwable t)
-			{
+			public void uncaughtException(Thread thread, Throwable t){
 				/*
 				 * Save the Throwable for later use and interrupt this thread so it exits
 				 */
@@ -200,14 +187,12 @@ public class LineDataTest extends TestCase
 		 * Create two threads using the above thread group
 		 */
 		Thread thread1 = new Thread(threadGroup, "1") {
-			public void run()
-			{
+			public void run(){
 				getSwitchDataIteratively(data);
 			}
 		};
 		Thread thread2 = new Thread(threadGroup, "2") {
-			public void run()
-			{
+			public void run(){
 				getSwitchDataIteratively(data);
 			}
 		};
@@ -219,34 +204,29 @@ public class LineDataTest extends TestCase
 		if (thread1.isAlive()) thread1.join();
 		if (thread2.isAlive()) thread2.join();
 		Throwable t = possibleThrowable.get();
-		if (t != null)
-		{
+		if (t != null){
 			throw t;
 		}
 	}
 
-	public void testMultiThreadedGetSwitchData() throws Throwable
-	{
+	public void testMultiThreadedGetSwitchData() throws Throwable{
 		/*
 		 * This test will often pass with only one iteration.
 		 * It passes once in a while with 10.   It never passes
 		 * with 100 (I hope).
 		 */
-		for (int i=0; i<100; i++)
-		{
+		for (int i=0; i<100; i++){
 			runGetSwitchDataTestWithTwoThreads();
 		}
 	}
 	
-	private static void getJumpDataIteratively(LineData data)
-	{
+	private static void getJumpDataIteratively(LineData data){
 		/*
 		 * When this test fails, it usually does so well before 2000 iterations.   If it
 		 * gets past 2000, it will usually pass, so there is not much need in going much
 		 * past 2000.
 		 */
-		for (int i=0; i<2000; i++)
-		{
+		for (int i=0; i<2000; i++){
 			/*
 			 * The following yield is needed to make sure the other thread gets
 			 * some CPU.  Otherwise, this thread will get too much of a jump ahead
@@ -258,14 +238,12 @@ public class LineDataTest extends TestCase
 		}
 	}
 	
-	private void runGetJumpDataTestWithTwoThreads() throws Throwable
-	{
+	private void runGetJumpDataTestWithTwoThreads() throws Throwable{
 		final LineData data = new LineData(2);
 		final AtomicReference<Throwable> possibleThrowable = new AtomicReference<Throwable>();
 		
 		ThreadGroup threadGroup = new ThreadGroup("TestThreadGroup") {
-			public void uncaughtException(Thread thread, Throwable t)
-			{
+			public void uncaughtException(Thread thread, Throwable t){
 				/*
 				 * Save the Throwable for later use and interrupt this thread so it exits
 				 */
@@ -278,14 +256,12 @@ public class LineDataTest extends TestCase
 		 * Create two threads using the above thread group
 		 */
 		Thread thread1 = new Thread(threadGroup, "1") {
-			public void run()
-			{
+			public void run(){
 				getJumpDataIteratively(data);
 			}
 		};
 		Thread thread2 = new Thread(threadGroup, "2") {
-			public void run()
-			{
+			public void run(){
 				getJumpDataIteratively(data);
 			}
 		};
@@ -297,21 +273,18 @@ public class LineDataTest extends TestCase
 		if (thread1.isAlive()) thread1.join();
 		if (thread2.isAlive()) thread2.join();
 		Throwable t = possibleThrowable.get();
-		if (t != null)
-		{
+		if (t != null){
 			throw t;
 		}
 	}
 
-	public void testMultiThreadedGetJumpData() throws Throwable
-	{
+	public void testMultiThreadedGetJumpData() throws Throwable{
 		/*
 		 * This test will often pass with only one iteration.
 		 * It passes once in a while with 10.   It never passes
 		 * with 100 (I hope).
 		 */
-		for (int i=0; i<100; i++)
-		{
+		for (int i=0; i<100; i++){
 			runGetJumpDataTestWithTwoThreads();
 		}
 	}

@@ -57,18 +57,15 @@
 
 package net.sourceforge.cobertura.ant;
 
-public class ExcludeClasses
-{
+public class ExcludeClasses{
 
 	String regex;
 
-	public void setRegex(String regex)
-	{
+	public void setRegex(String regex){
 		this.regex = regex;
 	}
 
-	public String getRegex()
-	{
+	public String getRegex(){
 		return regex;
 	}
 

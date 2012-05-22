@@ -56,8 +56,7 @@
 
 package net.sourceforge.cobertura.ant;
 
-public class IgnoreMethodAnnotation
-{
+public class IgnoreMethodAnnotation{
 	private String annotationName;
 
 	public String getAnnotationName() {

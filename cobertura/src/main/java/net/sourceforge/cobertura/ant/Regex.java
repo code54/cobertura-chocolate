@@ -56,30 +56,25 @@
 
 package net.sourceforge.cobertura.ant;
 
-public class Regex
-{
+public class Regex{
 
 	String pattern;
 	String lineRate;
 	String branchRate;
 
-	public void setPattern(String pattern)
-	{
+	public void setPattern(String pattern){
 		this.pattern = pattern;
 	}
 
-	public void setBranchRate(String branchRate)
-	{
+	public void setBranchRate(String branchRate){
 		this.branchRate = branchRate;
 	}
 
-	public void setLineRate(String lineRate)
-	{
+	public void setLineRate(String lineRate){
 		this.lineRate = lineRate;
 	}
 
-	public String toString()
-	{
+	public String toString(){
 		StringBuffer sb = new StringBuffer();
 		sb.append(pattern);
 		sb.append(':');
