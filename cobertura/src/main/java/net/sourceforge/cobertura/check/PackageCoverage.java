@@ -41,7 +41,10 @@ public class PackageCoverage{
 	}
 
 	public void addLineCount(double lineCount){
+        //TODO remove sout
+        System.out.println("**Adding line count->before: "+this.lineCount);
 		this.lineCount += lineCount;
+        System.out.println("**Adding line count->after: "+this.lineCount);
 	}
 
 	public double getBranchCoverage(){

@@ -1,7 +1,7 @@
 /*
  * Cobertura - http://cobertura.sourceforge.net/
  *
- * Copyright (C) 2007 John Lewis
+ * Copyright (C) 2006 John Lewis
  *
  * Note: This file is dual licensed under the GPL and the Apache
  * Source License (so that it can be used from both the main
@@ -23,30 +23,21 @@
  * USA
  */
 
-package test.condition;
-
-import junit.framework.TestCase;
+package test.first;
 
 /**
- * Simple class used in functional testing of branch coverage.
+ * Simple class used in functional testing.
  * 
  * @author John Lewis
  */
-public class Test extends TestCase{
+public class B{
 
-	public Test(String name){
-		super(name);
+	public void call(){
+		test.first.A.someMethod();
 	}
 
-	/**
-	 * Call the methods called "call"
-	 */
-	public void testMethod(){
-		ConditionCalls branch = new ConditionCalls();
-		branch.call(7);
-		branch.callLookupSwitch(1);
-		branch.callTableSwitch(100);
-		branch.callMultiCondition(3, 7, 1);
-		branch.callMultiCondition2(7, 7, 100);
+	public void dontCall(){
+		test.first.A.someMethod();
 	}
+
 }

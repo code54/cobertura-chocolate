@@ -52,7 +52,7 @@ public class ClassData extends CoverageDataContainer<Integer>
 
     @ElementMap(entry="children", key="key", valueType = CoverageData.class,
              keyType = Integer.class, attribute=true, inline=true, required = false)
-    private Map<Integer, CoverageData> children = new HashMap<Integer, CoverageData>();
+    private Map<Integer, CoverageData> children;
 
 	/**
 	 * Each key is a line number in this class, stored as an Integer object.
@@ -75,12 +75,15 @@ public class ClassData extends CoverageDataContainer<Integer>
 	private String sourceFileName = null;
 
     /*   This is needed for xml serialization   */
-    public ClassData(){}
+    public ClassData(){
+        children = new HashMap<Integer, CoverageData>();
+    }
 
 	/**
 	 * @param name In the format "net.sourceforge.cobertura.coveragedata.ClassData"
 	 */
 	public ClassData(String name){
+        children = new HashMap<Integer, CoverageData>();
 		if (name == null)
 			throw new IllegalArgumentException(
 				"Class name must be specified.");
@@ -247,7 +250,7 @@ public class ClassData extends CoverageDataContainer<Integer>
 	public SortedSet<CoverageData> getLines(){
 		lock.lock();
 		try{
-			return new TreeSet<CoverageData>(this.getChildren().values());
+			return new TreeSet<CoverageData>(getChildren().values());
 		}finally{
 			lock.unlock();
 		}

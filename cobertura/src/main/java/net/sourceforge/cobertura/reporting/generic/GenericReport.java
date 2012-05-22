@@ -6,12 +6,11 @@ import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.coveragedata.SourceFileData;
 import net.sourceforge.cobertura.reporting.ComplexityCalculator;
 import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
+import org.simpleframework.xml.ElementMap;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * This class groups data to be reported,
@@ -22,14 +21,24 @@ public class GenericReport {
     @Attribute
     private Date created;
 
+    //TODO makes sense move this to GenericReportEntry, so that different thresholds
+    //are supported per project, etc?
+    @ElementMap(entry="threshold", key="name", valueType = java.lang.Double.class,
+             keyType = String.class, attribute=true, inline=true, required = false)
+    Map<String, Double>thresholds;
+
     @ElementList(inline=true)
     List<GenericReportEntry> projectsReport;
 
-    public GenericReport(){}
+    public GenericReport(){
+        projectsReport = new ArrayList<GenericReportEntry>();
+        thresholds = new HashMap<String, Double>();
+    }
 
     public GenericReport(List<ProjectData> projects, ComplexityCalculator complexity){
         created = new Date();
         projectsReport = new ArrayList<GenericReportEntry>();
+        thresholds = new HashMap<String, Double>();
 
         for(ProjectData project : projects){
             buildPackageAndSourceFilesAndClassesReportEntries(project, complexity,
@@ -37,6 +46,11 @@ public class GenericReport {
         }
     }
 
+    public void addThreshold(String name, double value){
+        thresholds.put(name, value);
+    }
+
+    /*  Aux methods to extract data from model object   */
     private GenericReportEntry buildProjectReportEntry(
             ProjectData project, ComplexityCalculator complexity){
         CoverageData branchCoverage =

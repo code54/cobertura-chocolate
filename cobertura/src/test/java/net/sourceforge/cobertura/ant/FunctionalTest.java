@@ -35,9 +35,11 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import com.sun.xml.internal.rngom.parse.host.Base;
 import junit.framework.TestCase;
 import net.sourceforge.cobertura.reporting.JUnitXMLHelper;
 
+import org.apache.log4j.Logger;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.Path;
@@ -46,6 +48,12 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.xpath.XPath;
+import org.junit.*;
+
+import static net.sourceforge.cobertura.util.ArchiveUtil.deleteDir;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * These tests generally exec ant to run a test.xml file.  A different target is used for
@@ -54,33 +62,82 @@ import org.jdom.xpath.XPath;
  * 
  * @author jwlewi
  */
-public class FunctionalTest extends TestCase
-{
-
+public class FunctionalTest{
+    private static final Logger log = Logger.getLogger(FunctionalTest.class);
 	private static int forkedJVMDebugPort = 0;
 
 	private final static File BASEDIR = new File((System.getProperty("basedir") != null) ? System
-			.getProperty("basedir") : ".", "examples/functionaltest1");
+			.getProperty("basedir") : ".", "src/test/resources/integration/examples/functionaltest1");
 
-	public static void testInstrumentUsingDirSet() throws Exception{
+    private File reports;
+    private File instrumented;
+    private File classes;
+    private File lib;
+    private File tmp;
+
+    @Before
+	public void setUp(){
+        createRequiredDirs();
+	};
+
+    @After
+    public void tearDown(){
+        File[]files = BASEDIR.listFiles();
+        for(File file : files){
+            if(file.getName().startsWith("genericReport") ||
+                    file.getName().equals("cobertura.ser")){
+                file.delete();
+            }
+        }
+        deleteDir(reports);
+        deleteDir(instrumented);
+        deleteDir(classes);
+        deleteDir(lib);
+        deleteDir(tmp);
+	};
+
+    @org.junit.Ignore("Runs ok on Idea, not on Maven due to antlib.xml location")
+    @Test
+	public void testInstrumentUsingDirSet() throws Exception{
 		runTestAntScript("dirset", "test-dirset");
 		verify("dirset");
 	}
 
-	public static void testInstrumentUsingIncludesAndExcludes() throws Exception{
+    @Test
+	public void testInstrumentUsingIncludesAndExcludes() throws Exception{
 		runTestAntScript("includes-and-excludes", "test-includes-and-excludes");
 		verify("includes-and-excludes");
 	}
 
-	public static void testInstrumentUsingClassPath() throws Exception{
+    @Test
+	public void testInstrumentUsingClassPath() throws Exception{
 		runTestAntScript("classpath", "test-classpath");
 		verify("classpath");
 	}
 
-	public static void testInstrumentUsingWar() throws Exception{
+    @Test
+	public void testInstrumentUsingWar() throws Exception{
 		runTestAntScript("classpath", "test-war");
 		verify("war");
 	}
+
+
+    /*   Aux init methods   */
+    /*   Aux init methods   */
+    public void createRequiredDirs(){
+        reports = new File(BASEDIR, "reports");
+        reports.mkdir();
+        instrumented = new File(BASEDIR, "instrumented");
+        instrumented.mkdir();
+        classes = new File(BASEDIR, "classes");
+        classes.mkdir();
+        lib = new File(BASEDIR, "lib");
+        lib.mkdir();
+        tmp = new File(BASEDIR, "tmp");
+        tmp.mkdir();
+    }
+
+    /*   Aux methods   */
 
 	private static void verify(String testName) throws Exception{
 		verifyXml(testName);
@@ -338,7 +395,7 @@ public class FunctionalTest extends TestCase
 		}finally{
 			if (outputFile.exists()){
 				// Put the contents of the output file in the exception
-				System.out.println("\n\n\nOutput from Ant for " + testName
+				log.info("\n\n\nOutput from Ant for " + testName
 						+ " test:\n----------------------------------------\n"
 						+ Util.getText(outputFile) + "----------------------------------------");
 				outputFile.delete();

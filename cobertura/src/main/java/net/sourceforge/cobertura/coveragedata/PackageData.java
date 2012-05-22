@@ -37,7 +37,7 @@ public class PackageData extends CoverageDataContainer<String>
 
     @ElementMap(entry="children", key="key", valueType = CoverageData.class,
              keyType = String.class, attribute=true, inline=true, required = false)
-    private Map<String, CoverageData> children = new HashMap<String, CoverageData>();
+    private Map<String, CoverageData> children;
 
     @Element
 	private String name;
@@ -50,6 +50,7 @@ public class PackageData extends CoverageDataContainer<String>
 			throw new IllegalArgumentException(
 					"Package name must be specified.");
 		this.name = name;
+        this.children = new HashMap<String, CoverageData>();
 	}
     
 	public void addClassData(ClassData classData){
@@ -110,7 +111,7 @@ public class PackageData extends CoverageDataContainer<String>
 	public SortedSet getClasses(){
 		lock.lock();
 		try{
-			return new TreeSet(this.children.values());
+			return new TreeSet(getChildrenValues());
 		}finally{
 			lock.unlock();
 		}

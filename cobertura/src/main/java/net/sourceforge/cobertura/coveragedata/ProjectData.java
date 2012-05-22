@@ -46,7 +46,7 @@ public class ProjectData extends CoverageDataContainer<String> implements HasBee
 
     @ElementMap(entry="children", key="key", valueType = CoverageData.class,
              keyType = String.class, attribute=true, inline=true, required = false)
-    private Map<String, CoverageData> children = new HashMap<String, CoverageData>();
+    private Map<String, CoverageData> children;
 
 	/** This collection is used for quicker access to the list of classes. */
     @ElementMap(entry="classeslookup", key="key", valueType = ClassData.class,
@@ -54,7 +54,9 @@ public class ProjectData extends CoverageDataContainer<String> implements HasBee
 	private Map<String, ClassData> classes = new HashMap<String, ClassData>();
 
     /*   This is needed for xml serialization   */
-    public ProjectData(){}
+    public ProjectData(){
+         children = new HashMap<String, CoverageData>();
+    }
 
 	public void addClassData(ClassData classData){
 		lock.lock();
@@ -125,7 +127,7 @@ public class ProjectData extends CoverageDataContainer<String> implements HasBee
 	public SortedSet getPackages(){
 		lock.lock();
 		try{
-			return new TreeSet(this.children.values());
+			return new TreeSet(getChildrenValues());
 		}finally{
 			lock.unlock();
 		}
@@ -135,7 +137,7 @@ public class ProjectData extends CoverageDataContainer<String> implements HasBee
 		SortedSet sourceFileDatas = new TreeSet();
 		lock.lock();
 		try{
-			Iterator iter = this.children.values().iterator();
+			Iterator iter = getChildrenValues().iterator();
 			while (iter.hasNext()){
 				PackageData packageData = (PackageData)iter.next();
 				sourceFileDatas.addAll(packageData.getSourceFiles());
@@ -160,7 +162,7 @@ public class ProjectData extends CoverageDataContainer<String> implements HasBee
 		SortedSet subPackages = new TreeSet();
 		lock.lock();
 		try{
-			Iterator iter = this.children.values().iterator();
+			Iterator iter = getChildrenValues().iterator();
 			while (iter.hasNext()){
 				PackageData packageData = (PackageData)iter.next();
 				if (packageData.getName().startsWith(packageName + ".")

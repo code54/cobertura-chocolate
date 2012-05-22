@@ -37,18 +37,21 @@ public class SourceFileData extends CoverageDataContainer<String>
 
     @ElementMap(entry="children", key="key", valueType = CoverageData.class,
              keyType = String.class, attribute=true, inline=true)
-    private Map<String, CoverageData> children = new HashMap<String, CoverageData>();
+    private Map<String, CoverageData> children;
 
     @Element
 	private String name;
 
     /*   This is needed for xml serialization   */
-    public SourceFileData(){}
+    public SourceFileData(){
+        children = new HashMap<String, CoverageData>();
+    }
 
    /**
     * @param name In the format, "net/sourceforge/cobertura/coveragedata/SourceFileData.java"
     */
 	public SourceFileData(String name){
+        children = new HashMap<String, CoverageData>();
 		if (name == null)
 			throw new IllegalArgumentException(
 				"Source file name must be specified.");
@@ -58,7 +61,7 @@ public class SourceFileData extends CoverageDataContainer<String>
 	public void addClassData(ClassData classData){
 		lock.lock();
 		try{
-			if (children.containsKey(classData.getBaseName()))
+			if (getChildren().containsKey(classData.getBaseName()))
 				throw new IllegalArgumentException("Source file " + this.name
 						+ " already contains a class with the name "
 						+ classData.getBaseName());
@@ -83,7 +86,7 @@ public class SourceFileData extends CoverageDataContainer<String>
 	public boolean contains(String name){
 		lock.lock();
 		try{
-			return this.children.containsKey(name);
+			return getChildren().containsKey(name);
 		}finally{
 			lock.unlock();
 		}
@@ -147,7 +150,7 @@ public class SourceFileData extends CoverageDataContainer<String>
 	public SortedSet getClasses(){
 		lock.lock();
 		try{
-			return new TreeSet(this.children.values());
+			return new TreeSet(getChildrenValues());
 		}finally{
 			lock.unlock();
 		}
@@ -156,7 +159,7 @@ public class SourceFileData extends CoverageDataContainer<String>
 	public LineData getLineCoverage(int lineNumber){
 		lock.lock();
 		try{
-			Iterator iter = this.children.values().iterator();
+			Iterator iter = getChildrenValues().iterator();
 			while (iter.hasNext()){
 				ClassData classData = (ClassData)iter.next();
 				if (classData.isValidSourceLineNumber(lineNumber))
@@ -213,9 +216,8 @@ public class SourceFileData extends CoverageDataContainer<String>
     public boolean isValidSourceLineNumber(int lineNumber){
 		lock.lock();
 		try{
-			Iterator iter = this.children.values().iterator();
-			while (iter.hasNext())
-			{
+			Iterator iter = getChildrenValues().iterator();
+			while (iter.hasNext()){
 				ClassData classData = (ClassData)iter.next();
 				if (classData.isValidSourceLineNumber(lineNumber))
 					return true;
