@@ -4,15 +4,8 @@ public class CrapMetric implements ICustomMetric {
 
     private double crapMetric;
 
-    /**
-     *
-     * @param ccn - complexity
-     * @param coveredLines
-     * @param totalLines
-     */
-    public CrapMetric(double ccn, double coveredLines, double totalLines){
-        crapMetric = Math.pow(ccn,2) * Math.pow((1-(coveredLines/totalLines)),3)+ccn;
-    }
+
+    public CrapMetric(){}
 
     @Override
     public String getName() {
@@ -33,5 +26,12 @@ public class CrapMetric implements ICustomMetric {
     @Override
     public String getApplicableLevel() {
         return level_method;
+    }
+
+    @Override
+    public void setBasicMetricData(BasicMetricData data) {
+        crapMetric = Math.pow(data.getCyclomaticCodeComplexity(),2) *
+                Math.pow((1-(data.getLineCoverage().getCoverageRate())),3)+
+                data.getCyclomaticCodeComplexity();
     }
 }

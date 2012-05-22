@@ -5,6 +5,10 @@ import net.sourceforge.cobertura.coveragedata.PackageData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.coveragedata.SourceFileData;
 import net.sourceforge.cobertura.reporting.ComplexityCalculator;
+import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
@@ -22,7 +26,7 @@ public class GenericReport {
     private Date created;
 
     //TODO makes sense move this to GenericReportEntry, so that different thresholds
-    //are supported per project, etc?
+    //are supported per project, etc?  See CoverageData thresholds...
     @ElementMap(entry="threshold", key="name", valueType = java.lang.Double.class,
              keyType = String.class, attribute=true, inline=true, required = false)
     Map<String, Double>thresholds;
@@ -31,14 +35,12 @@ public class GenericReport {
     List<GenericReportEntry> projectsReport;
 
     public GenericReport(){
-        projectsReport = new ArrayList<GenericReportEntry>();
-        thresholds = new HashMap<String, Double>();
+        init();
     }
 
     public GenericReport(List<ProjectData> projects, ComplexityCalculator complexity){
+        init();
         created = new Date();
-        projectsReport = new ArrayList<GenericReportEntry>();
-        thresholds = new HashMap<String, Double>();
 
         for(ProjectData project : projects){
             buildPackageAndSourceFilesAndClassesReportEntries(project, complexity,
@@ -48,6 +50,12 @@ public class GenericReport {
 
     public void addThreshold(String name, double value){
         thresholds.put(name, value);
+    }
+
+    /*   Aux init method   */
+    private void init(){
+        projectsReport = new ArrayList<GenericReportEntry>();
+        thresholds = new HashMap<String, Double>();
     }
 
     /*  Aux methods to extract data from model object   */

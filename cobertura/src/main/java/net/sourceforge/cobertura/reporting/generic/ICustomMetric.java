@@ -30,4 +30,12 @@ public interface ICustomMetric {
      */
     String getApplicableLevel();
 
+    /**
+     * Sets data associated to the GenericReportEntry to which the
+     * ICustomMetricInstance applies. Used to perform calculations
+     * to get metrics value.
+     * @param data
+     */
+    void setBasicMetricData(BasicMetricData data);
+
 }

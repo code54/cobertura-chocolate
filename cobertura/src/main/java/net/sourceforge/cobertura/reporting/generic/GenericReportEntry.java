@@ -1,13 +1,19 @@
 package net.sourceforge.cobertura.reporting.generic;
 
+import org.apache.log4j.Logger;
+import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class GenericReportEntry {
+
+    private static final Logger log = Logger.getLogger(GenericReportEntry.class);
 
     public static final String level_project = "project";
     public static final String level_package = "package";
@@ -22,15 +28,7 @@ public class GenericReportEntry {
     private String name;
 
     @Element
-    private CoverageData branchCoverage;
-    @Element
-    private CoverageData lineCoverage;
-    @Attribute
-    private double cyclomaticCodeComplexity;
-    @Attribute
-    private int numberOfClasses;
-    @Attribute
-    private int numberOfSouceFiles;
+    private BasicMetricData basicMetricData;
 
     private Set<ICustomMetric>customMetrics;
 
@@ -45,26 +43,41 @@ public class GenericReportEntry {
                               int numberOfSourceFiles){
         this.entryLevel = entryLevel;
         this.name = name;
-        this.branchCoverage = branchCoverage;
-        this.lineCoverage = lineCoverage;
-        this.cyclomaticCodeComplexity = cyclomaticCodeComplexity;
-        this.numberOfClasses = numberOfClasses;
-        this.numberOfSouceFiles = numberOfSourceFiles;
+        this.basicMetricData =
+                new BasicMetricData(branchCoverage, lineCoverage,
+                              cyclomaticCodeComplexity, numberOfClasses,
+                              numberOfSourceFiles);
 
-        customMetrics = new HashSet<ICustomMetric>();
         childs = new HashSet<GenericReportEntry>();
+        loadMetrics();
     }
 
-    /**
-     * Allows to add a custom metric.
-     * Will be accepted only if applies to this level.
-     * @param customMetric
-     */
-    public void addCustomMetric(ICustomMetric customMetric){
-        if(customMetric.getApplicableLevel().equals(getEntryLevel())||
-                level_all.equals(getEntryLevel())){
-            customMetrics.add(customMetric);
+    public void loadMetrics(){
+        customMetrics = new HashSet<ICustomMetric>();
+
+        Reflections reflections = new Reflections(new ConfigurationBuilder()
+                .addUrls(ClasspathHelper.forClass(ICustomMetric.class))
+                .setScanners(new SubTypesScanner()));
+        Iterator<Class<? extends ICustomMetric>> iterator =
+                reflections.getSubTypesOf(ICustomMetric.class).iterator();
+
+        Map<String, ICustomMetric> metrics = new HashMap<String, ICustomMetric>();
+        while(iterator.hasNext()){
+            try{
+                ICustomMetric metric = (ICustomMetric)Class.forName(iterator.next().getName()).newInstance();
+                if(metric.getApplicableLevel().equals(getEntryLevel())||
+                    level_all.equals(getEntryLevel())){
+                        metric.setBasicMetricData(basicMetricData);
+                        customMetrics.add(metric);
+                }
+            }catch (Exception e){
+                log.error("An error occurred while loading metrics", e);
+            }
         }
+    }
+
+    public Set<ICustomMetric> getCustomMetrics(){
+        return Collections.unmodifiableSet(customMetrics);
     }
 
     public void addChild(GenericReportEntry entry){
@@ -83,23 +96,8 @@ public class GenericReportEntry {
         return name;
     }
 
-    public CoverageData getBranchCoverageData(){
-        return branchCoverage;
-    }
 
-    public CoverageData getLineCoverage(){
-        return lineCoverage;
-    }
-
-    public double getCyclomaticCodeComplexity(){
-        return cyclomaticCodeComplexity;
-    }
-
-    public int getNumberOfClasses(){
-        return numberOfClasses;
-    }
-
-    public int getNumberOfSouceFiles(){
-        return numberOfSouceFiles;
+    public BasicMetricData getBasicMetricData() {
+        return basicMetricData;
     }
 }

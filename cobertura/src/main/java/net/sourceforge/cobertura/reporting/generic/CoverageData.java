@@ -27,4 +27,20 @@ public class CoverageData {
     /*   Percentage we have   */
     @Attribute
     private double coverageRate;
+
+    public double getTotal() {
+        return total;
+    }
+
+    public double getCovered() {
+        return covered;
+    }
+
+    public double getCoverageRateThreshold() {
+        return coverageRateThreshold;
+    }
+
+    public double getCoverageRate() {
+        return coverageRate;
+    }
 }

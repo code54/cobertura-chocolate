@@ -109,5 +109,14 @@
 				<artifactId>groovy-all</artifactId>
 				<version>1.8.6</version>
 			</dependency>
+			
+			<!-- Add a library that makes reflection easy to use -->
+			<!-- This is used to dynamically load classes implementing some interface provided as extension point -->
+			<dependency>
+            			<groupId>org.reflections</groupId>
+            			<artifactId>reflections</artifactId>
+            			<version>0.9.6</version>
+		        </dependency>
+
 		</dependencies>
 </project>
