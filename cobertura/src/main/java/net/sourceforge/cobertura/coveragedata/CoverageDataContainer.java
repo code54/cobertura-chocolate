@@ -24,14 +24,10 @@
 
 package net.sourceforge.cobertura.coveragedata;
 
-import org.simpleframework.xml.ElementMap;
-import org.simpleframework.xml.Root;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;

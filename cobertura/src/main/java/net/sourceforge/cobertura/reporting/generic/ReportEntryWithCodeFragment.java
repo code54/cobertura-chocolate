@@ -2,7 +2,6 @@ package net.sourceforge.cobertura.reporting.generic;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 
 public class ReportEntryWithCodeFragment extends GenericReportEntry{

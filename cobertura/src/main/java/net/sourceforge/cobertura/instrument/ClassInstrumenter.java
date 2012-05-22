@@ -24,16 +24,15 @@
 
 package net.sourceforge.cobertura.instrument;
 
-import java.util.Collection;
-
 import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
-
 import org.apache.log4j.Logger;
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+
+import java.util.Collection;
 
 class ClassInstrumenter extends ClassAdapter{
 

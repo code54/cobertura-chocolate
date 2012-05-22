@@ -23,17 +23,12 @@
 
 package net.sourceforge.cobertura.coveragedata;
 
-import org.simpleframework.xml.*;
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.ElementList;
+import org.simpleframework.xml.ElementMap;
+import org.simpleframework.xml.Root;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * <p>

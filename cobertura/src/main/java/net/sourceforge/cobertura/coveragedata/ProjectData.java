@@ -29,20 +29,13 @@
 
 package net.sourceforge.cobertura.coveragedata;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
 import net.sourceforge.cobertura.util.FileLocker;
 import org.apache.log4j.Logger;
 import org.simpleframework.xml.ElementMap;
 import org.simpleframework.xml.Root;
+
+import java.io.File;
+import java.util.*;
 
 @Root(name="projectdata")
 public class ProjectData extends CoverageDataContainer<String> implements HasBeenInstrumented{

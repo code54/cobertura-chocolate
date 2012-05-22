@@ -24,11 +24,11 @@
 
 package net.sourceforge.cobertura.coveragedata;
 
-import java.util.*;
-
 import net.sourceforge.cobertura.util.StringUtil;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementMap;
+
+import java.util.*;
 
 public class SourceFileData extends CoverageDataContainer<String>
 		implements Comparable, HasBeenInstrumented{

@@ -24,21 +24,15 @@
 
 package net.sourceforge.cobertura.instrument;
 
+import net.sourceforge.cobertura.coveragedata.ClassData;
+import net.sourceforge.cobertura.util.RegexUtil;
+import org.objectweb.asm.*;
+import org.objectweb.asm.tree.MethodNode;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import net.sourceforge.cobertura.coveragedata.ClassData;
-import net.sourceforge.cobertura.util.RegexUtil;
-
-import org.objectweb.asm.AnnotationVisitor;
-import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodAdapter;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
-import org.objectweb.asm.tree.MethodNode;
 
 public class FirstPassMethodInstrumenter
         extends MethodAdapter implements Opcodes{

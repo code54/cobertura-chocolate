@@ -25,14 +25,14 @@
 
 package net.sourceforge.cobertura.coveragedata;
 
+import net.sourceforge.cobertura.coveragedata.countermaps.AtomicCounterMap;
+import net.sourceforge.cobertura.coveragedata.countermaps.CounterMap;
+import org.apache.log4j.Logger;
+
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import net.sourceforge.cobertura.coveragedata.countermaps.AtomicCounterMap;
-import net.sourceforge.cobertura.coveragedata.countermaps.CounterMap;
-import org.apache.log4j.Logger;
 
 public class TouchCollector implements HasBeenInstrumented{
 

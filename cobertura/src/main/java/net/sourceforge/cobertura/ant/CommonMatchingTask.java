@@ -61,6 +61,16 @@
 
 package net.sourceforge.cobertura.ant;
 
+import net.sourceforge.cobertura.util.CommandLineBuilder;
+import net.sourceforge.cobertura.util.StringUtil;
+import org.apache.tools.ant.AntClassLoader;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.DirectoryScanner;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.taskdefs.Java;
+import org.apache.tools.ant.taskdefs.MatchingTask;
+import org.apache.tools.ant.types.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -68,21 +78,6 @@ import java.net.URLClassLoader;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-
-import net.sourceforge.cobertura.util.CommandLineBuilder;
-import net.sourceforge.cobertura.util.StringUtil;
-
-import org.apache.tools.ant.AntClassLoader;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.DirectoryScanner;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.taskdefs.Java;
-import org.apache.tools.ant.taskdefs.MatchingTask;
-import org.apache.tools.ant.types.FileSet;
-import org.apache.tools.ant.types.AbstractFileSet;
-import org.apache.tools.ant.types.DirSet;
-import org.apache.tools.ant.types.Path;
-import org.apache.tools.ant.types.Reference;
 
 public abstract class CommonMatchingTask extends MatchingTask
 {

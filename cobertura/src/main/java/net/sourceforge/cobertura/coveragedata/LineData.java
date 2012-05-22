@@ -24,6 +24,11 @@
 
 package net.sourceforge.cobertura.coveragedata;
 
+import net.sourceforge.cobertura.util.StringUtil;
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.ElementList;
+import org.simpleframework.xml.Root;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
@@ -31,11 +36,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
-import net.sourceforge.cobertura.util.StringUtil;
-import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.ElementList;
-import org.simpleframework.xml.Root;
 
 /**
  * <p>

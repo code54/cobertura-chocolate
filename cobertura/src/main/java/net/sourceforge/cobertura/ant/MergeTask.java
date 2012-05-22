@@ -58,13 +58,12 @@
 
 package net.sourceforge.cobertura.ant;
 
-import java.io.IOException;
-
 import net.sourceforge.cobertura.util.CommandLineBuilder;
-
 import net.sourceforge.cobertura.util.Constants;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+
+import java.io.IOException;
 
 public class MergeTask extends CommonMatchingTask{
 

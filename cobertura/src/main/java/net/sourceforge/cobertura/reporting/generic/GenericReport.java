@@ -1,6 +1,9 @@
 package net.sourceforge.cobertura.reporting.generic;
 
-import net.sourceforge.cobertura.coveragedata.*;
+import net.sourceforge.cobertura.coveragedata.ClassData;
+import net.sourceforge.cobertura.coveragedata.PackageData;
+import net.sourceforge.cobertura.coveragedata.ProjectData;
+import net.sourceforge.cobertura.coveragedata.SourceFileData;
 import net.sourceforge.cobertura.reporting.ComplexityCalculator;
 import org.simpleframework.xml.ElementList;
 

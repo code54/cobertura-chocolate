@@ -25,17 +25,17 @@
 
 package net.sourceforge.cobertura.merge;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.util.CommandLineBuilder;
 import net.sourceforge.cobertura.util.Constants;
 import net.sourceforge.cobertura.util.Header;
 import org.apache.log4j.Logger;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class Main{
 

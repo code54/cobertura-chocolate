@@ -24,7 +24,6 @@
 package net.sourceforge.cobertura.instrument;
 
 import net.sourceforge.cobertura.util.RegexUtil;
-
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 

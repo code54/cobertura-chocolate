@@ -26,37 +26,16 @@
 
 package net.sourceforge.cobertura.reporting.html;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.Vector;
-
-import net.sourceforge.cobertura.coveragedata.ClassData;
-import net.sourceforge.cobertura.coveragedata.CoverageData;
-import net.sourceforge.cobertura.coveragedata.LineData;
-import net.sourceforge.cobertura.coveragedata.PackageData;
-import net.sourceforge.cobertura.coveragedata.ProjectData;
-import net.sourceforge.cobertura.coveragedata.SourceFileData;
+import net.sourceforge.cobertura.coveragedata.*;
 import net.sourceforge.cobertura.reporting.ComplexityCalculator;
 import net.sourceforge.cobertura.reporting.html.files.CopyFiles;
-import net.sourceforge.cobertura.util.FileFinder;
-import net.sourceforge.cobertura.util.Header;
-import net.sourceforge.cobertura.util.IOUtil;
-import net.sourceforge.cobertura.util.Source;
-import net.sourceforge.cobertura.util.StringUtil;
-
+import net.sourceforge.cobertura.util.*;
 import org.apache.log4j.Logger;
+
+import java.io.*;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.util.*;
 
 public class HTMLReport{
 
@@ -213,12 +192,12 @@ public class HTMLReport{
 					else
 						percentCovered = "N/A";
 					out.println("<td nowrap=\"nowrap\"><a target=\"summary\" href=\""
-									+ sourceFileData.getNormalizedName()
-									+ ".html\">"
-									+ sourceFileData.getBaseName()
-									+ "</a> <i>("
-									+ percentCovered
-									+ ")</i></td>");
+                            + sourceFileData.getNormalizedName()
+                            + ".html\">"
+                            + sourceFileData.getBaseName()
+                            + "</a> <i>("
+                            + percentCovered
+                            + ")</i></td>");
 					out.println("</tr>");
 				}
 				out.println("</tbody>");

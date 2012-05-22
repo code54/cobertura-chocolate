@@ -25,14 +25,14 @@
 
 package net.sourceforge.cobertura.coveragedata.countermaps;
 
+import net.sourceforge.cobertura.coveragedata.HasBeenInstrumented;
+
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import net.sourceforge.cobertura.coveragedata.HasBeenInstrumented;
 
 /**
  * Thread-safe implementation of map that counts number of keys (like multi-set)
