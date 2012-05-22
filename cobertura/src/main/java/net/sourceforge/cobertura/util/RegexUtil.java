@@ -72,16 +72,12 @@ public abstract class RegexUtil
 		return false;
 	}
 
-	public static void addRegex(Collection list, String regex)
-	{
-		try
-		{
+	public static void addRegex(Collection list, String regex){
+		try{
 			Perl5Compiler pc = new Perl5Compiler();
 			Pattern pattern = pc.compile(regex);
 			list.add(pattern);
-		}
-		catch (MalformedPatternException e)
-		{
+		}catch (MalformedPatternException e){
 			logger.warn("The regular expression " + regex + " is invalid: "
 					+ e.getLocalizedMessage());
 		}

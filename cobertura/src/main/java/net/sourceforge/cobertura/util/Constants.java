@@ -2,7 +2,7 @@ package net.sourceforge.cobertura.util;
 
 public class Constants {
 
-    /*   Command line constants   */
+    /*   Command line /parameters constants   */
     public static final String commandsfile = "--commandsfile";
     public static final String datafile = "--datafile";
     public static final String destination = "--destination";
@@ -23,6 +23,8 @@ public class Constants {
     public static final String packageline = "--packageline";
     public static final String totalbranch = "--totalbranch";
     public static final String totalline = "--totalline";
+    public static final String fileToInstrument = "filetoinstrument";
+    public static final String fileToMerge = "filetomerge";
 
     /*   Reporting format constants   */
     public static final String report_html = "html";

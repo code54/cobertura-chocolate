@@ -86,7 +86,7 @@ public class Main{
 		Header.print(System.out);
 
 		try {
-			args = CommandLineBuilder.preprocessCommandLineArguments( args);
+			args = CommandLineBuilder.preprocessCommandLineArguments(args);
 		} catch( Exception ex) {
 			log.error("Error: Cannot process arguments: " + ex.getMessage());
 			System.exit(1);

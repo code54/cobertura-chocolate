@@ -37,6 +37,7 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -70,8 +71,7 @@ import java.util.zip.ZipOutputStream;
  * as not to instrument the same class twice.
  * </p>
  */
-public class Main
-{
+public class Main{
 
 	private static final LoggerWrapper log = new LoggerWrapper();
 
@@ -382,6 +382,7 @@ public class Main
 				log.setFailOnError(true);
 			}else{
 				CoberturaFile coberturaFile = new CoberturaFile(baseDir, args[i]);
+                log.info("*** Parameter for instrumentation: "+args[i]+"***");
 				filePaths.add(coberturaFile);
 			}
 		}
