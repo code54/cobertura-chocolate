@@ -38,8 +38,11 @@ public class GenericReport {
         thresholdsLookup.add(threshold);
     }
 
-    //TODO this should be removed
-    public List<GenericReportEntry>getProjectsReport(){
+    public List<GenericReportEntry>getEntriesForLevel(String level){
+        List<GenericReportEntry>entries = new ArrayList<GenericReportEntry>();
+        for(GenericReportEntry entry : entries){
+            entry.getEntriesForLevel(entries, level);
+        }
         return entries;
     }
 

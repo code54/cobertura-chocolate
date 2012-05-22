@@ -5,6 +5,7 @@ import net.sourceforge.cobertura.Cobertura;
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.reporting.generic.BasicMetricData;
 import net.sourceforge.cobertura.reporting.generic.GenericReportEntry;
+import net.sourceforge.cobertura.reporting.generic.ReportConstants;
 import net.sourceforge.cobertura.reporting.xml.XmlReportFormatStrategy;
 import net.sourceforge.cobertura.util.DirectoryClassLoader;
 import org.apache.log4j.Logger;
@@ -86,7 +87,7 @@ public class CodeInstrumentationIntegrationTest {
         new JUnitCore().run(testClass);
 
         //get report
-        GenericReportEntry report = cobertura.report().getProjectsReport().get(0);
+        GenericReportEntry report = cobertura.report().getEntriesForLevel(ReportConstants.level_project).get(0);
         BasicMetricData metricData = report.getBasicMetricData();
 
         assertEquals("Branch coverage violation", 0.25925925925925924, metricData.getBranchCoverageData().getCoverageRate());

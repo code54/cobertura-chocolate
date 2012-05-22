@@ -10,12 +10,14 @@ public class ThresholdsLookup {
     /*   thresholdsLookup: Map<level+name, Map<metricName, Threshold>>   */
     private Map<String, Map<String, Threshold>> thresholdsLookup;
     private Map<String, Set<ICustomMetric>> metricsLookup;
+    private Levels levels;
 
     private ThresholdsLookup(){}
 
     public ThresholdsLookup(Set<ICustomMetric>metrics){
         thresholdsLookup = new HashMap<String, Map<String, Threshold>>();
         metricsLookup = new HashMap<String, Set<ICustomMetric>>();
+        levels = new Levels();
         Iterator<ICustomMetric>it = metrics.iterator();
         while(it.hasNext()){
             addMetric(it.next());
@@ -112,25 +114,8 @@ public class ThresholdsLookup {
                         thresholdsLookup.get(buildKey(currentLevel, levelName)).containsKey(metric.getName())){
                     threshold = thresholdsLookup.get(buildKey(currentLevel, levelName)).get(metric.getName());
                 }
-            }while(threshold==null && ((currentLevel=getNextLevel(currentLevel))!=null));
+            }while(threshold==null && ((currentLevel=levels.getNextLevel(currentLevel))!=null));
         }
         return threshold;
-    }
-
-    private String getNextLevel(String currentLevel){
-        String []levels = new String[]{
-                ReportConstants.level_method,
-                ReportConstants.level_class,
-                ReportConstants.level_sourcefile,
-                ReportConstants.level_package,
-                ReportConstants.level_project
-        };
-        for(int j=0;j<levels.length;j++){
-            if(levels[j].equals(currentLevel)&&
-                    !currentLevel.equals(ReportConstants.level_project)){
-                return levels[j+1];
-            }
-        }
-        return null;
     }
 }
