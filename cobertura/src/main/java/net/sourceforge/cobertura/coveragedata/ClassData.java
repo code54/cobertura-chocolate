@@ -258,8 +258,8 @@ public class ClassData extends CoverageDataContainer<Integer>
 		}
 	}
 
-	public Collection<CoverageData> getLines(String methodNameAndDescriptor){
-		Collection<CoverageData> lines = new HashSet<CoverageData>();
+	public Collection<LineData> getLines(String methodNameAndDescriptor){
+		Collection<LineData> lines = new HashSet<LineData>();
 		lock.lock();
 		try{
 			Iterator<LineData> iter = getChildrenValues().iterator();

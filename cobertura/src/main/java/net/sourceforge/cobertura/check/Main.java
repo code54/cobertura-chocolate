@@ -98,7 +98,7 @@ public class Main{
 
 	/**
 	 * This method returns the CoverageRate object that
-	 * applies to the given class.  If checks if there is a
+	 * applies to the given class.  It checks if there is a
 	 * pattern that matches the class name, and returns that
 	 * if it finds one.  Otherwise it uses the global minimum
 	 * rates that were passed in.
@@ -117,7 +117,6 @@ public class Main{
 
 	public Main(String[] args) throws MalformedPatternException{
 		int exitStatus = 0;
-
 		Header.print(System.out);
 
 		File dataFile = CoverageDataFileHandler.getDefaultDataFile();

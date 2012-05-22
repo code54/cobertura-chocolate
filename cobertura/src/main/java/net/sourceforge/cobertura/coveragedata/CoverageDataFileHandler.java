@@ -24,7 +24,10 @@
 
 package net.sourceforge.cobertura.coveragedata;
 
+import net.sourceforge.cobertura.reporting.ComplexityCalculator;
+import net.sourceforge.cobertura.reporting.generic.GenericReport;
 import net.sourceforge.cobertura.util.ConfigurationUtil;
+import net.sourceforge.cobertura.util.FileFinder;
 import org.apache.log4j.Logger;
 import org.apache.tools.ant.Project;
 import org.simpleframework.xml.Serializer;
@@ -40,6 +43,9 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * This contains methods used for reading and writing the
@@ -81,6 +87,11 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented{
         Serializer serializer = new Persister();
         try {
             serializer.write(projectData, dataFile);
+
+            List<ProjectData> projects = new ArrayList<ProjectData>();
+            projects.add(projectData);
+            ComplexityCalculator complexity = new ComplexityCalculator(new FileFinder());
+            serializer.write(new GenericReport(projects, complexity),new File("genericReport"+UUID.randomUUID()+".xml"));
         } catch (Exception e) {
             e.printStackTrace();
         }

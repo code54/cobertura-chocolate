@@ -60,7 +60,7 @@ import org.apache.log4j.Logger;
 
 public class HTMLReport{
 
-	private static final Logger LOGGER = Logger.getLogger(HTMLReport.class);
+	private static final Logger log = Logger.getLogger(HTMLReport.class);
 
 	private File destinationDir;
 
@@ -92,47 +92,37 @@ public class HTMLReport{
 		generateSourceFiles();
 	}
 
-	private String generatePackageName(PackageData packageData)
-	{
+	private String generatePackageName(PackageData packageData){
 		if (packageData.getName().equals(""))
 			return "(default)";
 		return packageData.getName();
 	}
 
-	private void generatePackageList() throws IOException
-	{
+	private void generatePackageList() throws IOException{
 		File file = new File(destinationDir, "frame-packages.html");
 		PrintWriter out = null;
 
-		try
-		{
+		try{
 			out = IOUtil.getPrintWriter(file);
 
-			out
-					.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"");
-			out
-					.println("           \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
+			out.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"");
+			out.println("           \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
 
-			out
-					.println("<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">");
+			out.println("<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">");
 			out.println("<head>");
-			out
-					.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />");
+			out.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />");
 			out.println("<title>Coverage Report</title>");
-			out
-					.println("<link title=\"Style\" type=\"text/css\" rel=\"stylesheet\" href=\"css/main.css\" />");
+			out.println("<link title=\"Style\" type=\"text/css\" rel=\"stylesheet\" href=\"css/main.css\" />");
 			out.println("</head>");
 			out.println("<body>");
 			out.println("<h5>Packages</h5>");
 			out.println("<table width=\"100%\">");
 			out.println("<tr>");
-			out
-					.println("<td nowrap=\"nowrap\"><a href=\"frame-summary.html\" onclick='parent.sourceFileList.location.href=\"frame-sourcefiles.html\"' target=\"summary\">All</a></td>");
+			out.println("<td nowrap=\"nowrap\"><a href=\"frame-summary.html\" onclick='parent.sourceFileList.location.href=\"frame-sourcefiles.html\"' target=\"summary\">All</a></td>");
 			out.println("</tr>");
 
 			Iterator iter = projectData.getPackages().iterator();
-			while (iter.hasNext())
-			{
+			while (iter.hasNext()){
 				PackageData packageData = (PackageData)iter.next();
 				String url1 = "frame-summary-" + packageData.getName()
 						+ ".html";
@@ -148,39 +138,30 @@ public class HTMLReport{
 			out.println("</table>");
 			out.println("</body>");
 			out.println("</html>");
-		}
-		finally
-		{
-			if (out != null)
-			{
-				out.close();
+		}finally{
+			if (out != null){
+                out.close();
 			}
 		}
 	}
 
-	private void generateSourceFileLists() throws IOException
-	{
+	private void generateSourceFileLists() throws IOException{
 		generateSourceFileList(null);
 		Iterator iter = projectData.getPackages().iterator();
-		while (iter.hasNext())
-		{
+		while (iter.hasNext()){
 			PackageData packageData = (PackageData)iter.next();
 			generateSourceFileList(packageData);
 		}
 	}
 
 	private void generateSourceFileList(PackageData packageData)
-			throws IOException
-	{
+			throws IOException{
 		String filename;
 		Collection sourceFiles;
-		if (packageData == null)
-		{
+		if (packageData == null){
 			filename = "frame-sourcefiles.html";
 			sourceFiles = projectData.getSourceFiles();
-		}
-		else
-		{
+		}else{
 			filename = "frame-sourcefiles-" + packageData.getName() + ".html";
 			sourceFiles = packageData.getSourceFiles();
 		}
@@ -195,8 +176,7 @@ public class HTMLReport{
 
 		File file = new File(destinationDir, filename);
 		PrintWriter out = null;
-		try
-		{
+		try{
 			out = IOUtil.getPrintWriter(file);
 
 			out
@@ -209,8 +189,7 @@ public class HTMLReport{
 			out
 					.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>");
 			out.println("<title>Coverage Report Classes</title>");
-			out
-					.println("<link title=\"Style\" type=\"text/css\" rel=\"stylesheet\" href=\"css/main.css\"/>");
+			out.println("<link title=\"Style\" type=\"text/css\" rel=\"stylesheet\" href=\"css/main.css\"/>");
 			out.println("</head>");
 			out.println("<body>");
 			out.println("<h5>");
@@ -219,14 +198,12 @@ public class HTMLReport{
 			out.println("</h5>");
 			out.println("<div class=\"separator\">&nbsp;</div>");
 			out.println("<h5>Classes</h5>");
-			if (!sortedSourceFiles.isEmpty())
-			{
+			if (!sortedSourceFiles.isEmpty()){
 				out.println("<table width=\"100%\">");
 				out.println("<tbody>");
 
 				for (Iterator iter = sortedSourceFiles.iterator(); iter
-						.hasNext();)
-				{
+						.hasNext();){
 					SourceFileData sourceFileData = (SourceFileData)iter.next();
 					out.println("<tr>");
 					String percentCovered;
@@ -235,8 +212,7 @@ public class HTMLReport{
 								.getLineCoverageRate());
 					else
 						percentCovered = "N/A";
-					out
-							.println("<td nowrap=\"nowrap\"><a target=\"summary\" href=\""
+					out.println("<td nowrap=\"nowrap\"><a target=\"summary\" href=\""
 									+ sourceFileData.getNormalizedName()
 									+ ".html\">"
 									+ sourceFileData.getBaseName()
@@ -430,7 +406,7 @@ public class HTMLReport{
 			}
 			catch (IOException e)
 			{
-				LOGGER.info("Could not generate HTML file for source file "
+				log.info("Could not generate HTML file for source file "
 						+ sourceFileData.getName() + ": "
 						+ e.getLocalizedMessage());
 			}
@@ -438,11 +414,9 @@ public class HTMLReport{
 	}
 
 	private void generateSourceFile(SourceFileData sourceFileData)
-			throws IOException
-	{
-		if (!sourceFileData.containsInstrumentationInfo())
-		{
-			LOGGER.info("Data file does not contain instrumentation "
+			throws IOException{
+		if (!sourceFileData.containsInstrumentationInfo()){
+			log.info("Data file does not contain instrumentation "
 					+ "information for the file " + sourceFileData.getName()
 					+ ".  Ensure this class was instrumented, and this "
 					+ "data file contains the instrumentation information.");
@@ -452,30 +426,23 @@ public class HTMLReport{
 		File file = new File(destinationDir, filename);
 		PrintWriter out = null;
 
-		try
-		{
+		try{
 			out = IOUtil.getPrintWriter(file);
 
-			out
-					.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"");
-			out
-					.println("           \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
+			out.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"");
+			out.println("           \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
 
 			out.println("<html>");
 			out.println("<head>");
-			out
-					.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>");
+			out.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>");
 			out.println("<title>Coverage Report</title>");
-			out
-					.println("<link title=\"Style\" type=\"text/css\" rel=\"stylesheet\" href=\"css/main.css\"/>");
-			out
-					.println("<script type=\"text/javascript\" src=\"js/popup.js\"></script>");
+			out.println("<link title=\"Style\" type=\"text/css\" rel=\"stylesheet\" href=\"css/main.css\"/>");
+			out.println("<script type=\"text/javascript\" src=\"js/popup.js\"></script>");
 			out.println("</head>");
 			out.println("<body>");
 			out.print("<h5>Coverage Report - ");
 			String classPackageName = sourceFileData.getPackageName();
-			if ((classPackageName != null) && classPackageName.length() > 0)
-			{
+			if ((classPackageName != null) && classPackageName.length() > 0){
 				out.print(classPackageName + ".");
 			}
 			out.print(sourceFileData.getBaseName());
@@ -508,16 +475,13 @@ public class HTMLReport{
    
 	private String generateBranchInfo(LineData lineData, String content) {
 		boolean hasBranch = (lineData != null) ? lineData.hasBranch() : false;
-		if (hasBranch) 
-		{
+		if (hasBranch) {
 			StringBuffer ret = new StringBuffer();
 			ret.append("<a title=\"Line ").append(lineData.getLineNumber()).append(": Conditional coverage ")
 			   .append(lineData.getConditionCoverage());
-			if (lineData.getConditionSize() > 1)
-			{
+			if (lineData.getConditionSize() > 1){
 				ret.append(" [each condition: ");
-				for (int i = 0; i < lineData.getConditionSize(); i++)
-				{
+				for (int i = 0; i < lineData.getConditionSize(); i++){
 					if (i > 0)
 						ret.append(", ");
 					ret.append(lineData.getConditionCoverage(i));
@@ -526,77 +490,57 @@ public class HTMLReport{
 			}
 			ret.append(".\">").append(content).append("</a>");
 			return ret.toString();
-		}
-		else
-		{
+		}else{
 			return content;
 		}
 	}
 
-	private String generateHtmlizedJavaSource(SourceFileData sourceFileData)
-	{
+	private String generateHtmlizedJavaSource(SourceFileData sourceFileData){
 		Source source = finder.getSource(sourceFileData.getName());
 		
-		if (source == null)
-		{
+		if (source == null){
 			return "<p>Unable to locate " + sourceFileData.getName()
 					+ ".  Have you specified the source directory?</p>";
 		}
 
 		BufferedReader br = null;
-		try
-		{
+		try{
 			br = new BufferedReader(new InputStreamReader(source.getInputStream(), encoding));
-		}
-		catch (UnsupportedEncodingException e)
-		{
+		}catch (UnsupportedEncodingException e){
 			return "<p>Unable to open " + source.getOriginDesc()
 					+ ": The encoding '" + encoding +"' is not supported by your JVM.</p>";
-		}
-		catch (Throwable t)
-		{
+		}catch (Throwable t){
 			return "<p>Unable to open " + source.getOriginDesc() + ": " + t.getLocalizedMessage() + "</p>";
 		}
 
 		StringBuffer ret = new StringBuffer();
-		ret
-				.append("<table cellspacing=\"0\" cellpadding=\"0\" class=\"src\">\n");
-		try
-		{
+		ret.append("<table cellspacing=\"0\" cellpadding=\"0\" class=\"src\">\n");
+		try{
 			String lineStr;
 			JavaToHtml javaToHtml = new JavaToHtml();
 			int lineNumber = 1;
-			while ((lineStr = br.readLine()) != null)
-			{
+			while ((lineStr = br.readLine()) != null){
 				ret.append("<tr>");
-				if (sourceFileData.isValidSourceLineNumber(lineNumber))
-				{
+				if (sourceFileData.isValidSourceLineNumber(lineNumber)){
 					LineData lineData = sourceFileData.getLineCoverage(lineNumber);
 					ret.append("  <td class=\"numLineCover\">&nbsp;"
 							+ lineNumber + "</td>");
-					if ((lineData != null) && (lineData.isCovered()))
-					{
+					if ((lineData != null) && (lineData.isCovered())){
 						ret.append("  <td class=\"nbHitsCovered\">" 
 								+ generateBranchInfo(lineData, "&nbsp;" + ((lineData != null) ? lineData.getHits() : 0)) 
 								+ "</td>");
-						ret
-							.append("  <td class=\"src\"><pre class=\"src\">&nbsp;"
+						ret.append("  <td class=\"src\"><pre class=\"src\">&nbsp;"
 									+ generateBranchInfo(lineData, javaToHtml.process(lineStr))
 									+ "</pre></td>");
-					}
-					else
-					{
+					}else{
 						ret.append("  <td class=\"nbHitsUncovered\">"
 								+ generateBranchInfo(lineData, "&nbsp;" + ((lineData != null) ? lineData.getHits() : 0))
 								+ "</td>");
-						ret
-							.append("  <td class=\"src\"><pre class=\"src\"><span class=\"srcUncovered\">&nbsp;"
+						ret.append("  <td class=\"src\"><pre class=\"src\"><span class=\"srcUncovered\">&nbsp;"
 									+ generateBranchInfo(lineData, javaToHtml.process(lineStr))
 									+ "</span></pre></td>");
 					}
-				}
-				else
-				{
+				}else{
 					ret.append("  <td class=\"numLine\">&nbsp;" + lineNumber
 							+ "</td>");
 					ret.append("  <td class=\"nbHits\">&nbsp;</td>\n");
@@ -606,23 +550,15 @@ public class HTMLReport{
 				ret.append("</tr>\n");
 				lineNumber++;
 			}
-		}
-		catch (IOException e)
-		{
+		}catch (IOException e){
 			ret.append("<tr><td>Error reading "
 					+ source.getOriginDesc() + ": "
 					+ e.getLocalizedMessage() + "</td></tr>\n");
-		}
-		finally
-		{
-			try
-			{
+		}finally{
+			try{
 				br.close();
 				source.close();
-			}
-			catch (IOException e)
-			{
-			}
+			}catch (IOException e){}
 		}
 
 		ret.append("</table>\n");
@@ -630,8 +566,7 @@ public class HTMLReport{
 		return ret.toString();
 	}
 
-	private static String generateFooter()
-	{
+	private static String generateFooter(){
 		return "<div class=\"footer\">Report generated by "
 				+ "<a href=\"http://cobertura.sourceforge.net/\" target=\"_top\">Cobertura</a> "
 				+ Header.version() + " on "
@@ -639,14 +574,12 @@ public class HTMLReport{
 	}
 
 	private static String generateTableHeader(String title,
-			boolean showColumnForNumberOfClasses)
-	{
+			boolean showColumnForNumberOfClasses){
 		StringBuffer ret = new StringBuffer();
 		ret.append("<thead>");
 		ret.append("<tr>");
 		ret.append("  <td class=\"heading\">" + title + "</td>");
-		if (showColumnForNumberOfClasses)
-		{
+		if (showColumnForNumberOfClasses){
 			ret.append("  <td class=\"heading\"># Classes</td>");
 		}
 		ret.append("  <td class=\"heading\">"
@@ -657,41 +590,36 @@ public class HTMLReport{
 				+ generateHelpURL("Branch Coverage",
 						"The percent of branches executed by this test run.")
 				+ "</td>");
-		ret
-				.append("  <td class=\"heading\">"
+		ret.append("  <td class=\"heading\">"
 						+ generateHelpURL(
 								"Complexity",
-								"Average McCabe's cyclomatic code complexity for all methods.  This is basically a count of the number of different code paths in a method (incremented by 1 for each if statement, while loop, etc.)")
+								"Average McCabe's cyclomatic code complexity for all methods.  " +
+                                        "This is basically a count of the number of different " +
+                                        "code paths in a method (incremented by 1 for each if " +
+                                        "statement, while loop, etc.)")
 						+ "</td>");
 		ret.append("</tr>");
 		ret.append("</thead>");
 		return ret.toString();
 	}
 
-	private static String generateHelpURL(String text, String description)
-	{
+	private static String generateHelpURL(String text, String description){
 		StringBuffer ret = new StringBuffer();
 		boolean popupTooltips = false;
-		if (popupTooltips)
-		{
-			ret
-					.append("<a class=\"hastooltip\" href=\"help.html\" onclick=\"popupwindow('help.html'); return false;\">");
+		if (popupTooltips){
+			ret.append("<a class=\"hastooltip\" href=\"help.html\" onclick=\"popupwindow('help.html'); return false;\">");
 			ret.append(text);
 			ret.append("<span>" + description + "</span>");
 			ret.append("</a>");
-		}
-		else
-		{
-			ret
-					.append("<a class=\"dfn\" href=\"help.html\" onclick=\"popupwindow('help.html'); return false;\">");
+		}else{
+			ret.append("<a class=\"dfn\" href=\"help.html\" onclick=\"popupwindow('help.html'); return false;\">");
 			ret.append(text);
 			ret.append("</a>");
 		}
 		return ret.toString();
 	}
 
-	private String generateTableRowForTotal()
-	{
+	private String generateTableRowForTotal(){
 		StringBuffer ret = new StringBuffer();
 		double ccn = complexity.getCCNForProject(projectData);
 
@@ -704,8 +632,7 @@ public class HTMLReport{
 		return ret.toString();
 	}
 
-	private String generateTableRowForPackage(PackageData packageData)
-	{
+	private String generateTableRowForPackage(PackageData packageData){
 		StringBuffer ret = new StringBuffer();
 		String url1 = "frame-summary-" + packageData.getName() + ".html";
 		String url2 = "frame-sourcefiles-" + packageData.getName() + ".html";
@@ -722,28 +649,23 @@ public class HTMLReport{
 		return ret.toString();
 	}
 
-	private String generateTableRowsForSourceFile(SourceFileData sourceFileData)
-	{
+	private String generateTableRowsForSourceFile(SourceFileData sourceFileData){
 		StringBuffer ret = new StringBuffer();
 		String sourceFileName = sourceFileData.getNormalizedName();
 		// TODO: ccn should be calculated per-class, not per-file
 		double ccn = complexity.getCCNForSourceFile(sourceFileData);
 
 		Iterator iter = sourceFileData.getClasses().iterator();
-		while (iter.hasNext())
-		{
+		while (iter.hasNext()){
 			ClassData classData = (ClassData)iter.next();
-			ret
-					.append(generateTableRowForClass(classData, sourceFileName,
-							ccn));
+			ret.append(generateTableRowForClass(classData, sourceFileName, ccn));
 		}
 
 		return ret.toString();
 	}
 
 	private String generateTableRowForClass(ClassData classData,
-			String sourceFileName, double ccn)
-	{
+			String sourceFileName, double ccn){
 		StringBuffer ret = new StringBuffer();
 
 		ret.append("  <tr>");
@@ -766,8 +688,7 @@ public class HTMLReport{
 	 * @return A string containing the HTML for three table cells.
 	 */
 	private static String generateTableColumnsFromData(CoverageData coverageData,
-			double ccn)
-	{
+			double ccn){
 		int numLinesCovered = coverageData.getNumberOfCoveredLines();
 		int numLinesValid = coverageData.getNumberOfValidLines();
 		int numBranchesCovered = coverageData.getNumberOfCoveredBranches();
@@ -776,7 +697,7 @@ public class HTMLReport{
 		/*	CRAP1(m) = comp(m)^2 * (1 – cov(m)/100)^3 + comp(m) 
 		 *	See http://googletesting.blogspot.com.ar/2011/02/this-code-is-crap.html
 		 */
-		double crapMetric = Math.pow(ccn,2) * Math.pow((1-(numLinesCovered/numLinesValid)),3)+ccn;
+//		double crapMetric = Math.pow(ccn,2) * Math.pow((1-(numLinesCovered/numLinesValid)),3)+ccn;
 
 		// The "hidden" CSS class is used below to write the ccn without
 		// any formatting so that the table column can be sorted correctly
@@ -784,7 +705,8 @@ public class HTMLReport{
 				+"</td><td>"
 				+ generatePercentResult(numBranchesCovered, numBranchesValid)
 				+ "</td><td class=\"value\"><span class=\"hidden\">"
-				+ ccn + ";</span>" + getDoubleValue(ccn) + "</td>"+"<td>"+crapMetric+"</td>";
+				+ ccn + ";</span>" + getDoubleValue(ccn) + "</td>";
+//                +"<td>"+crapMetric+"</td>";
 	}
 
 	/**
@@ -795,8 +717,7 @@ public class HTMLReport{
 	 * @param divisor  The number of valid lines or branches.
 	 * @return A percentage meter.
 	 */
-	private static String generatePercentResult(int dividend, int divisor)
-	{
+	private static String generatePercentResult(int dividend, int divisor){
 		StringBuffer sb = new StringBuffer();
 
 		sb.append("<table cellpadding=\"0px\" cellspacing=\"0px\" class=\"percentgraph\"><tr class=\"percentgraph\"><td align=\"right\" class=\"percentgraph\" width=\"40\">");
@@ -807,17 +728,14 @@ public class HTMLReport{
 					"N/A",
 					"Line coverage and branch coverage will appear as \"Not Applicable\" when Cobertura can not find line number information in the .class file.  This happens for stub and skeleton classes, interfaces, or when the class was not compiled with \"debug=true.\""));
 		sb.append("</td><td class=\"percentgraph\"><div class=\"percentgraph\">");
-		if (divisor > 0)
-		{
+		if (divisor > 0){
 			sb.append("<div class=\"greenbar\" style=\"width:"
 					+ (dividend * 100 / divisor) + "px\">");
 			sb.append("<span class=\"text\">");
 			sb.append(dividend);
 			sb.append("/");
 			sb.append(divisor);
-		}
-		else
-		{
+		}else{
 			sb.append("<div class=\"na\" style=\"width:100px\">");
 			sb.append("<span class=\"text\">");
 			sb.append(generateHelpURL(
@@ -829,13 +747,11 @@ public class HTMLReport{
 		return sb.toString();
 	}
 
-	private static String getDoubleValue(double value)
-	{
+	private static String getDoubleValue(double value){
 		return new DecimalFormat().format(value);
 	}
 
-	private static String getPercentValue(double value)
-	{
+	private static String getPercentValue(double value){
 		return StringUtil.getPercentValue(value);
 	}
 

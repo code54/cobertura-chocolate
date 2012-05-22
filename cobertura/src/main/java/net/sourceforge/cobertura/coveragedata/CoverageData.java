@@ -21,8 +21,7 @@
 
 package net.sourceforge.cobertura.coveragedata;
 
-public interface CoverageData
-{
+public interface CoverageData{
 
 	double getBranchCoverageRate();
 

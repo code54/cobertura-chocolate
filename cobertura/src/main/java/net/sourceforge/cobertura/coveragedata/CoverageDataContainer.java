@@ -316,6 +316,8 @@ public abstract class CoverageDataContainer<T>
         return getChildren().values();
     }
 
+    public abstract String getName();
+
     public String toString(){
         StringBuilder builder = new StringBuilder();
         builder.append("\n*"+getClass()+"\n");

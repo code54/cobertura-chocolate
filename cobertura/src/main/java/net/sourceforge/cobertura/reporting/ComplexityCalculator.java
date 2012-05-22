@@ -91,12 +91,10 @@ public class ComplexityCalculator {
 	 * @return average complexity for the specified input stream 
 	 */
 	private Complexity getAccumlatedCCNForSource(String sourceFileName, Source source) {
-		if (source == null)
-		{
+		if (source == null){
 			return ZERO_COMPLEXITY;
 		}
-		if (!sourceFileName.endsWith(".java"))
-		{
+		if (!sourceFileName.endsWith(".java")){
 			return ZERO_COMPLEXITY;
 		}
 		Javancss javancss = new Javancss(source.getInputStream());

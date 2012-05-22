@@ -207,6 +207,20 @@ public class ProjectData extends CoverageDataContainer<String> implements HasBee
         return children;
     }
 
+    /*
+     * We provide a project name,
+     * so that different project reports can be identified
+     */
+    @Override
+    public String getName() {
+        StringBuilder builder = new StringBuilder();
+        Iterator<String>it = this.classes.keySet().iterator();
+        while(it.hasNext()){
+            builder.append(it.next());
+        }
+        return ""+builder.toString().hashCode();
+    }
+
     // TODO: Is it possible to do this as a static initializer?
 	public static void initialize(){
 		// Hack for Tomcat - by saving project data right now we force loading

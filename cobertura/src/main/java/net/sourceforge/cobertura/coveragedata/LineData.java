@@ -59,7 +59,7 @@ public class LineData
     @ElementList(entry="switches", inline=true, required = false)
 	private List<SwitchData> switches;
     @Attribute(required = false)
-	private int lineNumber;//this was final. Removed to create a default constructor
+	private int lineNumber;//this was final. Removed to create a default constructor and allow xml serialization
     @Attribute(required = false)
 	private String methodDescriptor;
     @Attribute(required = false)
