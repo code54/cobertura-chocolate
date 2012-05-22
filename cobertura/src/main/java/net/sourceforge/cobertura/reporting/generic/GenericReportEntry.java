@@ -67,19 +67,26 @@ public class GenericReportEntry {
     }
 
     public void getEntriesForLevel(List<GenericReportEntry> entries, String level){
-        switch (new Levels().compare(entryLevel, level)){
-            case 0:
-                entries.add(this);
-                break;
-            case 1:
-                //my level is higher than the requested, stop here
-                break;
-            case -1:
-                //my level is lower than the required, propagate to childs
-                for(GenericReportEntry entry: childs){
+        if(ReportConstants.level_all.equals(level)){
+            entries.add(this);
+            for(GenericReportEntry entry: childs){
                     entry.getEntriesForLevel(entries, level);
-                }
-                break;
+            }
+        }else{
+            switch (new Levels().compare(entryLevel, level)){
+                case 0:
+                    entries.add(this);
+                    break;
+                case 1:
+                    //my level is higher than the requested, stop here
+                    break;
+                case -1:
+                    //my level is lower than the required, propagate to childs
+                    for(GenericReportEntry entry: childs){
+                        entry.getEntriesForLevel(entries, level);
+                    }
+                    break;
+            }
         }
     }
 
