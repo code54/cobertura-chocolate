@@ -25,6 +25,10 @@
 package net.sourceforge.cobertura.coveragedata;
 
 import net.sourceforge.cobertura.util.ConfigurationUtil;
+import org.apache.log4j.Logger;
+import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.core.Persister;
+import sun.tools.asm.Cover;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -40,15 +44,14 @@ import java.io.OutputStream;
  * This contains methods used for reading and writing the
  * "cobertura.ser" file.
  */
-public abstract class CoverageDataFileHandler implements HasBeenInstrumented
-{
+public abstract class CoverageDataFileHandler implements HasBeenInstrumented{
 	private static File defaultFile = null;
 
-	public static File getDefaultDataFile()
-	{
+    private static final Logger log = Logger.getLogger(CoverageDataFileHandler.class);
+
+	public static File getDefaultDataFile(){
 		// return cached defaultFile
-		if (defaultFile != null) 
-		{
+		if (defaultFile != null){
 			return defaultFile;
 		}
 
@@ -59,32 +62,25 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented
 		return defaultFile;
 	}
 
-	public static ProjectData loadCoverageData(File dataFile)
-	{
+	public static ProjectData loadCoverageData(File dataFile){
 		InputStream is = null;
 
 		//System.out.println("Cobertura: Loading coverage data from " + dataFile.getAbsolutePath());
-		try
-		{
+		try{
 			is = new BufferedInputStream(new FileInputStream(dataFile), 16384);
 			return loadCoverageData(is);
 		}
-		catch (IOException e)
-		{
+		catch (IOException e){
 			System.err.println("Cobertura: Error reading file "
 					+ dataFile.getAbsolutePath() + ": "
 					+ e.getLocalizedMessage());
 			return null;
 		}
-		finally
-		{
+		finally{
 			if (is != null)
-				try
-				{
+				try{
 					is.close();
-				}
-				catch (IOException e)
-				{
+				}catch (IOException e){
 					System.err.println("Cobertura: Error closing file "
 							+ dataFile.getAbsolutePath() + ": "
 							+ e.getLocalizedMessage());
@@ -92,37 +88,26 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented
 		}
 	}
 
-	private static ProjectData loadCoverageData(InputStream dataFile) throws IOException
-	{
+	private static ProjectData loadCoverageData(InputStream dataFile) throws IOException{
 		ObjectInputStream objects = null;
 
-		try
-		{
+		try{
 			objects = new ObjectInputStream(dataFile);
 			ProjectData projectData = (ProjectData)objects.readObject();
 			System.out.println("Cobertura: Loaded information on "
 					+ projectData.getNumberOfClasses() + " classes.");
 			return projectData;
-		}
-		catch (IOException e) {
+		}catch (IOException e) {
 			throw e;
-		}
-		catch (Exception e)
-		{
+		}catch (Exception e){
 			System.err.println("Cobertura: Error reading from object stream.");
 			e.printStackTrace();
 			return null;
-		}
-		finally
-		{
-			if (objects != null)
-			{
-				try
-				{
+		}finally{
+			if (objects != null){
+				try{
 					objects.close();
-				}
-				catch (IOException e)
-				{
+				}catch (IOException e){
 					System.err
 							.println("Cobertura: Error closing object stream.");
 					e.printStackTrace();
@@ -132,37 +117,40 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented
 	}
 
 	public static void saveCoverageData(ProjectData projectData,
-			File dataFile)
-	{
+			File dataFile){
 		FileOutputStream os = null;
 
-		//System.out.println("Cobertura: Saving coverage data to " + dataFile.getAbsolutePath());
-		try
-		{
+        log.error("\n***********saving coverage data - start***********************\n" +
+                "Coverage data is: "+projectData+"\n"+
+                "***********saving coverage data - end***********************");
+
+        Serializer serializer = new Persister();
+
+        File result = new File("testexample.xml");
+        log.info("Project data children is: "+projectData.getChildren());
+        try {
+            serializer.write(projectData, result);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try{
 			File dataDir = dataFile.getParentFile();
-			if( (dataDir != null) && !dataDir.exists() )
-			{
+			if( (dataDir != null) && !dataDir.exists() ){
 				dataDir.mkdirs();
 			}
 			os = new FileOutputStream(dataFile);
 			saveCoverageData(projectData, os);
-		}
-		catch (IOException e)
-		{
+		}catch (IOException e){
 			System.err.println("Cobertura: Error writing file "
 					+ dataFile.getAbsolutePath());
 			e.printStackTrace();
 		}
-		finally
-		{
-			if (os != null)
-			{
-				try
-				{
+		finally{
+			if (os != null){
+				try{
 					os.close();
-				}
-				catch (IOException e)
-				{
+				}catch (IOException e){
 					System.err.println("Cobertura: Error closing file "
 							+ dataFile.getAbsolutePath());
 					e.printStackTrace();
@@ -172,31 +160,25 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented
 	}
 
 	private static void saveCoverageData(ProjectData projectData,
-			OutputStream dataFile)
-	{
+			OutputStream dataFile){
 		ObjectOutputStream objects = null;
+
+        log.info("\n***********saving coverage data - start***********************\n" +
+                "Coverage data is: "+projectData+"\n"+
+                "***********saving coverage data - end***********************");
         
-		try
-		{
+		try{
 			objects = new ObjectOutputStream(dataFile);
 			objects.writeObject(projectData);
 			System.out.println("Cobertura: Saved information on " + projectData.getNumberOfClasses() + " classes.");
-		}
-		catch (IOException e)
-		{
+		}catch (IOException e){
 			System.err.println("Cobertura: Error writing to object stream.");
 			e.printStackTrace();
-		}
-		finally
-		{
-			if (objects != null)
-			{
-				try
-				{
+		}finally{
+			if (objects != null){
+				try{
 					objects.close();
-				}
-				catch (IOException e)
-				{
+				}catch (IOException e){
 					System.err
 							.println("Cobertura: Error closing object stream.");
 					e.printStackTrace();

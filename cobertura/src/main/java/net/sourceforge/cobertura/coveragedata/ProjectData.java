@@ -41,23 +41,19 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import net.sourceforge.cobertura.util.FileLocker;
 
-public class ProjectData extends CoverageDataContainer implements HasBeenInstrumented
-{
+public class ProjectData extends CoverageDataContainer implements HasBeenInstrumented{
 
 	private static final long serialVersionUID = 6;
 
 	/** This collection is used for quicker access to the list of classes. */
-	private Map classes = new HashMap();
+	private Map<String, ClassData> classes = new HashMap<String, ClassData>();
 
-	public void addClassData(ClassData classData)
-	{
+	public void addClassData(ClassData classData){
 		lock.lock();
-		try
-		{
+		try{
 			String packageName = classData.getPackageName();
 			PackageData packageData = (PackageData)children.get(packageName);
-			if (packageData == null)
-			{
+			if (packageData == null){
 				packageData = new PackageData(packageName);
 				// Each key is a package name, stored as an String object.
 				// Each value is information about the package, stored as a PackageData object.
@@ -65,22 +61,16 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 			}
 			packageData.addClassData(classData);
 			this.classes.put(classData.getName(), classData);
-		}
-		finally
-		{
+		}finally{
 			lock.unlock();
 		}
 	}
 
-	public ClassData getClassData(String name)
-	{
+	public ClassData getClassData(String name){
 		lock.lock();
-		try
-		{
-			return (ClassData)this.classes.get(name);
-		}
-		finally
-		{
+		try{
+			return this.classes.get(name);
+		}finally{
 			lock.unlock();
 		}
 	}
@@ -91,62 +81,45 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 	public ClassData getOrCreateClassData(String name)
 	{
 		lock.lock();
-		try
-		{
-			ClassData classData = (ClassData)this.classes.get(name);
-			if (classData == null)
-			{
+		try{
+			ClassData classData = this.classes.get(name);
+			if (classData == null){
 				classData = new ClassData(name);
 				addClassData(classData);
 			}
 			return classData;
-		}
-		finally
-		{
+		}finally{
 			lock.unlock();
 		}
 	}
 
-	public Collection getClasses()
-	{
+	public Collection getClasses(){
 		lock.lock();
-		try
-		{
+		try{
 			return this.classes.values();
-		}
-		finally
-		{
+		}finally{
 			lock.unlock();
 		}
 	}
 
-	public int getNumberOfClasses()
-	{
+	public int getNumberOfClasses(){
 		lock.lock();
-		try
-		{
+		try{
 			return this.classes.size();
-		}
-		finally
-		{
+		}finally{
 			lock.unlock();
 		}
 	}
 
-	public int getNumberOfSourceFiles()
-	{
+	public int getNumberOfSourceFiles(){
 		return getSourceFiles().size();
 	}
 
-	public SortedSet getPackages()
-	{
+	public SortedSet getPackages(){
 		lock.lock();
-		try
-		{
+		try{
 			return new TreeSet(this.children.values());
-		}
-		finally
-		{
+		}finally{
 			lock.unlock();
 		}
 	}
@@ -155,17 +128,13 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 	{
 		SortedSet sourceFileDatas = new TreeSet();
 		lock.lock();
-		try
-		{
+		try{
 			Iterator iter = this.children.values().iterator();
-			while (iter.hasNext())
-			{
+			while (iter.hasNext()){
 				PackageData packageData = (PackageData)iter.next();
 				sourceFileDatas.addAll(packageData.getSourceFiles());
 			}
-		}
-		finally
-		{
+		}finally{
 			lock.unlock();
 		}
 		return sourceFileDatas;
@@ -185,58 +154,48 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 	{
 		SortedSet subPackages = new TreeSet();
 		lock.lock();
-		try
-		{
+		try{
 			Iterator iter = this.children.values().iterator();
-			while (iter.hasNext())
-			{
+			while (iter.hasNext()){
 				PackageData packageData = (PackageData)iter.next();
-				if (packageData.getName().startsWith(packageName + ".") || packageData.getName().equals(packageName) || packageName.equals(""))
+				if (packageData.getName().startsWith(packageName + ".")
+                        || packageData.getName().equals(packageName)
+                        || packageName.equals(""))
 					subPackages.add(packageData);
 			}
-		}
-		finally
-		{
+		}finally{
 			lock.unlock();
 		}
 		return subPackages;
 	}
 
-	public void merge(CoverageData coverageData)
-	{
+	public void merge(CoverageData coverageData){
 		if (coverageData == null) {
 			return;
 		}
 		ProjectData projectData = (ProjectData)coverageData;
 		getBothLocks(projectData);
-		try
-		{
+		try{
 			super.merge(coverageData);
 	
-			for (Iterator iter = projectData.classes.keySet().iterator(); iter.hasNext();)
-			{
-				Object key = iter.next();
-				if (!this.classes.containsKey(key))
-				{
+			for (Iterator<String> iter = projectData.classes.keySet().iterator(); iter.hasNext();){
+				String key = iter.next();
+				if (!this.classes.containsKey(key)){
 					this.classes.put(key, projectData.classes.get(key));
 				}
 			}
-		}
-		finally
-		{
+		}finally{
 			lock.unlock();
 			projectData.lock.unlock();
 		}
 	}
 
 	// TODO: Is it possible to do this as a static initializer?
-	public static void initialize()
-	{
+	public static void initialize(){
 		// Hack for Tomcat - by saving project data right now we force loading
 		// of classes involved in this process (like ObjectOutputStream)
 		// so that it won't be necessary to load them on JVM shutdown
-		if (System.getProperty("catalina.home") != null)
-		{
+		if (System.getProperty("catalina.home") != null){
 			saveGlobalProjectData();
 
 			// Force the class loader to load some classes that are
@@ -260,8 +219,7 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 		//timer.schedule(saveTimer, 100);
 	}
 
-	public static void saveGlobalProjectData()
-	{
+	public static void saveGlobalProjectData(){
 		ProjectData projectDataToSave = new ProjectData();
 		
 		TouchCollector.applyTouchesOnProjectData(projectDataToSave);
@@ -291,50 +249,38 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 		synchronized (dataFile.getPath().intern() ) {
 			FileLocker fileLocker = new FileLocker(dataFile);
 			
-			try
-			{
+			try{
 				// Read the old data, merge our current data into it, then
 				// write a new ser file.
-				if (fileLocker.lock())
-				{
+				if (fileLocker.lock()){
 					ProjectData datafileProjectData = loadCoverageDataFromDatafile(dataFile);
-					if (datafileProjectData == null)
-					{
+					if (datafileProjectData == null){
 						datafileProjectData = projectDataToSave;
-					}
-					else
-					{
+					}else{
 						datafileProjectData.merge(projectDataToSave);
 					}
 					CoverageDataFileHandler.saveCoverageData(datafileProjectData, dataFile);
 				}
-			}
-			finally
-			{
+			}finally{
 				// Release the file lock
 				fileLocker.release();
 			}
 		}
 	}
 
-	private static ProjectData loadCoverageDataFromDatafile(File dataFile)
-	{
+	private static ProjectData loadCoverageDataFromDatafile(File dataFile){
 		ProjectData projectData = null;
 
 		// Read projectData from the serialized file.
-		if (dataFile.isFile())
-		{
+		if (dataFile.isFile()){
 			projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
 		}
 
-		if (projectData == null)
-		{
+		if (projectData == null){
 			// We could not read from the serialized file, so use a new object.
 			System.out.println("Cobertura: Coverage data file " + dataFile.getAbsolutePath()
 					+ " either does not exist or is not readable.  Creating a new data file.");
 		}
-
 		return projectData;
 	}
-
 }
