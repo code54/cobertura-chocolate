@@ -25,16 +25,33 @@ package net.sourceforge.cobertura.coveragedata;
 import java.util.concurrent.atomic.AtomicReference;
 
 import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
-public class LineDataTest extends TestCase{
+import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-	private final LineData a = new LineData(10, "test1", "(I)B");
-	private final LineData b = new LineData(11, "test1", "(I)B");
-	private final LineData c = new LineData(12, "test2", "(I)B");
-	private final LineData d = new LineData(13, "test2", "(I)B");
-	private final LineData e = new LineData(14);
-	private final LineData f = new LineData(15);
+public class LineDataTest{
 
+	private LineData a;
+	private LineData b;
+	private LineData c;
+	private LineData d;
+	private LineData e;
+	private LineData f;
+
+    @Before
+    public void setUp(){
+        a = new LineData(10, "test1", "(I)B");
+        b = new LineData(11, "test1", "(I)B");
+        c = new LineData(12, "test2", "(I)B");
+        d = new LineData(13, "test2", "(I)B");
+        e = new LineData(14);
+        f = new LineData(15);
+    }
+
+    @Test
 	public void testEquals(){
 		assertFalse(a.equals(null));
 		assertFalse(a.equals(new Integer(4)));
@@ -50,6 +67,7 @@ public class LineDataTest extends TestCase{
 		assertTrue(a.equals(aPrime));
 	}
 
+    @Test
 	public void testHashCode(){
 		assertEquals(a.hashCode(), a.hashCode());
 
@@ -57,6 +75,7 @@ public class LineDataTest extends TestCase{
 		assertEquals(a.hashCode(), aPrime.hashCode());
 	}
 
+    @Test
 	public void testGetLineNumber(){
 		assertEquals(10, a.getLineNumber());
 		assertEquals(11, b.getLineNumber());
@@ -66,6 +85,7 @@ public class LineDataTest extends TestCase{
 		assertEquals(15, f.getLineNumber());
 	}
 
+    @Test
 	public void testGetNumbers(){
 		assertEquals(1, a.getBranchCoverageRate(), 0);
 		assertEquals(0, a.getLineCoverageRate(), 0);
@@ -126,6 +146,7 @@ public class LineDataTest extends TestCase{
 		assertEquals(1, a.getNumberOfValidLines());
 	}
 
+    @Test
 	public void testSetConditional(){
 		assertFalse(c.hasBranch());
 		c.addJump(0);
@@ -134,6 +155,7 @@ public class LineDataTest extends TestCase{
 		assertTrue(c.hasBranch());
 	}
 
+    @Test
 	public void testSetMethodNameAndDescriptor(){
 		e.setMethodNameAndDescriptor("test3", "(I)B");
 		assertEquals("test3", e.getMethodName());
@@ -144,6 +166,7 @@ public class LineDataTest extends TestCase{
 		assertEquals("(I)B", f.getMethodDescriptor());
 	}
 
+    @Test
 	public void testTouch(){
 		assertEquals(0, a.getHits());
 		for (int i = 0; i < 400; i++)
@@ -219,7 +242,8 @@ public class LineDataTest extends TestCase{
 			runGetSwitchDataTestWithTwoThreads();
 		}
 	}
-	
+
+    /*  Aux methods    */
 	private static void getJumpDataIteratively(LineData data){
 		/*
 		 * When this test fails, it usually does so well before 2000 iterations.   If it

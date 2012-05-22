@@ -25,37 +25,32 @@ import java.io.File;
 import java.io.IOException;
 
 import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-public class CopyFilesTest extends TestCase
-{
+import static org.junit.Assert.assertTrue;
+
+public class CopyFilesTest{
 	private final static String basedir = (System.getProperty("basedir") != null)
 			? System.getProperty("basedir")
 			: "./";
     private final static File rootDir = new File(basedir, "/build");
 	private final static File tmpDir = new File(rootDir, rootDir+"/test/tmp");
 
+    @Before
 	public void setUp(){
 		tmpDir.mkdirs();
 	}
 
-	private final static void removeDir(File dir){
-		File files[] = dir.listFiles();
-		for (int i = 0; i < files.length; i++){
-			if (files[i].isDirectory())
-				removeDir(files[i]);
-			else
-				files[i].delete();
-		}
-		dir.delete();
-	}
-
+	@After
 	public void tearDown(){
 		removeDir(rootDir);
         new File(basedir, "cobertura.ser").delete();
 	}
 
-	public static void testCopy() throws IOException
-	{
+    @Test
+	public void testCopy() throws IOException{
 		CopyFiles.copy(tmpDir);
 		assertTrue(new File(tmpDir, "help.html").isFile());
 		assertTrue(new File(tmpDir, "index.html").isFile());
@@ -80,5 +75,17 @@ public class CopyFilesTest extends TestCase
 		assertTrue(new File(jsDir, "popup.js").isFile());
 		assertTrue(new File(jsDir, "sortabletable.js").isFile());
 		assertTrue(new File(jsDir, "stringbuilder.js").isFile());
+	}
+
+    /*  Aux methods */
+    private final static void removeDir(File dir){
+		File files[] = dir.listFiles();
+		for (int i = 0; i < files.length; i++){
+			if (files[i].isDirectory())
+				removeDir(files[i]);
+			else
+				files[i].delete();
+		}
+		dir.delete();
 	}
 }

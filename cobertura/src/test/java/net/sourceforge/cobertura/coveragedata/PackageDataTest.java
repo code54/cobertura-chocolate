@@ -23,24 +23,34 @@
 package net.sourceforge.cobertura.coveragedata;
 
 import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
-public class PackageDataTest extends TestCase
-{
+import static org.junit.Assert.*;
+
+public class PackageDataTest{
+
+    private static final String comExample = "com.example";
+    private static final String comExampleHelloWorld = "com.example.HelloWorld";
+    private static final String comExampleHelloWorldJava = "com/example/HelloWorld.java";
+
 
 	private PackageData packageData;
 
+    @Before
 	public void setUp(){
-		packageData = new PackageData("com.example");
-		assertEquals("com.example", packageData.getName());
+		packageData = new PackageData(comExample);
+		assertEquals(comExample, packageData.getName());
 	}
 
+    @Test
 	public void testAddClass(){
 		ClassData classData;
 
 		assertEquals(0, packageData.getNumberOfChildren());
 
-		classData = new ClassData("com.example.HelloWorld");
-		classData.setSourceFileName("com/example/HelloWorld.java");
+		classData = new ClassData(comExampleHelloWorld);
+		classData.setSourceFileName(comExampleHelloWorldJava);
 		for (int i = 0; i < 10; i++)
 			classData.addLine(i, "test", "(I)B");
 		packageData.addClassData(classData);
@@ -56,32 +66,29 @@ public class PackageDataTest extends TestCase
 		assertTrue(packageData.contains(classData.getBaseName()));
 
 		// See what happens when we try to add the same class twice
-		classData = new ClassData("com.example.HelloWorld");
-		classData.setSourceFileName("com/example/HelloWorld.java");
+		classData = new ClassData(comExampleHelloWorld);
+		classData.setSourceFileName(comExampleHelloWorldJava);
 		for (int i = 0; i < 19; i++)
 			classData.addLine(i, "test", "(I)B");
-		try
-		{
+		try{
 			packageData.addClassData(classData);
 			// removed by Jeremy Thomerson when changing PackageData
 			// fail("Expected an IllegalArgumentException but did not receive one!");
-		}
-		catch (IllegalArgumentException e)
-		{
+		}catch (IllegalArgumentException e){
 			// Good!
 		}
 
 		assertEquals(2, packageData.getNumberOfChildren());
 	}
 
-	public void testBranchCoverage()
-	{
+    @Test
+	public void testBranchCoverage(){
 		assertEquals(0, packageData.getNumberOfCoveredBranches());
 		assertEquals(0, packageData.getNumberOfValidBranches());
 		assertEquals(1.00d, packageData.getBranchCoverageRate(), 0d);
 
-		ClassData classData = new ClassData("com.example.HelloWorld");
-		classData.setSourceFileName("com/example/HelloWorld.java");
+		ClassData classData = new ClassData(comExampleHelloWorld);
+		classData.setSourceFileName(comExampleHelloWorldJava);
 		for (int i = 0; i < 10; i++)
 			classData.addLine(i, "test", "(I)B");
 		packageData.addClassData(classData);
@@ -112,24 +119,20 @@ public class PackageDataTest extends TestCase
 		assertEquals(0.33d, packageData.getBranchCoverageRate(), 0.01d);
 	}
 
-	public void testConstructor()
-	{
-		try
-		{
+	public void testConstructor(){
+		try{
 			new PackageData(null);
 			fail("Expected an IllegalArgumentException but did not receive one!");
-		}
-		catch (IllegalArgumentException e)
-		{
+		}catch (IllegalArgumentException e){
 			// Good!
 		}
 	}
 
-	public void testEquals()
-	{
-		PackageData a = new PackageData("com.example");
-		PackageData b = new PackageData("com.example");
-		PackageData c = new PackageData("com.example");
+    @Test
+	public void testEquals(){
+		PackageData a = new PackageData(comExample);
+		PackageData b = new PackageData(comExample);
+		PackageData c = new PackageData(comExample);
 		ClassData classData1 = new ClassData("com.example.HelloWorld1");
 		ClassData classData2 = new ClassData("com.example.HelloWorld2");
 		ClassData classData3 = new ClassData("com.example.HelloWorld3");
@@ -170,10 +173,10 @@ public class PackageDataTest extends TestCase
 		assertFalse(c.equals(a));
 	}
 
-	public void testHashCode()
-	{
-		PackageData a = new PackageData("com.example");
-		PackageData b = new PackageData("com.example");
+    @Test
+	public void testHashCode(){
+		PackageData a = new PackageData(comExample);
+		PackageData b = new PackageData(comExample);
 		ClassData classData1 = new ClassData("com.example.HelloWorld1");
 		ClassData classData2 = new ClassData("com.example.HelloWorld2");
 		ClassData classData3 = new ClassData("com.example.HelloWorld3");

@@ -34,25 +34,30 @@ public class ClassDataTest extends TestCase{
 	private final ClassData c = new ClassData("com.example.HelloWorld");
 	private final ClassData defPckg = new ClassData("DefaultPackageClass");
 
+    private static final String comExampleHelloWorld = "com/example/HelloWorld.java";
+    private static final String defaultPackageClass = "DefaultPackageClass.java";
+    private static final String test = "test";
+    private static final String IB = "(I)B";
+    private static final String testIB = test+IB;
+
 	public void setUp(){
-		a.setSourceFileName("com/example/HelloWorld.java");
-		b.setSourceFileName("com/example/HelloWorld.java");
-		c.setSourceFileName("com/example/HelloWorld.java");
-		defPckg.setSourceFileName("DefaultPackageClass.java");
+		a.setSourceFileName(comExampleHelloWorld);
+		b.setSourceFileName(comExampleHelloWorld);
+		c.setSourceFileName(comExampleHelloWorld);
+		defPckg.setSourceFileName(defaultPackageClass);
 
 		for (int i = 1; i <= 5; i++)
-			b.addLine(i, "test", "(I)B");
+			b.addLine(i, test, IB);
 		for (int i = 1; i <= 5; i++)
-			c.addLine(i, "test", "(I)B");
+			c.addLine(i, test, IB);
 		for (int i = 1; i <= 5; i++)
-			defPckg.addLine(i, "test", "(I)B");
+			defPckg.addLine(i, test, IB);
 
 		b.touch(1,1);
 		b.touch(2,1);
 	}
 
-	public void testBranch()
-	{
+	public void testBranch(){
 		// Setting an invalid line as a branch should not make the line valid
 		assertFalse(a.hasBranch(2));
 		a.addLineJump(2, 0);
@@ -73,21 +78,20 @@ public class ClassDataTest extends TestCase{
 		Collection branches = b.getBranches();
 		assertEquals(2, branches.size());
 		assertEquals(14, b.getNumberOfValidBranches());
-		assertTrue(branches.contains(new Integer(2)));
-		assertTrue(branches.contains(new Integer(4)));
+		assertTrue(branches.contains(2));
+		assertTrue(branches.contains(4));
 		//assertTrue(branches.contains(new LineData(2, "test", "(I)B")));
 		//assertTrue(branches.contains(new LineData(4, "test", "(I)B")));
 	}
 
-	public void testBranchCoverage()
-	{
+	public void testBranchCoverage(){
 		assertEquals(0, a.getNumberOfValidBranches());
 		assertEquals(0, b.getNumberOfValidBranches());
 		assertEquals(1.00d, a.getBranchCoverageRate(), 0d);
 		assertEquals(1.00d, b.getBranchCoverageRate(), 0d);
 
-		assertEquals(1.00d, a.getBranchCoverageRate("test(I)B"), 0d);
-		assertEquals(1.00d, b.getBranchCoverageRate("test(I)B"), 0d);
+		assertEquals(1.00d, a.getBranchCoverageRate(testIB), 0d);
+		assertEquals(1.00d, b.getBranchCoverageRate(testIB), 0d);
 
 		c.addLineJump(1, 0);
 		c.addLineJump(2, 0);
@@ -97,7 +101,7 @@ public class ClassDataTest extends TestCase{
 		assertEquals(12, c.getNumberOfValidBranches());
 		assertEquals(0, c.getNumberOfCoveredBranches());
 		assertEquals(0.00d, c.getBranchCoverageRate(), 0d);
-		assertEquals(0.00d, c.getBranchCoverageRate("test(I)B"), 0d);
+		assertEquals(0.00d, c.getBranchCoverageRate(testIB), 0d);
 
 		c.touchJump(1, 0, true,1);
 		c.touchJump(1, 0, false,1);
@@ -107,7 +111,7 @@ public class ClassDataTest extends TestCase{
 		assertEquals(12, c.getNumberOfValidBranches());
 		assertEquals(4, c.getNumberOfCoveredBranches());
 		assertEquals(0.33d, c.getBranchCoverageRate(), 0.01d);
-		assertEquals(0.33d, c.getBranchCoverageRate("test(I)B"), 0.01d);
+		assertEquals(0.33d, c.getBranchCoverageRate(testIB), 0.01d);
 
 		c.touchSwitch(3, 0, 0,1);
 		c.touchSwitch(3, 0, 1,1);
@@ -117,18 +121,14 @@ public class ClassDataTest extends TestCase{
 		assertEquals(12, c.getNumberOfValidBranches());
 		assertEquals(8, c.getNumberOfCoveredBranches());
 		assertEquals(0.66d, c.getBranchCoverageRate(), 0.01d);
-		assertEquals(0.66d, c.getBranchCoverageRate("test(I)B"), 0.01d);
+		assertEquals(0.66d, c.getBranchCoverageRate(testIB), 0.01d);
 	}
 
-	public void testConstructor()
-	{
-		try
-		{
+	public void testConstructor(){
+		try{
 			new ClassData(null);
 			fail("Expected an IllegalArgumentException but did not receive one!");
-		}
-		catch (IllegalArgumentException e)
-		{
+		}catch (IllegalArgumentException e){
 			// Good!
 		}
 
@@ -141,8 +141,7 @@ public class ClassDataTest extends TestCase{
 		assertEquals("DefaultPackageClass", defPckg.getName());
 	}
 
-	public void testEquals()
-	{
+	public void testEquals(){
 		assertFalse(a.equals(null));
 		assertFalse(a.equals(new Integer(4)));
 		assertFalse(a.equals(new PackageData("com.example")));
@@ -170,8 +169,7 @@ public class ClassDataTest extends TestCase{
 		assertTrue(b.equals(c));
 	}
 
-	public void testLineCoverage()
-	{
+	public void testLineCoverage(){
 		assertEquals(0, a.getNumberOfCoveredLines());
 		assertEquals(0, a.getNumberOfValidLines());
 		assertEquals(2, b.getNumberOfCoveredLines());
@@ -182,17 +180,16 @@ public class ClassDataTest extends TestCase{
 		assertEquals(0.4d, b.getLineCoverageRate(), 0d);
 		assertEquals(0d, c.getLineCoverageRate(), 0d);
 
-		assertEquals(1d, a.getLineCoverageRate("test(I)B"), 0d);
-		assertEquals(0.4d, b.getLineCoverageRate("test(I)B"), 0d);
-		assertEquals(0d, c.getLineCoverageRate("test(I)B"), 0d);
+		assertEquals(1d, a.getLineCoverageRate(testIB), 0d);
+		assertEquals(0.4d, b.getLineCoverageRate(testIB), 0d);
+		assertEquals(0d, c.getLineCoverageRate(testIB), 0d);
 
 		assertEquals(1d, a.getLineCoverageRate("notReal(I)B"), 0d);
 		assertEquals(1d, b.getLineCoverageRate("notReal(I)B"), 0d);
 		assertEquals(1d, c.getLineCoverageRate("notReal(I)B"), 0d);
 	}
 
-	public void testRemoveLine()
-	{
+	public void testRemoveLine(){
 		assertEquals(0, a.getNumberOfValidBranches());
 		assertEquals(0, a.getNumberOfCoveredBranches());
 		assertEquals(0, a.getNumberOfValidLines());
@@ -222,12 +219,11 @@ public class ClassDataTest extends TestCase{
 		assertEquals(4, c.getNumberOfValidLines());
 	}
 
-	public void testSourceFileName()
-	{
+	public void testSourceFileName(){
 		a.setSourceFileName(null);
-		assertEquals("com/example/HelloWorld.java", a.getSourceFileName());
+		assertEquals(comExampleHelloWorld, a.getSourceFileName());
 		a.setSourceFileName("HelloWorld.java");
-		assertEquals("com/example/HelloWorld.java", a.getSourceFileName());
+		assertEquals(comExampleHelloWorld, a.getSourceFileName());
 
 		ClassData d = new ClassData("org.jaxen.expr.IdentitySet$IdentityWrapp");
 		assertEquals("org/jaxen/expr/IdentitySet.java", d.getSourceFileName());

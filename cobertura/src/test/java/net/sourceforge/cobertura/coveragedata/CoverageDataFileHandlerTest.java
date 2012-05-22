@@ -23,10 +23,16 @@ package net.sourceforge.cobertura.coveragedata;
 
 import java.io.File;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-public class CoverageDataFileHandlerTest extends TestCase
-{
+import static junit.framework.Assert.assertEquals;
+import static net.sourceforge.cobertura.testutil.Util.createRequiredDirectories;
+import static net.sourceforge.cobertura.testutil.Util.removeRequiredDirectories;
+import static net.sourceforge.cobertura.testutil.Util.removeTestReportFiles;
+
+public class CoverageDataFileHandlerTest{
 
 	private final static String basedir = (System.getProperty("basedir") != null)
 			? System.getProperty("basedir")
@@ -34,11 +40,27 @@ public class CoverageDataFileHandlerTest extends TestCase
 	private final static String pathToTestOutput = basedir
 			+ "/build/test/CoverageDataFileHandlerTest";
 
-	private final ProjectData a = new ProjectData();
-	private File tmpDir = new File(pathToTestOutput);
+	private ProjectData a;
+	private File tmp;
 
+    @Before
 	public void setUp(){
-		// Create some coverage data
+        tmp = new File(pathToTestOutput);
+        a = new ProjectData();
+
+		// Create the directory for our serialized coverage data
+		createRequiredDirectories(new File[]{tmp});
+	}
+
+    @After
+	public void tearDown(){
+        removeTestReportFiles(new File(basedir));
+        removeRequiredDirectories(new File[]{new File(basedir,"/build")});
+	}
+
+    @Test
+	public void testSaveAndRestore(){
+        // Create some coverage data
 		ClassData classData;
 		assertEquals(0, a.getNumberOfClasses());
 		assertEquals(0, a.getNumberOfChildren());
@@ -59,20 +81,8 @@ public class CoverageDataFileHandlerTest extends TestCase
 		assertEquals(2, a.getNumberOfClasses());
 		assertEquals(1, a.getNumberOfChildren());
 
-		// Create the directory for our serialized coverage data
-		tmpDir.mkdirs();
-	}
 
-	public void tearDown(){
-		tmpDir = new File(pathToTestOutput);
-		File files[] = tmpDir.listFiles();
-		for (int i = 0; i < files.length; i++)
-			files[i].delete();
-		tmpDir.delete();
-	}
-
-	public void testSaveAndRestore(){
-		File dataFile = new File(tmpDir, "cobertura.xml");
+		File dataFile = new File(tmp, "cobertura.ser");
 		CoverageDataFileHandler.saveCoverageData(a, dataFile);
 
 		ProjectData b;

@@ -35,29 +35,24 @@ import org.xml.sax.SAXParseException;
  * any suspect XML, then this class will throw a JUnit
  * assertion failure.
  */
-public class JUnitXMLParserErrorHandler implements ErrorHandler
-{
+public class JUnitXMLParserErrorHandler implements ErrorHandler{
 	
-	private void createErrorMessage(SAXParseException exception)
-	{
+	private void createErrorMessage(SAXParseException exception){
 		Assert.fail("Line number: " + exception.getLineNumber() 
 				+ " column: " +	exception.getColumnNumber() 
 				+ "\n"
 				+ exception.toString());
 	}
 
-	public void error(SAXParseException exception)
-	{
+	public void error(SAXParseException exception){
 		createErrorMessage(exception);
 	}
 
-	public void fatalError(SAXParseException exception)
-	{
+	public void fatalError(SAXParseException exception){
 		createErrorMessage(exception);
 	}
 
-	public void warning(SAXParseException exception)
-	{
+	public void warning(SAXParseException exception){
 		createErrorMessage(exception);
 	}
 

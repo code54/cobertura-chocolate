@@ -28,31 +28,42 @@ package net.sourceforge.cobertura.coveragedata;
 import java.util.concurrent.atomic.AtomicReference;
 
 import junit.framework.TestCase;
+import org.junit.Test;
 
-public class TouchCollectorTest extends TestCase
-{
-	private static void touchIteratively(int num)
-	{
-		for (int i=0; i<2000; i++)
-		{
+public class TouchCollectorTest{
+
+    /**
+	 * Tests the thread safety of the TouchCollector.   Since TouchCollector has all
+	 * static methods, it is difficult to get this test to fail everytime if
+	 * there is a thread problem.
+	 *
+	 * At the time this test was written, TouchCollector had a problem, but
+	 * this test needed to be run a few times before seeing a failure.   The
+	 * majority of times it would fail though.
+	 */
+    @Test
+	public void testMultiThreaded() throws Throwable{
+		runTestWithTwoThreads();
+	}
+
+    /*  Aux methods   */
+	private static void touchIteratively(int num){
+		for (int i=0; i<2000; i++){
 			/*
 			 * The following yield is needed to make sure the other thread gets
 			 * some CPU.  Otherwise, this thread will get too much of a jump ahead
 			 * of the other thread.
 			 */
-			Thread.yield(); 
-			
+			Thread.yield();
 			TouchCollector.touch(Integer.toString(i),1);
 		}
 	}
 
-	private void runTestWithTwoThreads() throws Throwable
-	{
+	private void runTestWithTwoThreads() throws Throwable{
 		final AtomicReference<Throwable> possibleThrowable = new AtomicReference<Throwable>();
 
 		ThreadGroup threadGroup = new ThreadGroup("TestThreadGroup") {
-			public void uncaughtException(Thread thread, Throwable t)
-			{
+			public void uncaughtException(Thread thread, Throwable t){
 				/*
 				 * Save the Throwable for later use and interrupt this thread so it exits
 				 */
@@ -65,14 +76,12 @@ public class TouchCollectorTest extends TestCase
 		 * Create two threads using the above thread group
 		 */
 		Thread thread1 = new Thread(threadGroup, "1") {
-			public void run()
-			{
+			public void run(){
 				touchIteratively(0);
 			}
 		};
 		Thread thread2 = new Thread(threadGroup, "2") {
-			public void run()
-			{
+			public void run(){
 				touchIteratively(1);
 			}
 		};
@@ -84,25 +93,9 @@ public class TouchCollectorTest extends TestCase
 		if (thread1.isAlive()) thread1.join();
 		if (thread2.isAlive()) thread2.join();
 		Throwable t = possibleThrowable.get();
-		if (t != null)
-		{
+		if (t != null){
 			throw t;
 		}
 		TouchCollector.applyTouchesOnProjectData(new ProjectData());
 	}
-
-	/**
-	 * Tests the thread safety of the TouchCollector.   Since TouchCollector has all
-	 * static methods, it is difficult to get this test to fail everytime if
-	 * there is a thread problem.
-	 * 
-	 * At the time this test was written, TouchCollector had a problem, but
-	 * this test needed to be run a few times before seeing a failure.   The
-	 * majority of times it would fail though.
-	 */
-	public void testMultiThreaded() throws Throwable
-	{
-		runTestWithTwoThreads();
-	}
-
 }

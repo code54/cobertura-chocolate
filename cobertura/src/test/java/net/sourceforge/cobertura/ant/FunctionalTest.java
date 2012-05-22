@@ -35,10 +35,9 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import com.sun.xml.internal.rngom.parse.host.Base;
-import junit.framework.TestCase;
 import net.sourceforge.cobertura.reporting.JUnitXMLHelper;
 
+import net.sourceforge.cobertura.testutil.Util;
 import org.apache.log4j.Logger;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Java;
@@ -50,6 +49,9 @@ import org.jdom.JDOMException;
 import org.jdom.xpath.XPath;
 import org.junit.*;
 
+import static net.sourceforge.cobertura.testutil.Util.createRequiredDirectories;
+import static net.sourceforge.cobertura.testutil.Util.removeRequiredDirectories;
+import static net.sourceforge.cobertura.testutil.Util.removeTestReportFiles;
 import static net.sourceforge.cobertura.util.ArchiveUtil.deleteDir;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -77,24 +79,19 @@ public class FunctionalTest{
 
     @Before
 	public void setUp(){
-        createRequiredDirs();
-	};
+        reports = new File(BASEDIR, "reports");
+        instrumented = new File(BASEDIR, "instrumented");
+        classes = new File(BASEDIR, "classes");
+        lib = new File(BASEDIR, "lib");
+        tmp = new File(BASEDIR, "tmp");
+        createRequiredDirectories(new File[]{reports, instrumented, classes, lib, tmp});
+	}
 
     @After
     public void tearDown(){
-        File[]files = BASEDIR.listFiles();
-        for(File file : files){
-            if(file.getName().startsWith("genericReport") ||
-                    file.getName().equals("cobertura.ser")){
-                file.delete();
-            }
-        }
-        deleteDir(reports);
-        deleteDir(instrumented);
-        deleteDir(classes);
-        deleteDir(lib);
-        deleteDir(tmp);
-	};
+        removeTestReportFiles(BASEDIR);
+        removeRequiredDirectories(new File[]{reports, instrumented, classes, lib, tmp});
+	}
 
     @org.junit.Ignore("Runs ok on Idea, not on Maven due to antlib.xml location")
     @Test
@@ -120,22 +117,6 @@ public class FunctionalTest{
 		runTestAntScript("classpath", "test-war");
 		verify("war");
 	}
-
-
-    /*   Aux init methods   */
-    /*   Aux init methods   */
-    public void createRequiredDirs(){
-        reports = new File(BASEDIR, "reports");
-        reports.mkdir();
-        instrumented = new File(BASEDIR, "instrumented");
-        instrumented.mkdir();
-        classes = new File(BASEDIR, "classes");
-        classes.mkdir();
-        lib = new File(BASEDIR, "lib");
-        lib.mkdir();
-        tmp = new File(BASEDIR, "tmp");
-        tmp.mkdir();
-    }
 
     /*   Aux methods   */
 

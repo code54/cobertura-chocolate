@@ -22,12 +22,14 @@
 package net.sourceforge.cobertura.reporting.html;
 
 import junit.framework.TestCase;
+import org.junit.Test;
 
-public class JavaToHtmlTest extends TestCase
-{
+import static junit.framework.Assert.assertEquals;
 
-	public static void testSyntaxHighlight()
-	{
+public class JavaToHtmlTest{
+
+    @Test
+	public void testSyntaxHighlight(){
 		JavaToHtml javaToHtml = new JavaToHtml();
 
 		assertEquals(

@@ -21,17 +21,28 @@
 
 package net.sourceforge.cobertura.coveragedata;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
-public class JumpDataTest extends TestCase
-{
+import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-	private final JumpData a = new JumpData(0);
-	private final JumpData b = new JumpData(1);
+public class JumpDataTest{
 
+	private JumpData a;
+	private JumpData b;
+
+    @Before
+    public void setUp(){
+        a = new JumpData(0);
+        b = new JumpData(1);
+    }
+
+    @Test
 	public void testEquals(){
 		assertFalse(a.equals(null));
-		assertFalse(a.equals(new Integer(4)));
+		assertFalse(a.equals(4));
 
 		assertTrue(a.equals(a));
 		assertFalse(a.equals(b));
@@ -40,6 +51,7 @@ public class JumpDataTest extends TestCase
 		assertTrue(a.equals(aPrime));
 	}
 
+    @Test
 	public void testHashCode(){
 		assertEquals(a.hashCode(), a.hashCode());
 
@@ -47,11 +59,13 @@ public class JumpDataTest extends TestCase
 		assertEquals(a.hashCode(), aPrime.hashCode());
 	}
 
+    @Test
 	public void testGetBranchNumber(){
 		assertEquals(0, a.getConditionNumber());
 		assertEquals(1, b.getConditionNumber());
 	}
 
+    @Test
 	public void testGetNumbers(){
 		assertEquals(0, a.getBranchCoverageRate(), 0);
 		assertEquals(2, a.getNumberOfValidBranches());
@@ -70,6 +84,7 @@ public class JumpDataTest extends TestCase
 		assertEquals(2, a.getNumberOfCoveredBranches());
 	}
 
+    @Test
 	public void testTouchBranch(){
 		assertEquals(0, a.getTrueHits());
 		for (int i = 0; i < 400; i++)

@@ -30,45 +30,59 @@ import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.util.Constants;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * Tests merging feature by launching Main class.
  */
-public class MergeMainTest extends TestCase {
+public class MergeMainTest{
     private static final String firstClassString="test.First";
     private static final String secondClassString="test.Second";
     private static final String thirdClassString="test.Third";
     private static final String seventhClassString="test.Seventh";
 
 
-	private ClassData firstClass = new ClassData(firstClassString);
-	private ClassData secondClass = new ClassData(secondClassString);
+	private ClassData firstClass;
+	private ClassData secondClass;
     /* Changed to package, since classes without a package are
      * discouraged. If we decide to support classes without a
      * package, we should turn Package name attribute
      * as required=false at @Attribute notation
      */
-	private ClassData seventhClass = new ClassData(seventhClassString);
+	private ClassData seventhClass;
 
-	private ProjectData greenProject = new ProjectData();
-	private ProjectData redProject = new ProjectData();
-	private ProjectData blueProject = new ProjectData();
+	private ProjectData greenProject;
+	private ProjectData redProject;
+	private ProjectData blueProject;
 	
-	private List filesToRemove = new ArrayList();
-	
-	private File createTempSerFile() throws IOException {
-		File result = File.createTempFile( "cobertura", ".xml");
-		result.delete();
-		filesToRemove.add(result);
-		return result;
-	}
-	
-	protected void tearDown() throws Exception {
+	private List filesToRemove;
+
+    @Before
+    public void setUp(){
+        firstClass = new ClassData(firstClassString);
+        secondClass = new ClassData(secondClassString);
+        seventhClass = new ClassData(seventhClassString);
+        greenProject = new ProjectData();
+        redProject = new ProjectData();
+        blueProject = new ProjectData();
+        filesToRemove = new ArrayList();
+    }
+
+    @After
+	public void tearDown() throws Exception {
 		for( int i=0; i<filesToRemove.size(); i++) {
 			((File)filesToRemove.get(i)).delete();
 		}
+
 	}
-	
+
+    @Test
 	public void testNewDestinationFile() throws IOException {
 		// Create some coverage data
 		greenProject.addClassData(firstClass);
@@ -101,6 +115,7 @@ public class MergeMainTest extends TestCase {
 		assertNull( merged.getClassData(thirdClassString));
 	}
 
+    @Test
 	public void testExistingDestinationFile() throws IOException {
 		// Create some coverage data
 		greenProject.addClassData( firstClass);
@@ -129,6 +144,7 @@ public class MergeMainTest extends TestCase {
 		assertNotNull( merged.getClassData(secondClassString));
 	}
 
+    @Test
 	public void testBaseDir() throws IOException {
 		// Create some coverage data
 		greenProject.addClassData( firstClass);
@@ -163,5 +179,13 @@ public class MergeMainTest extends TestCase {
 		assertNotNull( merged.getClassData(firstClassString));
 		assertNotNull( merged.getClassData(secondClassString));
 		assertNotNull( merged.getClassData(seventhClassString));
+	}
+
+    /*   Aux methods   */
+    private File createTempSerFile() throws IOException {
+		File result = File.createTempFile( "cobertura", ".ser");
+		result.delete();
+		filesToRemove.add(result);
+		return result;
 	}
 }

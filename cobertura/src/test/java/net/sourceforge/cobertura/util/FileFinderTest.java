@@ -26,11 +26,39 @@ import java.io.File;
 import java.io.IOException;
 
 import junit.framework.*;
+import org.junit.*;
+import org.junit.Test;
 
-public class FileFinderTest extends TestCase {
+import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+public class FileFinderTest{
     private FileFinder fileFinder;
     private FileFixture fileFixture;
 
+    @Before
+    public void setUp() throws Exception {
+        fileFixture = new FileFixture();
+        fileFixture.setUp();
+
+        fileFinder = new FileFinder();
+        fileFinder.addSourceDirectory(fileFixture.sourceDirectory(FileFixture.SOURCE_DIRECTORY_IDENTIFIER[0]).toString());
+        fileFinder.addSourceDirectory(fileFixture.sourceDirectory(FileFixture.SOURCE_DIRECTORY_IDENTIFIER[1]).toString());
+        fileFinder.addSourceFile( fileFixture.sourceDirectory(FileFixture.SOURCE_DIRECTORY_IDENTIFIER[2]).toString(), "com/example\\Sample5.java");
+        fileFinder.addSourceFile( fileFixture.sourceDirectory(FileFixture.SOURCE_DIRECTORY_IDENTIFIER[2]).toString(), "com/example/Sample6.java");
+        fileFinder.addSourceFile( fileFixture.sourceDirectory(FileFixture.SOURCE_DIRECTORY_IDENTIFIER[3]).toString(), "com/example/Sample7.java");
+
+        // Do not add com/example/Sample8.java
+        // fileFinder.addSourceFile( fileFixture.sourceDirectory(FileFixture.SOURCE_DIRECTORY_IDENTIFIER[3]).toString(), "com/example/Sample8.java");
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        fileFixture.tearDown();
+    }
+
+    @Test
     public void testGetSourceDirectoryList() {
         assertEquals(4, fileFinder.getSourceDirectoryList().size());
         assertTrue(new FileFinder().getSourceDirectoryList().isEmpty());
@@ -51,14 +79,7 @@ public class FileFinderTest extends TestCase {
         assertEquals( 3, ff.getSourceDirectoryList().size());
     }
 
-    private void checkFile( String fileName, String baseName, int sourceNum) throws IOException {
-    	File file = fileFinder.getFileForSource( fileName);
-    	assertTrue( file.getAbsolutePath(), file.getAbsolutePath().indexOf(FileFixture.SOURCE_DIRECTORY_IDENTIFIER[sourceNum])!=-1);
-    	assertTrue( baseName.equals( file.getName()));
-    	assertTrue( file.exists());
-    	assertTrue( file.isFile());
-    }
-    
+    @Test
     public void testFindFile() throws IOException {
     	checkFile("com/example/Sample1.java", "Sample1.java", 0);
     	checkFile("com\\example\\Sample2.java", "Sample2.java", 0);
@@ -69,74 +90,53 @@ public class FileFinderTest extends TestCase {
     	checkFile("com\\example/Sample7.java", "Sample7.java", 3);
     }
 
-    public void testFindFile_NotFound() {
-    	try {
-    		fileFinder.getFileForSource("com/example/Sample19.java");
-    		fail( "IOException expected");
-    	} catch( IOException ex) {}
-    	try {
-    		fileFinder.getFileForSource("com/example/Sample1.jav");
-    		fail( "IOException expected");
-    	} catch( IOException ex) {}
-    	try {
-    		fileFinder.getFileForSource("com/example/Sample7.java2");
-    		fail( "IOException expected");
-    	} catch( IOException ex) {}
-    	try {
-    		fileFinder.getFileForSource("Sample3.java");
-    		fail( "IOException expected");
-    	} catch( IOException ex) {}
-    	try {
-    		// This file exist, but is not added to fileFinder
-    		fileFinder.getFileForSource("com/example/Sample8.java");
-    		fail( "IOException expected");
-    	} catch( IOException ex) {}
+    @Test(expected = IOException.class)
+    public void testFindFile_NotFound() throws IOException {
+        String [] files =
+                new String []{"com/example/Sample19.java",
+                        "com/example/Sample1.jav",
+                        "com/example/Sample7.java2",
+                        "Sample3.java"};
+
+        for(String file:files){
+            try {
+                fileFinder.getFileForSource(file);
+                fail("IOException expected");
+    	    } catch( IOException ex) {}
+        }
+
+    	// This file exist, but is not added to fileFinder
+    	fileFinder.getFileForSource("com/example/Sample8.java");
     }
 
+    @Test(expected = NullPointerException.class)
     public void testFindFile_null() throws IOException {
-    	try {
-    		fileFinder.getFileForSource(null);
-    		fail( "NullPointerException expected");
-    	} catch( NullPointerException ex) {}
+    	fileFinder.getFileForSource(null);
     }
 
+    @Test(expected = NullPointerException.class)
     public void testAddSourceDirectory_null() {
-    	try {
-    		fileFinder.addSourceDirectory(null);
-    		fail( "NullPointerException expected");
-    	} catch( NullPointerException ex) {}
-    }
-    
-    public void testAddSourceFile_null() {
-    	try {
-    		fileFinder.addSourceFile(null,"com/example/Sample1.java");
-    		fail( "NullPointerException expected");
-    	} catch( NullPointerException ex) {}
-    	try {
-    		fileFinder.addSourceFile( FileFixture.SOURCE_DIRECTORY_IDENTIFIER[0], null);
-    		fail( "NullPointerException expected");
-    	} catch( NullPointerException ex) {}
+    	fileFinder.addSourceDirectory(null);
     }
 
-    protected void setUp() throws Exception {
-        super.setUp();
-        fileFixture = new FileFixture();
-        fileFixture.setUp();
-
-        fileFinder = new FileFinder();
-        fileFinder.addSourceDirectory(fileFixture.sourceDirectory(FileFixture.SOURCE_DIRECTORY_IDENTIFIER[0]).toString());
-        fileFinder.addSourceDirectory(fileFixture.sourceDirectory(FileFixture.SOURCE_DIRECTORY_IDENTIFIER[1]).toString());
-        fileFinder.addSourceFile( fileFixture.sourceDirectory(FileFixture.SOURCE_DIRECTORY_IDENTIFIER[2]).toString(), "com/example\\Sample5.java");
-        fileFinder.addSourceFile( fileFixture.sourceDirectory(FileFixture.SOURCE_DIRECTORY_IDENTIFIER[2]).toString(), "com/example/Sample6.java");
-        fileFinder.addSourceFile( fileFixture.sourceDirectory(FileFixture.SOURCE_DIRECTORY_IDENTIFIER[3]).toString(), "com/example/Sample7.java");
-
-        // Do not add com/example/Sample8.java
-        // fileFinder.addSourceFile( fileFixture.sourceDirectory(FileFixture.SOURCE_DIRECTORY_IDENTIFIER[3]).toString(), "com/example/Sample8.java");
+    @Test(expected = NullPointerException.class)
+    public void testAddSourceFile_nullPointerWhenSourceDirIsNull() {
+    	fileFinder.addSourceFile(null,"com/example/Sample1.java");
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        fileFixture.tearDown();
+    @Test(expected = NullPointerException.class)
+    public void testAddSourceFile_nullPointerWhenFileNameIsNull() {
+    	fileFinder.addSourceFile( FileFixture.SOURCE_DIRECTORY_IDENTIFIER[0], null);
+    }
+
+    /*  Aux methods    */
+    private void checkFile( String fileName, String baseName, int sourceNum) throws IOException {
+    	File file = fileFinder.getFileForSource( fileName);
+    	assertTrue( file.getAbsolutePath(),
+                file.getAbsolutePath().indexOf(FileFixture.SOURCE_DIRECTORY_IDENTIFIER[sourceNum])!=-1);
+    	assertTrue( baseName.equals( file.getName()));
+    	assertTrue( file.exists());
+    	assertTrue( file.isFile());
     }
 
 }

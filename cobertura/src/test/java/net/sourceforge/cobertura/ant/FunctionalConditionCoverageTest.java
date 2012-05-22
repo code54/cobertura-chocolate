@@ -36,9 +36,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
 import net.sourceforge.cobertura.reporting.JUnitXMLHelper;
 
+import net.sourceforge.cobertura.testutil.Util;
 import org.apache.log4j.Logger;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Java;
@@ -56,6 +56,9 @@ import org.junit.Before;
 import org.junit.Test;
 import test.condition.ConditionCalls;
 
+import static net.sourceforge.cobertura.testutil.Util.createRequiredDirectories;
+import static net.sourceforge.cobertura.testutil.Util.removeRequiredDirectories;
+import static net.sourceforge.cobertura.testutil.Util.removeTestReportFiles;
 import static net.sourceforge.cobertura.util.ArchiveUtil.deleteDir;
 import static org.junit.Assert.*;
 
@@ -85,25 +88,19 @@ public class FunctionalConditionCoverageTest{
 
     @Before
 	public void setUp(){
-        createRequiredDirs();
+        reports = new File(BASEDIR, "reports");
+        instrumented = new File(BASEDIR, "instrumented");
+        classes = new File(BASEDIR, "classes");
+        lib = new File(BASEDIR, "lib");
+        createRequiredDirectories(new File[]{reports,instrumented,classes,lib});
         initTestInfoMap();
 	};
 
     @After
     public void tearDown(){
-        File[]files = BASEDIR.listFiles();
-        for(File file : files){
-            if(file.getName().startsWith("genericReport") ||
-                    file.getName().equals("cobertura.ser")){
-                file.delete();
-            }
-        }
-
-        deleteDir(reports);
-        deleteDir(instrumented);
-        deleteDir(classes);
-        deleteDir(lib);
-	};
+        removeTestReportFiles(BASEDIR);
+        removeRequiredDirectories(new File[]{reports, instrumented, classes, lib});
+	}
 
     @Test
 	public void testConditionCoverage() throws Exception{
@@ -112,16 +109,6 @@ public class FunctionalConditionCoverageTest{
 	}
 
     /*   Aux init methods   */
-    public void createRequiredDirs(){
-        reports = new File(BASEDIR, "reports");
-        reports.mkdir();
-        instrumented = new File(BASEDIR, "instrumented");
-        instrumented.mkdir();
-        classes = new File(BASEDIR, "classes");
-        classes.mkdir();
-        lib = new File(BASEDIR, "lib");
-        lib.mkdir();
-    }
 
     private void initTestInfoMap(){
         testInfoMap = new HashMap();
@@ -400,7 +387,7 @@ public class FunctionalConditionCoverageTest{
 
 		task.createArg().setValue("-f");
         log.info("Our base dir is: "+ BASEDIR.getAbsolutePath());
-        log.info("We are seeking for "+ BASEDIR +"/build.xml");
+        log.info("We are looking for "+ BASEDIR +"/build.xml");
 		task.createArg().setValue(BASEDIR + "/build.xml");
 		task.createArg().setValue(target);
 

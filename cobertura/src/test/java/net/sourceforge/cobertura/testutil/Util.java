@@ -24,7 +24,7 @@
  * USA
  */
 
-package net.sourceforge.cobertura.ant;
+package net.sourceforge.cobertura.testutil;
 
 import org.apache.log4j.Logger;
 
@@ -36,11 +36,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 
-class Util{
+import static net.sourceforge.cobertura.util.ArchiveUtil.deleteDir;
+
+public class Util{
 
     private static final Logger log = Logger.getLogger(Util.class);
 
-	static File createTemporaryTextFile(String prefix) throws IOException{
+	public static File createTemporaryTextFile(String prefix) throws IOException{
 		File outputFile;
 		outputFile = File.createTempFile(prefix, ".txt");
 		outputFile.deleteOnExit();
@@ -53,7 +55,7 @@ class Util{
 	 * @param file The file to read.
 	 * @return A string containing the text of the file
 	 */
-	static String getText(File file) throws FileNotFoundException, IOException{
+	public static String getText(File file) throws FileNotFoundException, IOException{
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		PrintStream ps = new PrintStream(baos);
 		BufferedReader reader = null;
@@ -77,5 +79,27 @@ class Util{
 		}
 		return baos.toString();
 	}
+
+    public static void createRequiredDirectories(File[]files){
+        for(File file : files){
+            file.mkdirs();
+        }
+    }
+
+    public static void removeRequiredDirectories(File[]files){
+        for(File file : files){
+            deleteDir(file);
+        }
+    }
+
+    public static void removeTestReportFiles(File basedir){
+        File[]files = basedir.listFiles();
+        for(File file : files){
+            if(file.getName().startsWith("genericReport") ||
+                    file.getName().equals("cobertura.ser")){
+                file.delete();
+            }
+        }
+    }
 
 }

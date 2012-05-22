@@ -26,19 +26,24 @@ import java.util.Iterator;
 import java.util.SortedSet;
 
 import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
-public class ProjectDataTest extends TestCase
-{
+import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+public class ProjectDataTest{
 
 	private ProjectData coverageData;
 
-	public void setUp()
-	{
+    @Before
+	public void setUp(){
 		coverageData = new ProjectData();
 	}
 
-	public void testAddClass()
-	{
+    @Test
+	public void testAddClass(){
 		ClassData classData;
 
 		assertEquals(0, coverageData.getNumberOfChildren());
@@ -68,22 +73,19 @@ public class ProjectDataTest extends TestCase
 		classData.setSourceFileName("com/example/HelloWorld.java");
 		for (int i = 0; i < 19; i++)
 			classData.addLine(i, "test", "(I)B");
-		try
-		{
+		try{
 			coverageData.addClassData(classData);
 			// removed by Jeremy Thomerson when changing PackageData
 			// fail("Expected an IllegalArgumentException but did not receive one!");
-		}
-		catch (IllegalArgumentException e)
-		{
+		}catch (IllegalArgumentException e){
 			// Good!
 		}
 		assertEquals(1, coverageData.getNumberOfChildren());
 		assertEquals(2, coverageData.getClasses().size());
 	}
 
-	public void testEquals()
-	{
+    @Test
+	public void testEquals(){
 		ProjectData a = new ProjectData();
 		ProjectData b = new ProjectData();
 		ProjectData c = new ProjectData();
@@ -126,9 +128,9 @@ public class ProjectDataTest extends TestCase
 		assertFalse(a.equals(c));
 		assertFalse(c.equals(a));
 	}
-	
-	public void testHashCode()
-	{
+
+    @Test
+	public void testHashCode(){
 		ProjectData a = new ProjectData();
 		ProjectData b = new ProjectData();
 		ClassData classData1 = new ClassData("com.example.HelloWorld1");
@@ -151,9 +153,9 @@ public class ProjectDataTest extends TestCase
 		b.addClassData(classData3);
 		assertEquals(a.hashCode(), b.hashCode());
 	}
-	
-	public void testGetSubPackages()
-	{
+
+    @Test
+	public void testGetSubPackages(){
 		coverageData.addClassData(new ClassData("com.example.HelloWorld"));
 		coverageData.addClassData(new ClassData("com.example.test.HelloWorldTest"));
 		coverageData.addClassData(new ClassData("com.examplesomething.HelloWorld"));

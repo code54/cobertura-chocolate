@@ -30,32 +30,26 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import junit.framework.TestCase;
+import org.junit.Assert;
+import org.junit.Test;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Grzegorz Lukasik
  */
-public class IOUtilTest extends TestCase
-{
+public class IOUtilTest{
 
 	private static final byte[] emptyByteArray = new byte[] {};
 
 	private static final byte[] singletonByteArray = new byte[] { 7 };
 
-	private static final byte[] smallByteArray = new byte[] { 1, 0, 2, -128,
-			127 };
+	private static final byte[] smallByteArray = new byte[] { 1, 0, 2, -128, 127 };
 
-	private File createFileWithData(byte[] data) throws IOException
-	{
-		File file = File.createTempFile("IOUtilTest", ".txt");
-		file.deleteOnExit();
-		OutputStream src = new FileOutputStream(file);
-		src.write(data);
-		src.close();
-		return file;
-	}
-
-	public void testMoveFile() throws IOException
-	{
+	@Test
+	public void testMoveFile() throws IOException{
 		// Move file if destination does not exist
 		File srcFile = createFileWithData(smallByteArray);
 		File destFile = createFileWithData(emptyByteArray);
@@ -76,121 +70,97 @@ public class IOUtilTest extends TestCase
 		assertTrue(destFile.isFile());
 		in = new FileInputStream(destFile);
 		for (int i = 0; i < singletonByteArray.length; i++)
-			assertEquals(singletonByteArray[i], (byte)in.read());
-		assertEquals(-1, in.read());
+            Assert.assertEquals(singletonByteArray[i], (byte) in.read());
+		Assert.assertEquals(-1, in.read());
 		in.close();
-
-		// Pass null values
-		srcFile = createFileWithData(smallByteArray);
-		try
-		{
-			IOUtil.moveFile(srcFile, null);
-			fail("Expected NullPointerException");
-		}
-		catch (NullPointerException ex)
-		{
-		}
-
-		destFile = createFileWithData(smallByteArray);
-		try
-		{
-			IOUtil.moveFile(null, destFile);
-			fail("Expected NullPointerException");
-		}
-		catch (NullPointerException ex)
-		{
-		}
 	}
 
-	public void testCopyStream() throws IOException
-	{
+    @Test(expected = NullPointerException.class)
+	public void testMoveFile_nullPointerIfDestinationFileIsNull() throws IOException{
+		// Pass null values
+		File srcFile = createFileWithData(smallByteArray);
+		IOUtil.moveFile(srcFile, null);
+	}
+
+    @Test(expected = NullPointerException.class)
+	public void testMoveFile_nullPointerIfSourceFileIsNull() throws IOException{
+		// Pass null values
+		File destFile = createFileWithData(smallByteArray);
+		IOUtil.moveFile(null, destFile);
+	}
+
+    @Test
+	public void testCopyStream() throws IOException{
 		ByteArrayInputStream in = new ByteArrayInputStream(smallByteArray);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		IOUtil.copyStream(in, out);
-		assertEquals(smallByteArray, out.toByteArray());
+		assertArrayEquals(smallByteArray, out.toByteArray());
 
 		in = new ByteArrayInputStream(singletonByteArray);
 		out = new ByteArrayOutputStream();
 		IOUtil.copyStream(in, out);
-		assertEquals(singletonByteArray, out.toByteArray());
+		assertArrayEquals(singletonByteArray, out.toByteArray());
 
 		in = new ByteArrayInputStream(emptyByteArray);
 		out = new ByteArrayOutputStream();
 		IOUtil.copyStream(in, out);
-		assertEquals(emptyByteArray, out.toByteArray());
+		assertArrayEquals(emptyByteArray, out.toByteArray());
 
 		byte[] bigArray = generateBigByteArray();
 		in = new ByteArrayInputStream(bigArray);
 		out = new ByteArrayOutputStream();
 		IOUtil.copyStream(in, out);
-		assertEquals(bigArray, out.toByteArray());
-
-		try
-		{
-			IOUtil.copyStream(null, new ByteArrayOutputStream());
-			fail("NullPointerException expected");
-		}
-		catch (NullPointerException ex)
-		{
-		}
-
-		try
-		{
-			IOUtil.copyStream(new ByteArrayInputStream(bigArray), null);
-			fail("NullPointerException expected");
-		}
-		catch (NullPointerException ex)
-		{
-		}
+		assertArrayEquals(bigArray, out.toByteArray());
 	}
 
-	public void testFillByteArrayFromInputStream() throws IOException
-	{
+    @Test(expected = NullPointerException.class)
+	public void testCopyStream_nullPointerExceptionIfSourceFileIsNull() throws IOException{
+		IOUtil.copyStream(null, new ByteArrayOutputStream());
+	}
+
+    @Test(expected = NullPointerException.class)
+	public void testCopyStream_nullPointerExceptionIfDestinationFileIsNull() throws IOException{
+		IOUtil.copyStream(new ByteArrayInputStream(generateBigByteArray()), null);
+	}
+
+    @Test(expected = NullPointerException.class)
+	public void testFillByteArrayFromInputStream() throws IOException{
 		byte[] out = IOUtil
 				.createByteArrayFromInputStream(new ByteArrayInputStream(
 						smallByteArray));
-		assertEquals(smallByteArray, out);
+		assertArrayEquals(smallByteArray, out);
 
 		out = IOUtil.createByteArrayFromInputStream(new ByteArrayInputStream(
 				emptyByteArray));
-		assertEquals(emptyByteArray, out);
+		assertArrayEquals(emptyByteArray, out);
 
 		out = IOUtil.createByteArrayFromInputStream(new ByteArrayInputStream(
 				singletonByteArray));
-		assertEquals(singletonByteArray, out);
+		assertArrayEquals(singletonByteArray, out);
 
 		byte[] bigArray = generateBigByteArray();
 		out = IOUtil.createByteArrayFromInputStream(new ByteArrayInputStream(
 				bigArray));
-		assertEquals(bigArray, out);
-
-		try
-		{
-			IOUtil.createByteArrayFromInputStream(null);
-			fail("NullPointerException expected");
-		}
-		catch (NullPointerException ex)
-		{
-		}
+		assertArrayEquals(bigArray, out);
+        IOUtil.createByteArrayFromInputStream(null);
 	}
 
-	private void assertEquals(byte[] first, byte[] second)
-	{
-		assertEquals(first.length, second.length);
-		for (int i = 0; i < first.length; i++)
-		{
-			assertEquals(first[i], second[i]);
-		}
-	}
-
-	private byte[] generateBigByteArray()
-	{
+    /*   Aux methods   */
+	private byte[] generateBigByteArray(){
 		byte[] bigArray = new byte[1000000];
-		for (int i = 0; i < bigArray.length; i++)
-		{
+		for (int i = 0; i < bigArray.length; i++){
 			bigArray[i] = (byte)i;
 		}
 		return bigArray;
+	}
+
+    private File createFileWithData(byte[] data) throws IOException{
+		File file = File.createTempFile("IOUtilTest", ".txt");
+		file.deleteOnExit();
+		OutputStream src = new FileOutputStream(file);
+		src.write(data);
+		src.close();
+		return file;
 	}
 
 }

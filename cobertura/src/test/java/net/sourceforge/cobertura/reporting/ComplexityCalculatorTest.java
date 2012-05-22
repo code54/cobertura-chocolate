@@ -27,12 +27,43 @@ import net.sourceforge.cobertura.coveragedata.SourceFileData;
 import net.sourceforge.cobertura.util.FileFinder;
 import net.sourceforge.cobertura.util.FileFixture;
 import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-public class ComplexityCalculatorTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+public class ComplexityCalculatorTest{
     private FileFixture fileFixture;
     private FileFinder fileFinder;
     private ComplexityCalculator complexity;
-	
+
+    @Before
+    public void setUp() throws Exception {
+        fileFixture = new FileFixture();
+        fileFixture.setUp();
+
+        fileFinder = new FileFinder();
+        fileFinder.addSourceDirectory(fileFixture.sourceDirectory(FileFixture.SOURCE_DIRECTORY_IDENTIFIER[0]).toString());
+        fileFinder.addSourceDirectory(fileFixture.sourceDirectory(FileFixture.SOURCE_DIRECTORY_IDENTIFIER[1]).toString());
+        fileFinder.addSourceFile(fileFixture.sourceDirectory(FileFixture.SOURCE_DIRECTORY_IDENTIFIER[2]).toString(), "com/example\\Sample5.java");
+        fileFinder.addSourceFile(fileFixture.sourceDirectory(FileFixture.SOURCE_DIRECTORY_IDENTIFIER[2]).toString(), "com/example/Sample6.java");
+        fileFinder.addSourceFile(fileFixture.sourceDirectory(FileFixture.SOURCE_DIRECTORY_IDENTIFIER[3]).toString(), "com/example/Sample7.java");
+
+        // Do not add com/example/Sample8.java
+        // fileFinder.addSourceFile( fileFixture.sourceDirectory(FileFixture.SOURCE_DIRECTORY_IDENTIFIER[3]).toString(), "com/example/Sample8.java");
+
+        complexity = new ComplexityCalculator( fileFinder);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        fileFixture.tearDown();
+    }
+
+    @Test
     public void testGetCCNForSourceFile() {
     	/*
     	 * Sample1.java has a @Deprecated annotation to make sure the complexity works with annotations.
@@ -56,6 +87,7 @@ public class ComplexityCalculatorTest extends TestCase {
     	assertTrue( ccn0==0.0);
     }
 
+    @Test
     public void testGetCCNForClass() {
     	double ccn1 = complexity.getCCNForClass( new ClassData("com.example.Sample3"));
     	assertTrue( ccn1!=0.0);
@@ -76,6 +108,7 @@ public class ComplexityCalculatorTest extends TestCase {
     	assertEquals( 0.0, ccn0, 0.0);
     }
 
+    @Test
     public void testGetCCNForPackage() {
     	PackageData pd = new PackageData("com.example");
     	pd.addClassData( new ClassData("com.example.Sample3"));
@@ -95,6 +128,7 @@ public class ComplexityCalculatorTest extends TestCase {
     	assertEquals( 0.0, complexity3.getCCNForPackage( empty), 0.0);
     }
 
+    @Test
     public void testGetCCNForProject() {
     	ProjectData project = new ProjectData();
     	project.addClassData( new ClassData("com.example.Sample5"));
@@ -117,55 +151,23 @@ public class ComplexityCalculatorTest extends TestCase {
     	assertEquals( 0.0, ccn0, 0.0);
     }
 
+    @Test(expected=NullPointerException.class)
     public void testGetCCNForSourceFile_null() {
-    	try {
-    		complexity.getCCNForSourceFile(null);
-    		fail( "NullPointerException expected");
-    	} catch( NullPointerException ex) {}
+    	complexity.getCCNForSourceFile(null);
     }
-    
+
+    @Test(expected=NullPointerException.class)
     public void testGetCCNForPackage_null() {
-    	try {
-    		complexity.getCCNForPackage(null);
-    		fail( "NullPointerException expected");
-    	} catch( NullPointerException ex) {}
+    	complexity.getCCNForPackage(null);
     }
 
+    @Test(expected=NullPointerException.class)
    	public void testGetCCNForProject_null() {
-    	try {
-    		complexity.getCCNForProject(null);
-    		fail( "NullPointerException expected");
-    	} catch( NullPointerException ex) {}
+    	complexity.getCCNForProject(null);
    	}
-    
+
+    @Test(expected=NullPointerException.class)
     public void testConstructor_null() {
-    	try {
-    		new ComplexityCalculator(null);
-    		fail( "NullPointerException expected");
-    	} catch( NullPointerException ex) {}
-    }
-
-   	
-    protected void setUp() throws Exception {
-        super.setUp();
-        fileFixture = new FileFixture();
-        fileFixture.setUp();
-
-        fileFinder = new FileFinder();
-        fileFinder.addSourceDirectory(fileFixture.sourceDirectory(FileFixture.SOURCE_DIRECTORY_IDENTIFIER[0]).toString());
-        fileFinder.addSourceDirectory(fileFixture.sourceDirectory(FileFixture.SOURCE_DIRECTORY_IDENTIFIER[1]).toString());
-        fileFinder.addSourceFile( fileFixture.sourceDirectory(FileFixture.SOURCE_DIRECTORY_IDENTIFIER[2]).toString(), "com/example\\Sample5.java");
-        fileFinder.addSourceFile( fileFixture.sourceDirectory(FileFixture.SOURCE_DIRECTORY_IDENTIFIER[2]).toString(), "com/example/Sample6.java");
-        fileFinder.addSourceFile( fileFixture.sourceDirectory(FileFixture.SOURCE_DIRECTORY_IDENTIFIER[3]).toString(), "com/example/Sample7.java");
-
-        // Do not add com/example/Sample8.java
-        // fileFinder.addSourceFile( fileFixture.sourceDirectory(FileFixture.SOURCE_DIRECTORY_IDENTIFIER[3]).toString(), "com/example/Sample8.java");
-        
-        complexity = new ComplexityCalculator( fileFinder);
-    }
-
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        fileFixture.tearDown();
+    	new ComplexityCalculator(null);
     }
 }

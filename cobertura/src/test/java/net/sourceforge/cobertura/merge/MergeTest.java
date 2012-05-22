@@ -32,6 +32,7 @@ import net.sourceforge.cobertura.coveragedata.LineData;
 import net.sourceforge.cobertura.coveragedata.PackageData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.coveragedata.SourceFileData;
+import org.junit.Before;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertNotNull;
@@ -44,25 +45,39 @@ import static org.junit.Assert.assertTrue;
  * Tests merge feature by calling directly ProjectData.merge method.
  */
 public class MergeTest{
-	private ClassData firstClass = new ClassData("test.First");
-	private ClassData secondClass = new ClassData("test.Second");
-	private ClassData thirdClass = new ClassData("test.Third");
-	private ClassData firstClassB = new ClassData("test.First");
-	private ClassData fourthClass = new ClassData("test.me.Fourth");
-	private ClassData fifthClass = new ClassData("beautiful.Fourth");
-	private ClassData sixthClass = new ClassData("Fourth");
-	private ClassData seventhClass = new ClassData("Seventh");
+	private ClassData firstClass;
+	private ClassData secondClass;
+	private ClassData thirdClass;
+	private ClassData firstClassB;
+	private ClassData fourthClass;
+	private ClassData fifthClass;
+	private ClassData sixthClass;
+	private ClassData seventhClass;
 
-	private ProjectData greenProject = new ProjectData();
-	private ProjectData redProject = new ProjectData();
+	private ProjectData greenProject;
+	private ProjectData redProject;
+
+    @Before
+    public void setUp(){
+        firstClass = new ClassData("test.First");
+        secondClass = new ClassData("test.Second");
+        thirdClass = new ClassData("test.Third");
+        firstClassB = new ClassData("test.First");
+        fourthClass = new ClassData("test.me.Fourth");
+        fifthClass = new ClassData("beautiful.Fourth");
+        sixthClass = new ClassData("Fourth");
+        seventhClass = new ClassData("Seventh");
+        greenProject = new ProjectData();
+        redProject = new ProjectData();
+    }
 
     @Test
 	public void testMergePackages() {
-		greenProject.addClassData( firstClass);
-		greenProject.addClassData( fourthClass);
-		redProject.addClassData( fifthClass);
-		redProject.addClassData( sixthClass);
-		redProject.addClassData( seventhClass);
+		greenProject.addClassData(firstClass);
+		greenProject.addClassData(fourthClass);
+		redProject.addClassData(fifthClass);
+		redProject.addClassData(sixthClass);
+		redProject.addClassData(seventhClass);
 		
 		//merge with null - should not change the greenProject
 		greenProject.merge(null);

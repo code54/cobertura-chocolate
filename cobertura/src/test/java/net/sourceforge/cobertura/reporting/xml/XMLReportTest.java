@@ -23,38 +23,40 @@ package net.sourceforge.cobertura.reporting.xml;
 
 import java.io.File;
 
-import junit.framework.TestCase;
 import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.reporting.ComplexityCalculator;
 import net.sourceforge.cobertura.reporting.JUnitXMLHelper;
 import net.sourceforge.cobertura.util.FileFinder;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-public class XMLReportTest extends TestCase
-{
+import static net.sourceforge.cobertura.testutil.Util.createRequiredDirectories;
+import static net.sourceforge.cobertura.testutil.Util.removeRequiredDirectories;
+import static net.sourceforge.cobertura.testutil.Util.removeTestReportFiles;
+
+public class XMLReportTest{
 
 	private final static String BASEDIR = (System.getProperty("basedir") != null) ? System
 			.getProperty("basedir") : ".";
 	private final static String PATH_TO_TEST_OUTPUT = BASEDIR + "/build/test/XMLReportTest";
-	private File tmpDir;
+	private File tmp;
 
-	public void setUp()
-	{
-		tmpDir = new File(PATH_TO_TEST_OUTPUT);
-		tmpDir.mkdirs();
+    @Before
+	public void setUp(){
+		tmp = new File(PATH_TO_TEST_OUTPUT);
+        createRequiredDirectories(new File[]{tmp});
 	}
 
-	public void tearDown()
-	{
-		tmpDir = new File(PATH_TO_TEST_OUTPUT);
-		File files[] = tmpDir.listFiles();
-		for (int i = 0; i < files.length; i++)
-			files[i].delete();
-		tmpDir.delete();
+    @After
+	public void tearDown(){
+		removeTestReportFiles(new File(BASEDIR));
+        removeRequiredDirectories(new File[]{tmp});
 	}
 
-	public void testXMLReportWithNonSourceLines() throws Exception
-	{
+    @Test
+	public void testXMLReportWithNonSourceLines() throws Exception{
 		ProjectData projectData = new ProjectData();
 
 		// Adding line to the project data that hasn't been yet marked as source line 

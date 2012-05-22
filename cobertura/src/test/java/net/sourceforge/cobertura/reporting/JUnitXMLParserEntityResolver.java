@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
+import org.apache.log4j.Logger;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -45,29 +46,24 @@ import org.xml.sax.helpers.DefaultHandler;
  * or when webpages must be accessed through a proxy server.
  * </p>
  */
-public class JUnitXMLParserEntityResolver extends DefaultHandler
-{
+public class JUnitXMLParserEntityResolver extends DefaultHandler{
+    private static final Logger log = Logger.getLogger(JUnitXMLParserEntityResolver.class);
 
 	private final File DTD_DIRECTORY;
 
-	public JUnitXMLParserEntityResolver(File dtdDirectory)
-	{
+	public JUnitXMLParserEntityResolver(File dtdDirectory){
 		this.DTD_DIRECTORY = dtdDirectory;
 	}
 
 	public InputSource resolveEntity(String publicId, String systemId)
-			throws SAXException
-	{
-		System.out.println("systemId=" + systemId);
+			throws SAXException{
+		log.info("systemId=" + systemId);
 		String systemIdBasename = systemId.substring(systemId.lastIndexOf('/'));
 		File localDtd = new File(this.DTD_DIRECTORY, systemIdBasename);
-		try
-		{
+		try{
 			return new InputSource(new FileInputStream(localDtd));
-		}
-		catch (FileNotFoundException e)
-		{
-			System.out.println("Unable to open local DTD file "
+		}catch (FileNotFoundException e){
+			log.info("Unable to open local DTD file "
 					+ localDtd.getAbsolutePath() + ", using " + systemId
 					+ " instead.");
 		}
@@ -82,7 +78,6 @@ public class JUnitXMLParserEntityResolver extends DefaultHandler
 			//	actual code on 1.4.2 has it remmed out so that it only throws SAXException  
 			throw new SAXException(exception);
 		}
-
 		return source;
 	}
 
