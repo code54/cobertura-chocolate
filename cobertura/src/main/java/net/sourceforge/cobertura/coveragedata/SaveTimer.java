@@ -23,12 +23,9 @@ package net.sourceforge.cobertura.coveragedata;
 
 import java.util.TimerTask;
 
-public class SaveTimer extends TimerTask implements HasBeenInstrumented
-{
+public class SaveTimer extends TimerTask implements HasBeenInstrumented{
 
-	public void run()
-	{
+	public void run(){
 		ProjectData.saveGlobalProjectData();
 	}
-
 }

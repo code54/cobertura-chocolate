@@ -35,11 +35,9 @@ import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.util.CommandLineBuilder;
 import net.sourceforge.cobertura.util.Header;
 
-public class Main
-{
+public class Main{
 
-	public Main(String[] args)
-	{
+	public Main(String[] args){
 		File dataFile = CoverageDataFileHandler.getDefaultDataFile();
 		File baseDir = null;
 		List filesToMerge = new ArrayList();
@@ -83,8 +81,7 @@ public class Main
 		CoverageDataFileHandler.saveCoverageData(projectData, dataFile);
 	}
 
-	public static void main(String[] args)
-	{
+	public static void main(String[] args){
 		Header.print(System.out);
 
 		try {

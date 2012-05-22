@@ -84,7 +84,7 @@ import net.sourceforge.cobertura.javancss.test.JavancssTest;
  * invokes the Java parser.
  *
  * @author    Chr. Clemens Lee <clemens@kclee.com>
- *            , recursive feature by Pääkö Hannu
+ *            , recursive feature by Paako Hannu
  *            , additional javadoc metrics by Emilio Gongora <emilio@sms.nl>
  *            , and Guillermo Rodriguez <guille@sms.nl>.
  * @version   $Id: Javancss.java 676 2009-09-04 13:42:13Z lewijw $

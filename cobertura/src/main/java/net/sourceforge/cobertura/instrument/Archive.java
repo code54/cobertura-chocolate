@@ -34,8 +34,7 @@ import java.io.InputStream;
  * 
  * @author John Lewis
  */
-class Archive
-{
+class Archive{
 
 	private byte[] bytes;
 	private boolean modified;
@@ -47,8 +46,7 @@ class Archive
 	 * @param file The parent archive on the hard drive that holds the child archive.
 	 * @param bytes The contents of the child archive.
 	 */
-	Archive(CoberturaFile file, byte[] bytes)
-	{
+	Archive(CoberturaFile file, byte[] bytes){
 		this.bytes = bytes;
 		this.file = file;
 	}
@@ -58,8 +56,7 @@ class Archive
 	 * 
 	 * @return An InputStream for the contents.
 	 */
-	InputStream getInputStream()
-	{
+	InputStream getInputStream(){
 		return new ByteArrayInputStream(this.bytes);
 	}
 
@@ -68,8 +65,7 @@ class Archive
 	 * 
 	 * @param bytes The new contents of the archive (instrumented).
 	 */
-	void setModifiedBytes(byte[] bytes)
-	{
+	void setModifiedBytes(byte[] bytes){
 		this.bytes = bytes;
 		this.modified = true;
 	}
@@ -79,8 +75,7 @@ class Archive
 	 * 
 	 * @return true if modified.
 	 */
-	boolean isModified()
-	{
+	boolean isModified(){
 		return modified;
 	}
 
@@ -89,8 +84,7 @@ class Archive
 	 * 
 	 * @return A byte array with the contents of this archive.
 	 */
-	byte[] getBytes()
-	{
+	byte[] getBytes(){
 		return this.bytes;
 	}
 
@@ -99,8 +93,7 @@ class Archive
 	 * 
 	 * @return A CoberturaFile representing the parent archive.
 	 */
-	CoberturaFile getCoberturaFile()
-	{
+	CoberturaFile getCoberturaFile(){
 		return this.file;
 	}
 }

@@ -34,9 +34,20 @@ import net.sourceforge.cobertura.coveragedata.ProjectData;
  * Tests merging feature by launching Main class.
  */
 public class MergeMainTest extends TestCase {
-	private ClassData firstClass = new ClassData("test.First");
-	private ClassData secondClass = new ClassData("test.Second");
-	private ClassData seventhClass = new ClassData("Seventh");
+    private static final String firstClassString="test.First";
+    private static final String secondClassString="test.Second";
+    private static final String thirdClassString="test.Third";
+    private static final String seventhClassString="test.Seventh";
+
+
+	private ClassData firstClass = new ClassData(firstClassString);
+	private ClassData secondClass = new ClassData(secondClassString);
+    /* Changed to package, since classes without a package are
+     * discouraged. If we decide to support classes without a
+     * package, we should turn Package name attribute
+     * as required=false at @Attribute notation
+     */
+	private ClassData seventhClass = new ClassData(seventhClassString);
 
 	private ProjectData greenProject = new ProjectData();
 	private ProjectData redProject = new ProjectData();
@@ -45,7 +56,7 @@ public class MergeMainTest extends TestCase {
 	private List filesToRemove = new ArrayList();
 	
 	private File createTempSerFile() throws IOException {
-		File result = File.createTempFile( "cobertura", ".ser");
+		File result = File.createTempFile( "cobertura", ".xml");
 		result.delete();
 		filesToRemove.add(result);
 		return result;
@@ -59,9 +70,9 @@ public class MergeMainTest extends TestCase {
 	
 	public void testNewDestinationFile() throws IOException {
 		// Create some coverage data
-		greenProject.addClassData( firstClass);
-		redProject.addClassData( secondClass);
-		redProject.addClassData( seventhClass);
+		greenProject.addClassData(firstClass);
+		redProject.addClassData(secondClass);
+		redProject.addClassData(seventhClass);
 
 		// Generate filenames for serialized data 
 		File greenFile = createTempSerFile();
@@ -69,24 +80,24 @@ public class MergeMainTest extends TestCase {
 		File dataFile = createTempSerFile();
 		
 		// Save coverage data for created data
-		CoverageDataFileHandler.saveCoverageData( greenProject, greenFile);
-		CoverageDataFileHandler.saveCoverageData( redProject, redFile);
+		CoverageDataFileHandler.saveCoverageData(greenProject, greenFile);
+		CoverageDataFileHandler.saveCoverageData(redProject, redFile);
 		
 		// Run merge task
 		String[] args = {"--datafile", dataFile.getAbsolutePath(), 
 				greenFile.getAbsolutePath(), redFile.getAbsolutePath()};
 		
-		Main.main( args);
+		Main.main(args);
 		
 		// Read merged data
-		ProjectData merged = CoverageDataFileHandler.loadCoverageData( dataFile);
+		ProjectData merged = CoverageDataFileHandler.loadCoverageData(dataFile);
 		
 		// Check if everything is ok
 		assertEquals( 3, merged.getNumberOfClasses());
-		assertNotNull( merged.getClassData("test.First"));
-		assertNotNull( merged.getClassData("test.Second"));
-		assertNotNull( merged.getClassData("Seventh"));
-		assertNull( merged.getClassData("test.Third"));
+		assertNotNull( merged.getClassData(firstClassString));
+		assertNotNull( merged.getClassData(secondClassString));
+		assertNotNull( merged.getClassData(seventhClassString));
+		assertNull( merged.getClassData(thirdClassString));
 	}
 
 	public void testExistingDestinationFile() throws IOException {
@@ -113,8 +124,8 @@ public class MergeMainTest extends TestCase {
 		
 		// Check if  everything is ok
 		assertEquals( 2, merged.getNumberOfClasses());
-		assertNotNull( merged.getClassData("test.First"));
-		assertNotNull( merged.getClassData("test.Second"));
+		assertNotNull( merged.getClassData(firstClassString));
+		assertNotNull( merged.getClassData(secondClassString));
 	}
 
 	public void testBaseDir() throws IOException {
@@ -148,8 +159,8 @@ public class MergeMainTest extends TestCase {
 		
 		// Check if everything is ok
 		assertEquals( 3, merged.getNumberOfClasses());
-		assertNotNull( merged.getClassData("test.First"));
-		assertNotNull( merged.getClassData("test.Second"));
-		assertNotNull( merged.getClassData("Seventh"));
+		assertNotNull( merged.getClassData(firstClassString));
+		assertNotNull( merged.getClassData(secondClassString));
+		assertNotNull( merged.getClassData(seventhClassString));
 	}
 }

@@ -42,10 +42,9 @@ import org.apache.oro.text.regex.Pattern;
 import org.apache.oro.text.regex.Perl5Compiler;
 import org.apache.oro.text.regex.Perl5Matcher;
 
-public class Main
-{
+public class Main{
 
-	private static final Logger logger = Logger.getLogger(Main.class);
+	private static final Logger log = Logger.getLogger(Main.class);
 
 	final Perl5Matcher pm = new Perl5Matcher();
 
@@ -71,17 +70,14 @@ public class Main
 	 */
 	Map packageCoverageMap = new HashMap();
 
-	double inRangeAndDivideByOneHundred(String coverageRateAsPercentage)
-	{
+	double inRangeAndDivideByOneHundred(String coverageRateAsPercentage){
 		return inRangeAndDivideByOneHundred(Integer.valueOf(
 				coverageRateAsPercentage).intValue());
 	}
 
-	double inRangeAndDivideByOneHundred(int coverageRateAsPercentage)
-	{
+	double inRangeAndDivideByOneHundred(int coverageRateAsPercentage){
 		if ((coverageRateAsPercentage >= 0)
-				&& (coverageRateAsPercentage <= 100))
-		{
+				&& (coverageRateAsPercentage <= 100)){
 			return (double)coverageRateAsPercentage / 100;
 		}
 		throw new IllegalArgumentException("The value "
@@ -90,8 +86,7 @@ public class Main
 	}
 
 	void setMinimumCoverageRate(String minimumCoverageRate)
-			throws MalformedPatternException
-	{
+			throws MalformedPatternException{
 		StringTokenizer tokenizer = new StringTokenizer(minimumCoverageRate,
 				":");
 		this.minimumCoverageRates.put(pc.compile(tokenizer.nextToken()),
@@ -107,23 +102,19 @@ public class Main
 	 * if it finds one.  Otherwise it uses the global minimum
 	 * rates that were passed in.
 	 */
-	CoverageRate findMinimumCoverageRate(String classname)
-	{
+	CoverageRate findMinimumCoverageRate(String classname){
 		Iterator iter = this.minimumCoverageRates.entrySet().iterator();
-		while (iter.hasNext())
-		{
+		while (iter.hasNext()){
 			Map.Entry entry = (Map.Entry)iter.next();
 
-			if (pm.matches(classname, (Pattern)entry.getKey()))
-			{
+			if (pm.matches(classname, (Pattern)entry.getKey())){
 				return (CoverageRate)entry.getValue();
 			}
 		}
 		return this.minimumCoverageRate;
 	}
 
-	public Main(String[] args) throws MalformedPatternException
-	{
+	public Main(String[] args) throws MalformedPatternException{
 		int exitStatus = 0;
 
 		Header.print(System.out);
@@ -136,38 +127,22 @@ public class Main
 		double totalBranchCoverageRate = -1.0;
 		double totalLineCoverageRate = -1.0;
 
-		for (int i = 0; i < args.length; i++)
-		{
-			if (args[i].equals("--branch"))
-			{
+		for (int i = 0; i < args.length; i++){
+			if (args[i].equals("--branch")){
 				branchCoverageRate = inRangeAndDivideByOneHundred(args[++i]);
-			}
-			else if (args[i].equals("--datafile"))
-			{
+			}else if (args[i].equals("--datafile")){
 				dataFile = new File(args[++i]);
-			}
-			else if (args[i].equals("--line"))
-			{
+			}else if (args[i].equals("--line")){
 				lineCoverageRate = inRangeAndDivideByOneHundred(args[++i]);
-			}
-			else if (args[i].equals("--regex"))
-			{
+			}else if (args[i].equals("--regex")){
 				setMinimumCoverageRate(args[++i]);
-			}
-			else if (args[i].equals("--packagebranch"))
-			{
+			}else if (args[i].equals("--packagebranch")){
 				packageBranchCoverageRate = inRangeAndDivideByOneHundred(args[++i]);
-			}
-			else if (args[i].equals("--packageline"))
-			{
+			}else if (args[i].equals("--packageline")){
 				packageLineCoverageRate = inRangeAndDivideByOneHundred(args[++i]);
-			}
-			else if (args[i].equals("--totalbranch"))
-			{
+			}else if (args[i].equals("--totalbranch")){
 				totalBranchCoverageRate = inRangeAndDivideByOneHundred(args[++i]);
-			}
-			else if (args[i].equals("--totalline"))
-			{
+			}else if (args[i].equals("--totalline")){
 				totalLineCoverageRate = inRangeAndDivideByOneHundred(args[++i]);
 			}
 		}
@@ -175,9 +150,8 @@ public class Main
 		ProjectData projectData = CoverageDataFileHandler
 				.loadCoverageData(dataFile);
 
-		if (projectData == null)
-		{
-			System.err.println("Error: Unable to read from data file "
+		if (projectData == null){
+			log.error("Error: Unable to read from data file "
 					+ dataFile.getAbsolutePath());
 			System.exit(1);
 		}
@@ -188,18 +162,15 @@ public class Main
 				&& (packageBranchCoverageRate == -1.0)
 				&& (totalLineCoverageRate == -1.0)
 				&& (totalBranchCoverageRate == -1.0)
-				&& (this.minimumCoverageRates.size() == 0))
-		{
+				&& (this.minimumCoverageRates.size() == 0)){
 			branchCoverageRate = 0.5;
 			lineCoverageRate = 0.5;
 			packageBranchCoverageRate = 0.5;
 			packageLineCoverageRate = 0.5;
 			totalBranchCoverageRate = 0.5;
 			totalLineCoverageRate = 0.5;
-		}
-		// If they specified one or more thresholds, default everything else to 0
-		else
-		{
+		}else{
+            // If they specified one or more thresholds, default everything else to 0
 			if (branchCoverageRate == -1.0)
 				branchCoverageRate = 0.0;
 			if (lineCoverageRate == -1.0)
@@ -223,63 +194,56 @@ public class Main
 		double totalBranchesCovered = 0;
 
 		Iterator iter = projectData.getClasses().iterator();
-		while (iter.hasNext())
-		{
+		while (iter.hasNext()){
 			ClassData classData = (ClassData)iter.next();
 			CoverageRate coverageRate = findMinimumCoverageRate(classData
 					.getName());
 
-			if (totalBranchCoverageRate > 0.0)
-			{
+			if (totalBranchCoverageRate > 0.0){
 				totalBranches += classData.getNumberOfValidBranches();
 				totalBranchesCovered += classData.getNumberOfCoveredBranches();
 			}
 
-			if (totalLineCoverageRate > 0.0)
-			{
+			if (totalLineCoverageRate > 0.0){
 				totalLines += classData.getNumberOfValidLines();
 				totalLinesCovered += classData.getNumberOfCoveredLines();
 			}
 
 			PackageCoverage packageCoverage = getPackageCoverage(classData
 					.getPackageName());
-			if (packageBranchCoverageRate > 0.0)
-			{
+			if (packageBranchCoverageRate > 0.0){
 				packageCoverage.addBranchCount(classData
 						.getNumberOfValidBranches());
 				packageCoverage.addBranchCoverage(classData
 						.getNumberOfCoveredBranches());
 			}
 
-			if (packageLineCoverageRate > 0.0)
-			{
+			if (packageLineCoverageRate > 0.0){
 				packageCoverage.addLineCount(classData.getNumberOfValidLines());
 				packageCoverage.addLineCoverage(classData
 						.getNumberOfCoveredLines());
 			}
 
-			logger.debug("Class " + classData.getName()
+			log.debug("Class " + classData.getName()
 					+ ", line coverage rate: "
 					+ percentage(classData.getLineCoverageRate())
 					+ "%, branch coverage rate: "
 					+ percentage(classData.getBranchCoverageRate()) + "%");
 
 			if (classData.getBranchCoverageRate() < coverageRate
-					.getBranchCoverageRate())
-			{
-				System.err.println(classData.getName()
-						+ " failed check. Branch coverage rate of "
-						+ percentage(classData.getBranchCoverageRate())
-						+ "% is below "
-						+ percentage(coverageRate.getBranchCoverageRate())
-						+ "%");
+					.getBranchCoverageRate()){
+				log.error(classData.getName()
+                        + " failed check. Branch coverage rate of "
+                        + percentage(classData.getBranchCoverageRate())
+                        + "% is below "
+                        + percentage(coverageRate.getBranchCoverageRate())
+                        + "%");
 				exitStatus |= 2;
 			}
 
 			if (classData.getLineCoverageRate() < coverageRate
-					.getLineCoverageRate())
-			{
-				System.err.println(classData.getName()
+					.getLineCoverageRate()){
+				log.error(classData.getName()
 						+ " failed check. Line coverage rate of "
 						+ percentage(classData.getLineCoverageRate())
 						+ "% is below "
@@ -293,21 +257,18 @@ public class Main
 
 		// Check the rates for the overall project
 		if ((totalBranches > 0)
-				&& (totalBranchCoverageRate > (totalBranchesCovered / totalBranches)))
-		{
-			System.err
-					.println("Project failed check. "
-							+ "Total branch coverage rate of "
-							+ percentage(totalBranchesCovered / totalBranches)
-							+ "% is below "
-							+ percentage(totalBranchCoverageRate) + "%");
+				&& (totalBranchCoverageRate > (totalBranchesCovered / totalBranches))){
+			log.error("Project failed check. "
+                    + "Total branch coverage rate of "
+                    + percentage(totalBranchesCovered / totalBranches)
+                    + "% is below "
+                    + percentage(totalBranchCoverageRate) + "%");
 			exitStatus |= 8;
 		}
 
 		if ((totalLines > 0)
-				&& (totalLineCoverageRate > (totalLinesCovered / totalLines)))
-		{
-			System.err.println("Project failed check. "
+				&& (totalLineCoverageRate > (totalLinesCovered / totalLines))){
+			log.error("Project failed check. "
 					+ "Total line coverage rate of "
 					+ percentage(totalLinesCovered / totalLines)
 					+ "% is below " + percentage(totalLineCoverageRate) + "%");
@@ -317,12 +278,10 @@ public class Main
 		System.exit(exitStatus);
 	}
 
-	private PackageCoverage getPackageCoverage(String packageName)
-	{
+	private PackageCoverage getPackageCoverage(String packageName){
 		PackageCoverage packageCoverage = (PackageCoverage)packageCoverageMap
 				.get(packageName);
-		if (packageCoverage == null)
-		{
+		if (packageCoverage == null){
 			packageCoverage = new PackageCoverage();
 			packageCoverageMap.put(packageName, packageCoverage);
 		}
@@ -330,12 +289,10 @@ public class Main
 	}
 
 	private int checkPackageCoverageLevels(double packageBranchCoverageRate,
-			double packageLineCoverageRate)
-	{
+			double packageLineCoverageRate){
 		int exitStatus = 0;
 		Iterator iter = packageCoverageMap.entrySet().iterator();
-		while (iter.hasNext())
-		{
+		while (iter.hasNext()){
 			Map.Entry entry = (Map.Entry)iter.next();
 			String packageName = (String)entry.getKey();
 			PackageCoverage packageCoverage = (PackageCoverage)entry.getValue();
@@ -348,15 +305,13 @@ public class Main
 
 	private int checkPackageCoverage(double packageBranchCoverageRate,
 			double packageLineCoverageRate, String packageName,
-			PackageCoverage packageCoverage)
-	{
+			PackageCoverage packageCoverage){
 		int exitStatus = 0;
 		double branchCoverage = packageCoverage.getBranchCoverage()
 				/ packageCoverage.getBranchCount();
 		if ((packageCoverage.getBranchCount() > 0)
-				&& (packageBranchCoverageRate > branchCoverage))
-		{
-			System.err.println("Package " + packageName
+				&& (packageBranchCoverageRate > branchCoverage)){
+			log.error("Package " + packageName
 					+ " failed check. Package branch coverage rate of "
 					+ percentage(branchCoverage) + "% is below "
 					+ percentage(packageBranchCoverageRate) + "%");
@@ -366,9 +321,8 @@ public class Main
 		double lineCoverage = packageCoverage.getLineCoverage()
 				/ packageCoverage.getLineCount();
 		if ((packageCoverage.getLineCount() > 0)
-				&& (packageLineCoverageRate > lineCoverage))
-		{
-			System.err.println("Package " + packageName
+				&& (packageLineCoverageRate > lineCoverage)){
+			log.error("Package " + packageName
 					+ " failed check. Package line coverage rate of "
 					+ percentage(lineCoverage) + "% is below "
 					+ percentage(packageLineCoverageRate) + "%");
@@ -378,15 +332,12 @@ public class Main
 		return exitStatus;
 	}
 
-	private String percentage(double coverateRate)
-	{
+	private String percentage(double coverateRate){
 		BigDecimal decimal = new BigDecimal(coverateRate * 100);
 		return decimal.setScale(1, BigDecimal.ROUND_DOWN).toString();
 	}
 
-	public static void main(String[] args) throws MalformedPatternException
-	{
+	public static void main(String[] args) throws MalformedPatternException{
 		new Main(args);
 	}
-
 }

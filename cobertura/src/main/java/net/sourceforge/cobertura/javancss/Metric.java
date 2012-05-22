@@ -63,7 +63,7 @@ package net.sourceforge.cobertura.javancss;
 /**
  * Base data class to store all metrics common to packages, objects and functions.
  *
- * @author  Hervé Boutemy
+ * @author  Herve Boutemy
  * @version $Id: Metric.java 121 2009-01-17 22:19:45Z hboutemy $
  */
 public abstract class Metric implements Comparable

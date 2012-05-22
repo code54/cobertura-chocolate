@@ -26,6 +26,7 @@ package net.sourceforge.cobertura.coveragedata;
 
 import net.sourceforge.cobertura.util.ConfigurationUtil;
 import org.apache.log4j.Logger;
+import org.apache.tools.ant.Project;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 import sun.tools.asm.Cover;
@@ -65,27 +66,31 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented{
 	public static ProjectData loadCoverageData(File dataFile){
 		InputStream is = null;
 
-		//System.out.println("Cobertura: Loading coverage data from " + dataFile.getAbsolutePath());
 		try{
-			is = new BufferedInputStream(new FileInputStream(dataFile), 16384);
-			return loadCoverageData(is);
-		}
-		catch (IOException e){
-			System.err.println("Cobertura: Error reading file "
+//			is = new BufferedInputStream(new FileInputStream(dataFile), 16384);
+//			return loadCoverageData(is);
+
+            Serializer serializer = new Persister();
+            return serializer.read(ProjectData.class, dataFile);
+		}catch (IOException e){
+			log.error("Cobertura: Error reading file "
 					+ dataFile.getAbsolutePath() + ": "
 					+ e.getLocalizedMessage());
 			return null;
-		}
-		finally{
-			if (is != null)
-				try{
-					is.close();
-				}catch (IOException e){
-					System.err.println("Cobertura: Error closing file "
-							+ dataFile.getAbsolutePath() + ": "
-							+ e.getLocalizedMessage());
-				}
-		}
+		} catch (Exception e) {
+            log.error("Cobertura: Error while deserializing object", e);
+            return null;
+        }
+//        finally{
+//			if (is != null)
+//				try{
+//					is.close();
+//				}catch (IOException e){
+//					log.error("Cobertura: Error closing file "
+//							+ dataFile.getAbsolutePath() + ": "
+//							+ e.getLocalizedMessage());
+//				}
+//		}
 	}
 
 	private static ProjectData loadCoverageData(InputStream dataFile) throws IOException{
@@ -94,13 +99,13 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented{
 		try{
 			objects = new ObjectInputStream(dataFile);
 			ProjectData projectData = (ProjectData)objects.readObject();
-			System.out.println("Cobertura: Loaded information on "
+			log.info("Cobertura: Loaded information on "
 					+ projectData.getNumberOfClasses() + " classes.");
 			return projectData;
 		}catch (IOException e) {
 			throw e;
 		}catch (Exception e){
-			System.err.println("Cobertura: Error reading from object stream.");
+			log.error("Cobertura: Error reading from object stream.");
 			e.printStackTrace();
 			return null;
 		}finally{
@@ -108,9 +113,7 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented{
 				try{
 					objects.close();
 				}catch (IOException e){
-					System.err
-							.println("Cobertura: Error closing object stream.");
-					e.printStackTrace();
+					log.error("Cobertura: Error closing object stream.", e);
 				}
 			}
 		}
@@ -120,71 +123,60 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented{
 			File dataFile){
 		FileOutputStream os = null;
 
-        log.error("\n***********saving coverage data - start***********************\n" +
-                "Coverage data is: "+projectData+"\n"+
+        log.info("\n***********saving coverage data - start***********************\n" +
+                "Coverage data is: " + projectData + "\n" +
                 "***********saving coverage data - end***********************");
 
         Serializer serializer = new Persister();
+//        File result = new File("testexample.xml");
 
-        File result = new File("testexample.xml");
         log.info("Project data children is: "+projectData.getChildren());
         try {
-            serializer.write(projectData, result);
+            serializer.write(projectData, dataFile);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        try{
-			File dataDir = dataFile.getParentFile();
-			if( (dataDir != null) && !dataDir.exists() ){
-				dataDir.mkdirs();
-			}
-			os = new FileOutputStream(dataFile);
-			saveCoverageData(projectData, os);
-		}catch (IOException e){
-			System.err.println("Cobertura: Error writing file "
-					+ dataFile.getAbsolutePath());
-			e.printStackTrace();
-		}
-		finally{
-			if (os != null){
-				try{
-					os.close();
-				}catch (IOException e){
-					System.err.println("Cobertura: Error closing file "
-							+ dataFile.getAbsolutePath());
-					e.printStackTrace();
-				}
-			}
-		}
+//
+//        try{
+//			File dataDir = dataFile.getParentFile();
+//			if( (dataDir != null) && !dataDir.exists() ){
+//				dataDir.mkdirs();
+//			}
+//			os = new FileOutputStream(dataFile);
+//			saveCoverageData(projectData, os);
+//		}catch (IOException e){
+//			log.error("Cobertura: Error writing file "
+//                    + dataFile.getAbsolutePath(), e);
+//		}finally{
+//			if (os != null){
+//				try{
+//					os.close();
+//				}catch (IOException e){
+//					log.error("Cobertura: Error closing file "
+//                            + dataFile.getAbsolutePath(), e);
+//				}
+//			}
+//		}
 	}
 
 	private static void saveCoverageData(ProjectData projectData,
 			OutputStream dataFile){
 		ObjectOutputStream objects = null;
-
-        log.info("\n***********saving coverage data - start***********************\n" +
-                "Coverage data is: "+projectData+"\n"+
-                "***********saving coverage data - end***********************");
         
 		try{
 			objects = new ObjectOutputStream(dataFile);
 			objects.writeObject(projectData);
-			System.out.println("Cobertura: Saved information on " + projectData.getNumberOfClasses() + " classes.");
+			log.info("Cobertura: Saved information on " + projectData.getNumberOfClasses() + " classes.");
 		}catch (IOException e){
-			System.err.println("Cobertura: Error writing to object stream.");
-			e.printStackTrace();
+			log.error("Cobertura: Error writing to object stream.", e);
 		}finally{
 			if (objects != null){
 				try{
 					objects.close();
 				}catch (IOException e){
-					System.err
-							.println("Cobertura: Error closing object stream.");
-					e.printStackTrace();
+					log.error("Cobertura: Error closing object stream.", e);
 				}
 			}
 		}
 	}
-
 }

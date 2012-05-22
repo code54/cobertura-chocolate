@@ -40,8 +40,7 @@ import net.sourceforge.cobertura.util.RegexUtil;
  * @author John Lewis
  *
  */
-public class ClassPattern
-{
+public class ClassPattern{
 
 	private Collection includeClassesRegexes = new HashSet();
 
@@ -55,8 +54,7 @@ public class ClassPattern
 	 * 
 	 * @return true if any regular expressions have been specified
 	 */
-	boolean isSpecified()
-	{
+	boolean isSpecified(){
 		return includeClassesRegexes.size() > 0;
 	}
 
@@ -72,16 +70,13 @@ public class ClassPattern
 	 * @return true if the classname matches this ClassPattern or if this ClassPattern
 	 * has not been specified.
 	 */
-	boolean matches(String filename)
-	{
+	boolean matches(String filename){
 		boolean matches = true;
 
-		if (isSpecified())
-		{
+		if (isSpecified()){
 			matches = false;
 			// Remove .class extension if it exists
-			if (filename.endsWith(".class"))
-			{
+			if (filename.endsWith(".class")){
 				filename = filename.substring(0, filename.length() - 6);
 			}
 			filename = filename.replace('\\', '/');
@@ -89,22 +84,18 @@ public class ClassPattern
 			filename = removeAnyWebInfClassesString(filename);
 
 			filename = filename.replace('/', '.');
-			if (RegexUtil.matches(includeClassesRegexes, filename))
-			{
+			if (RegexUtil.matches(includeClassesRegexes, filename)){
 				matches = true;
 			}
-			if (matches && RegexUtil.matches(excludeClassesRegexes, filename))
-			{
+			if (matches && RegexUtil.matches(excludeClassesRegexes, filename)){
 				matches = false;
 			}
 		}
 		return matches;
 	}
 
-	private String removeAnyWebInfClassesString(String filename)
-	{
-		if (filename.startsWith(WEBINF_CLASSES))
-		{
+	private String removeAnyWebInfClassesString(String filename){
+		if (filename.startsWith(WEBINF_CLASSES)){
 			filename = filename.substring(WEBINF_CLASSES.length());
 		}
 		return filename;
@@ -115,8 +106,7 @@ public class ClassPattern
 	 * 
 	 * @param regex A regular expression to add.
 	 */
-	void addIncludeClassesRegex(String regex)
-	{
+	void addIncludeClassesRegex(String regex){
 		RegexUtil.addRegex(includeClassesRegexes, regex);
 	}
 
@@ -125,9 +115,7 @@ public class ClassPattern
 	 * 
 	 * @param regex
 	 */
-	void addExcludeClassesRegex(String regex)
-	{
+	void addExcludeClassesRegex(String regex){
 		RegexUtil.addRegex(excludeClassesRegexes, regex);
 	}
-
 }

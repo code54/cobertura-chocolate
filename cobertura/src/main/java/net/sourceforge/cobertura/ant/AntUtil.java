@@ -79,16 +79,13 @@ abstract class AntUtil
 	 *
 	 * @param task The Java task that will do the forking.
 	 */
-	static void transferCoberturaDataFileProperty(Java task)
-	{
+	static void transferCoberturaDataFileProperty(Java task){
 		String coberturaProperty = System.getProperty("net.sourceforge.cobertura.datafile");
-		if (coberturaProperty != null)
-		{
+		if (coberturaProperty != null){
 			Variable sysproperty = new Variable();
 			sysproperty.setKey("net.sourceforge.cobertura.datafile");
 			sysproperty.setValue(coberturaProperty);
 			task.addSysproperty(sysproperty);
 		}
 	}
-
 }

@@ -23,34 +23,38 @@
 
 package net.sourceforge.cobertura.coveragedata;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.SortedMap;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.ElementMap;
+import org.simpleframework.xml.Root;
 
-public class PackageData extends CoverageDataContainer
-		implements Comparable, HasBeenInstrumented
-{
+import java.util.*;
+
+@Root(name="packagedata")
+public class PackageData extends CoverageDataContainer<String>
+		implements Comparable, HasBeenInstrumented{
 
 	private static final long serialVersionUID = 7;
 
+    @ElementMap(entry="children", key="key", valueType = CoverageData.class,
+             keyType = String.class, attribute=true, inline=true, required = false)
+    private Map<String, CoverageData> children = new HashMap<String, CoverageData>();
+
+    @Element
 	private String name;
 
-	public PackageData(String name)
-	{
+    /*   This is needed for xml serialization   */
+    public PackageData(){}
+
+	public PackageData(String name){
 		if (name == null)
 			throw new IllegalArgumentException(
 					"Package name must be specified.");
 		this.name = name;
 	}
     
-	public void addClassData(ClassData classData)
-	{
+	public void addClassData(ClassData classData){
 		lock.lock();
-		try
-		{
+		try{
 			if (children.containsKey(classData.getBaseName()))
 				throw new IllegalArgumentException("Package " + this.name
 						+ " already contains a class with the name "
@@ -59,9 +63,7 @@ public class PackageData extends CoverageDataContainer
 			// Each key is a class basename, stored as an String object.
 			// Each value is information about the class, stored as a ClassData object.
 			children.put(classData.getBaseName(), classData);
-		}
-		finally
-		{
+		}finally{
 			lock.unlock();
 		}
 	}
@@ -69,22 +71,17 @@ public class PackageData extends CoverageDataContainer
 	/**
 	 * This is required because we implement Comparable.
 	 */
-	public int compareTo(Object o)
-	{
+	public int compareTo(Object o){
 		if (!o.getClass().equals(PackageData.class))
 			return Integer.MAX_VALUE;
 		return this.name.compareTo(((PackageData)o).name);
 	}
 
-	public boolean contains(String name)
-	{
+	public boolean contains(String name){
 		lock.lock();
-		try
-		{
+		try{
 			return this.children.containsKey(name);
-		}
-		finally
-		{
+		}finally{
 			lock.unlock();
 		}
 	}
@@ -94,8 +91,7 @@ public class PackageData extends CoverageDataContainer
 	 * PackageData class, and it contains the same data as this
 	 * class.
 	 */
-	public boolean equals(Object obj)
-	{
+	public boolean equals(Object obj){
 		if (this == obj)
 			return true;
 		if ((obj == null) || !(obj.getClass().equals(this.getClass())))
@@ -103,70 +99,59 @@ public class PackageData extends CoverageDataContainer
 
 		PackageData packageData = (PackageData)obj;
 		getBothLocks(packageData);
-		try
-		{
+		try{
 			return super.equals(obj) && this.name.equals(packageData.name);
-		}
-		finally
-		{
+		}finally{
 			lock.unlock();
 			packageData.lock.unlock();
 		}
 	}
 
-	public SortedSet getClasses()
-	{
+	public SortedSet getClasses(){
 		lock.lock();
-		try
-		{
+		try{
 			return new TreeSet(this.children.values());
-		}
-		finally
-		{
+		}finally{
 			lock.unlock();
 		}
 	}
 
-	public String getName()
-	{
+	public String getName(){
 		return this.name;
 	}
 
-	public String getSourceFileName()
-	{
+	public String getSourceFileName(){
 		return this.name.replace('.', '/');
 	}
 
-	public Collection getSourceFiles()
-	{
+	public Collection getSourceFiles(){
 		SortedMap sourceFileDatas = new TreeMap();
 		
 		lock.lock();
-		try
-		{
+		try{
 			Iterator iter = this.children.values().iterator();
 			while (iter.hasNext()) {
 				ClassData classData = (ClassData)iter.next();
 				String sourceFileName = classData.getSourceFileName();
 				SourceFileData sourceFileData = (SourceFileData)sourceFileDatas.get(sourceFileName);
-				if (sourceFileData == null)
-				{
+				if (sourceFileData == null){
 					sourceFileData = new SourceFileData(sourceFileName);
 					sourceFileDatas.put(sourceFileName, sourceFileData);
 				}
 				sourceFileData.addClassData(classData);
 			}
-		}
-		finally
-		{
+		}finally{
 			lock.unlock();
 		}
 		return sourceFileDatas.values();
 	}
 
-	public int hashCode()
-	{
+	public int hashCode(){
 		return this.name.hashCode();
 	}
 
+    @Override
+    public Map<String, CoverageData> getChildren() {
+        return children;
+    }
 }

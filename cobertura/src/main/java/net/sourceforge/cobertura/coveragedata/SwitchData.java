@@ -21,6 +21,9 @@
 
 package net.sourceforge.cobertura.coveragedata;
 
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Element;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
@@ -42,16 +45,23 @@ public class SwitchData implements BranchCoverageData, Comparable, Serializable,
 
 	private transient Lock lock;
 
+    @Attribute
 	private int switchNumber;
-	
+
+    @Attribute(required = false)
 	private long defaultHits;
 
+    @Element(required = false)
 	private long[] hits;
-	
+
+    @Element(required = false)
 	private int[] keys;
 
-	public SwitchData(int switchNumber, int[] keys)
-	{
+
+    /*   This is needed for xml serialization   */
+    public SwitchData(){}
+
+	public SwitchData(int switchNumber, int[] keys){
 		super();
 		this.switchNumber = switchNumber;
 		defaultHits = 0;
@@ -62,8 +72,7 @@ public class SwitchData implements BranchCoverageData, Comparable, Serializable,
 		initLock();
 	}
 
-	public SwitchData(int switchNumber, int min, int max)
-	{
+	public SwitchData(int switchNumber, int min, int max){
 		super();
 		this.switchNumber = switchNumber;
 		defaultHits = 0;

@@ -40,24 +40,39 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import net.sourceforge.cobertura.util.FileLocker;
+import org.apache.log4j.Logger;
+import org.simpleframework.xml.ElementMap;
+import org.simpleframework.xml.Root;
 
-public class ProjectData extends CoverageDataContainer implements HasBeenInstrumented{
+@Root(name="projectdata")
+public class ProjectData extends CoverageDataContainer<String> implements HasBeenInstrumented{
+
+    private static final Logger log = Logger.getLogger(ProjectData.class);
 
 	private static final long serialVersionUID = 6;
 
+    @ElementMap(entry="children", key="key", valueType = CoverageData.class,
+             keyType = String.class, attribute=true, inline=true, required = false)
+    private Map<String, CoverageData> children = new HashMap<String, CoverageData>();
+
 	/** This collection is used for quicker access to the list of classes. */
+    @ElementMap(entry="classeslookup", key="key", valueType = ClassData.class,
+             keyType = String.class, attribute=true, inline=true, required = false)
 	private Map<String, ClassData> classes = new HashMap<String, ClassData>();
+
+    /*   This is needed for xml serialization   */
+    public ProjectData(){}
 
 	public void addClassData(ClassData classData){
 		lock.lock();
 		try{
 			String packageName = classData.getPackageName();
-			PackageData packageData = (PackageData)children.get(packageName);
+			PackageData packageData = (PackageData)getChildren().get(packageName);
 			if (packageData == null){
 				packageData = new PackageData(packageName);
 				// Each key is a package name, stored as an String object.
 				// Each value is information about the package, stored as a PackageData object.
-				this.children.put(packageName, packageData);
+				this.getChildren().put(packageName, packageData);
 			}
 			packageData.addClassData(classData);
 			this.classes.put(classData.getName(), classData);
@@ -78,8 +93,7 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 	/**
 	 * This is called by instrumented bytecode.
 	 */
-	public ClassData getOrCreateClassData(String name)
-	{
+	public ClassData getOrCreateClassData(String name){
 		lock.lock();
 		try{
 			ClassData classData = this.classes.get(name);
@@ -124,8 +138,7 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 		}
 	}
 
-	public Collection getSourceFiles()
-	{
+	public Collection getSourceFiles(){
 		SortedSet sourceFileDatas = new TreeSet();
 		lock.lock();
 		try{
@@ -150,8 +163,7 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 	 *         has a name beginning with the given packageName.  For
 	 *         example: "com.example.io", "com.example.io.internal"
 	 */
-	public SortedSet getSubPackages(String packageName)
-	{
+	public SortedSet getSubPackages(String packageName){
 		SortedSet subPackages = new TreeSet();
 		lock.lock();
 		try{
@@ -190,7 +202,12 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 		}
 	}
 
-	// TODO: Is it possible to do this as a static initializer?
+    @Override
+    public Map<String, CoverageData> getChildren() {
+        return children;
+    }
+
+    // TODO: Is it possible to do this as a static initializer?
 	public static void initialize(){
 		// Hack for Tomcat - by saving project data right now we force loading
 		// of classes involved in this process (like ObjectOutputStream)
@@ -278,9 +295,19 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 
 		if (projectData == null){
 			// We could not read from the serialized file, so use a new object.
-			System.out.println("Cobertura: Coverage data file " + dataFile.getAbsolutePath()
-					+ " either does not exist or is not readable.  Creating a new data file.");
+			log.info("Cobertura: Coverage data file " + dataFile.getAbsolutePath()
+                    + " either does not exist or is not readable.  Creating a new data file.");
 		}
 		return projectData;
 	}
+
+    public String toString(){
+        StringBuilder builder = new StringBuilder();
+        builder.append("\n*"+getClass()+"\n");
+        Iterator<CoverageData>it = children.values().iterator();
+        while(it.hasNext()){
+            builder.append("**"+it.next()+"\n");
+        }
+        return builder.toString();
+    }
 }

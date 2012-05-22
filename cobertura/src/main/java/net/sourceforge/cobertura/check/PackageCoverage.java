@@ -21,52 +21,42 @@
 
 package net.sourceforge.cobertura.check;
 
-public class PackageCoverage
-{
+public class PackageCoverage{
 
 	private double branchCount;
 	private double lineCount;
 	private double branchCoverage;
 	private double lineCoverage;
 
-	public double getBranchCount()
-	{
+	public double getBranchCount(){
 		return branchCount;
 	}
 
-	public void addBranchCount(double branchCount)
-	{
+	public void addBranchCount(double branchCount){
 		this.branchCount += branchCount;
 	}
 
-	public double getLineCount()
-	{
+	public double getLineCount(){
 		return lineCount;
 	}
 
-	public void addLineCount(double lineCount)
-	{
+	public void addLineCount(double lineCount){
 		this.lineCount += lineCount;
 	}
 
-	public double getBranchCoverage()
-	{
+	public double getBranchCoverage(){
 		return branchCoverage;
 	}
 
-	public void addBranchCoverage(double branchCoverage)
-	{
+	public void addBranchCoverage(double branchCoverage){
 		this.branchCoverage += branchCoverage;
 	}
 
-	public double getLineCoverage()
-	{
+	public double getLineCoverage(){
 		return lineCoverage;
 	}
 
-	public void addLineCoverage(double lineCoverage)
-	{
+	public void addLineCoverage(double lineCoverage){
 		this.lineCoverage += lineCoverage;
 	}
-
 }

@@ -69,8 +69,7 @@ import org.apache.tools.ant.BuildException;
  * the coverage percentage for lines or branches is below a certain,
  * user specifiable threshold.
  */
-public class CheckTask extends CommonMatchingTask
-{
+public class CheckTask extends CommonMatchingTask{
 
 	private String dataFile = null;
 

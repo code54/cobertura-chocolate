@@ -40,8 +40,8 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.MethodNode;
 
-public class FirstPassMethodInstrumenter extends MethodAdapter implements Opcodes
-{
+public class FirstPassMethodInstrumenter
+        extends MethodAdapter implements Opcodes{
 
 	private final String ownerClass;
 
@@ -88,8 +88,7 @@ public class FirstPassMethodInstrumenter extends MethodAdapter implements Opcode
 			final String owner, final String superOwner, final int access, final String name, final String desc, 
 			final String signature, final String[] exceptions, final Collection ignoreRegexs,
 			final Collection ignoreBranchesRegexs, final Collection ignoreMethodAnnotations,
-			final boolean ignoreTrivial)
-	{
+			final boolean ignoreTrivial){
 		super(new MethodNode(access, name, desc, signature, exceptions));
 		this.writerMethodVisitor = mv;
 		this.ownerClass = owner;
@@ -108,19 +107,16 @@ public class FirstPassMethodInstrumenter extends MethodAdapter implements Opcode
 		this.lineLabels = new HashMap();
 		this.currentLine = 0;
 
-		if (ignoreTrivial)
-		{
+		if (ignoreTrivial){
 			checkForTrivialSignature();
 		}
 	}
 
-	private void checkForTrivialSignature()
-	{
+	private void checkForTrivialSignature(){
 		Type[] args = Type.getArgumentTypes(myDescriptor);
 		Type ret = Type.getReturnType(myDescriptor);
 
-		if (myName.equals("<init>"))
-		{
+		if (myName.equals("<init>")){
 			isInit = true;
 			mightBeTrivial = true;
 			return;
@@ -130,8 +126,8 @@ public class FirstPassMethodInstrumenter extends MethodAdapter implements Opcode
 		// - have a name starting with "set"
 		// - take one arguments
 		// - return nothing (void)
-		if (myName.startsWith("set") && args.length == 1 && ret.equals(Type.VOID_TYPE))
-		{
+		if (myName.startsWith("set")
+                && args.length == 1 && ret.equals(Type.VOID_TYPE)){
 			isSetter = true;
 			mightBeTrivial = true;
 			return;
@@ -142,8 +138,7 @@ public class FirstPassMethodInstrumenter extends MethodAdapter implements Opcode
 		// - take no arguments
 		// - return a value (non-void)
 		if ((myName.startsWith("get") || myName.startsWith("is") || myName.startsWith("has")) &&
-			args.length == 0 && !ret.equals(Type.VOID_TYPE))
-		{
+			args.length == 0 && !ret.equals(Type.VOID_TYPE)){
 			isGetter = true;
 			mightBeTrivial = true;
 			return;
@@ -161,8 +156,7 @@ public class FirstPassMethodInstrumenter extends MethodAdapter implements Opcode
 		
 		if(ignored) {
 			Iterator iter = lineLabels.values().iterator();
-			while (iter.hasNext())
-			{
+			while (iter.hasNext()){
 				classData.removeLine(((Integer) iter.next()).intValue());
 			}
 			lineLabels.clear();
@@ -171,16 +165,14 @@ public class FirstPassMethodInstrumenter extends MethodAdapter implements Opcode
 		methodNode.accept(lineLabels.isEmpty() ? writerMethodVisitor : new SecondPassMethodInstrumenter(this)); //when there is no line number info -> no instrumentation
 	}
 
-	public void visitJumpInsn(int opcode, Label label)
-	{
+	public void visitJumpInsn(int opcode, Label label){
 		// Ignore any jump instructions in the "class init" method.
 		// When initializing static variables, the JVM first checks
 		// that the variable is null before attempting to set it.
 		// This check contains an IFNONNULL jump instruction which
 		// would confuse people if it showed up in the reports.
 		if ((opcode != GOTO) && (opcode != JSR) && (currentLine != 0)
-				&& (!this.myName.equals("<clinit>")))
-		{
+				&& (!this.myName.equals("<clinit>"))){
 			classData.addLineJump(currentLine, currentJump);
 			jumpTargetLabels.put(label, new JumpHolder(currentLine, currentJump++));
 		}
@@ -190,8 +182,7 @@ public class FirstPassMethodInstrumenter extends MethodAdapter implements Opcode
 		super.visitJumpInsn(opcode, label);
 	}
 
-	public void visitLineNumber(int line, Label start)
-	{
+	public void visitLineNumber(int line, Label start){
 		// Record initial information about this line of code
 		currentLine = line;
 		classData.addLine(currentLine, myName, myDescriptor);
@@ -211,70 +202,54 @@ public class FirstPassMethodInstrumenter extends MethodAdapter implements Opcode
 	{
 		super.visitFieldInsn(opcode, string, string1, string2);
 
-		if (!ignored && mightBeTrivial)
-		{
+		if (!ignored && mightBeTrivial){
 			// trivial opcodes for accessing class fields are:
 			// - GETFIELD or PUTFIELD
 			if ((isGetter && opcode != GETFIELD) ||
 				(isSetter && opcode != PUTFIELD) ||
-				(isInit && opcode != PUTFIELD))
-			{
+				(isInit && opcode != PUTFIELD)){
 				markNonTrivial();
 			}
 		}
 	}
 
-	public void visitVarInsn(int opcode, int i1)
-	{
+	public void visitVarInsn(int opcode, int i1){
 		super.visitVarInsn(opcode, i1);
 
-		if (!ignored && mightBeTrivial)
-		{
+		if (!ignored && mightBeTrivial){
 			if (
 				opcode == ILOAD ||
 				opcode == LLOAD ||
 				opcode == FLOAD ||
 				opcode == DLOAD ||
 				opcode == ALOAD
-				)
-			{
+				){
 				// trivial opcodes for accessing local variables.
-			}
-			else 
-			{
+			}else{
 				markNonTrivial();
 			}
 		}
 	}
 
 	public void visitMethodInsn(int opcode, String owner, String name,
-			String desc)
-	{
+			String desc){
 		super.visitMethodInsn(opcode, owner, name, desc);
 
 		// If any of the ignore patterns match this line
 		// then remove it from our data
-		if (RegexUtil.matches(ignoreRegexs, owner)) 
-		{
+		if (RegexUtil.matches(ignoreRegexs, owner)){
 			classData.removeLine(currentLine);
-		}
-		if (!ignored && mightBeTrivial)
-		{
-			if (isInit)
-			{
+		}if (!ignored && mightBeTrivial){
+			if (isInit){
 				// trivial initializers can invoke parent initializers,
 				// but cannot invoke any other methods
-				if (opcode == INVOKESPECIAL && name.equals("<init>") && owner.equals(ownerSuperClass))
-				{
+				if (opcode == INVOKESPECIAL && name.equals("<init>")
+                        && owner.equals(ownerSuperClass)){
 					// trivial call to super constructor
-				}
-				else
-				{
+				}else{
 					markNonTrivial();
 				}
-			}
-			else
-			{
+			}else{
 				markNonTrivial();
 			}
 		}
@@ -305,12 +280,10 @@ public class FirstPassMethodInstrumenter extends MethodAdapter implements Opcode
 		markNonTrivial();
 	}
 	
-	public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels)
-	{
+	public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels){
 		super.visitLookupSwitchInsn(dflt, keys, labels);
       
-		if (currentLine != 0)
-		{
+		if (currentLine != 0){
 			switchTargetLabels.put(dflt, new SwitchHolder(currentLine, currentSwitch, -1)); 
 			for (int i = labels.length -1; i >=0; i--)
 				switchTargetLabels.put(labels[i], new SwitchHolder(currentLine, currentSwitch, i));
@@ -321,31 +294,25 @@ public class FirstPassMethodInstrumenter extends MethodAdapter implements Opcode
 	}
 
 	@Override
-	public AnnotationVisitor visitAnnotation(String desc, boolean visible)
-	{
+	public AnnotationVisitor visitAnnotation(String desc, boolean visible){
 		// We need to convert desc to a fully-qualified classname.  Example:
 		//   java.lang.Override --> passed in as this: "Ljava/lang/Override;"
-		if(desc.charAt(0) == 'L' && desc.charAt(desc.length() - 1) == ';')
-		{
+		if(desc.charAt(0) == 'L' && desc.charAt(desc.length() - 1) == ';'){
 			desc = desc.substring(1, desc.length() - 1).replace('/', '.');
 		}
 		
 		// Check to see if this annotation is one of the ones that we use to 
 		// trigger us to ignore this method
-		if(ignoreMethodAnnotations.contains(desc))
-		{
+		if(ignoreMethodAnnotations.contains(desc)){
 			ignored = true;
 		}
-			
 		return super.visitAnnotation(desc, visible);
 	}
 
-	public void visitTableSwitchInsn(int min, int max, Label dflt, Label[] labels)
-	{
+	public void visitTableSwitchInsn(int min, int max, Label dflt, Label[] labels){
 		super.visitTableSwitchInsn(min, max, dflt, labels);
       
-		if (currentLine != 0)
-		{
+		if (currentLine != 0){
 			switchTargetLabels.put(dflt, new SwitchHolder(currentLine, currentSwitch, -1)); 
 			for (int i = labels.length -1; i >=0; i--)
 				switchTargetLabels.put(labels[i], new SwitchHolder(currentLine, currentSwitch, i));
@@ -354,13 +321,11 @@ public class FirstPassMethodInstrumenter extends MethodAdapter implements Opcode
 		markNonTrivial();
 	}
 
-	protected void removeLine(int lineNumber) 
-	{
+	protected void removeLine(int lineNumber){
 		classData.removeLine(lineNumber);
 	}
    
-	protected MethodVisitor getWriterMethodVisitor() 
-	{
+	protected MethodVisitor getWriterMethodVisitor(){
 		return writerMethodVisitor;
 	}
 

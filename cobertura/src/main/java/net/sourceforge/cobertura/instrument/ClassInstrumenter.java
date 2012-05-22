@@ -35,10 +35,9 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
-class ClassInstrumenter extends ClassAdapter
-{
+class ClassInstrumenter extends ClassAdapter{
 
-	private static final Logger logger = Logger
+	private static final Logger log = Logger
 			.getLogger(ClassInstrumenter.class);
 
 	private final static String hasBeenInstrumented = "net/sourceforge/cobertura/coveragedata/HasBeenInstrumented";
@@ -60,20 +59,17 @@ class ClassInstrumenter extends ClassAdapter
 
 	private boolean instrument = false;
 
-	public String getClassName()
-	{
+	public String getClassName(){
 		return this.myName;
 	}
 
-	public boolean isInstrumented()
-	{
+	public boolean isInstrumented(){
 		return instrument;
 	}
 
 	public ClassInstrumenter(ProjectData projectData, final ClassVisitor cv,
 			final Collection ignoreRegexs, final Collection ignoreBranchesRegexes,
-			final Collection ignoreMethodAnnotations, boolean ignoreTrivial)
-	{
+			final Collection ignoreMethodAnnotations, boolean ignoreTrivial){
 		super(cv);
 		this.projectData = projectData;
 		this.ignoreRegexs = ignoreRegexs;
@@ -82,14 +78,11 @@ class ClassInstrumenter extends ClassAdapter
 		this.ignoreTrivial = ignoreTrivial;
 	}
 
-	private boolean arrayContains(Object[] array, Object key)
-	{
-		for (int i = 0; i < array.length; i++)
-		{
+	private boolean arrayContains(Object[] array, Object key){
+		for (int i = 0; i < array.length; i++){
 			if (array[i].equals(key))
 				return true;
 		}
-
 		return false;
 	}
 
@@ -98,8 +91,7 @@ class ClassInstrumenter extends ClassAdapter
 	 *             "net/sourceforge/cobertura/coverage/ClassInstrumenter"
 	 */
 	public void visit(int version, int access, String name, String signature,
-			String superName, String[] interfaces)
-	{
+			String superName, String[] interfaces){
 		this.myName = name.replace('/', '.');
 		this.classData = this.projectData.getOrCreateClassData(this.myName);
 		this.superName = superName;
@@ -108,13 +100,10 @@ class ClassInstrumenter extends ClassAdapter
 		// Do not attempt to instrument interfaces or classes that
 		// have already been instrumented
 		if (((access & Opcodes.ACC_INTERFACE) != 0)
-				|| arrayContains(interfaces, hasBeenInstrumented))
-		{
+				|| arrayContains(interfaces, hasBeenInstrumented)){
 			super.visit(version, access, name, signature, superName,
 							interfaces);
-		}
-		else
-		{
+		}else{
 			instrument = true;
 
 			// Flag this class as having been instrumented
@@ -131,16 +120,14 @@ class ClassInstrumenter extends ClassAdapter
 	/**
 	 * @param source In the format "ClassInstrumenter.java"
 	 */
-	public void visitSource(String source, String debug)
-	{
+	public void visitSource(String source, String debug){
 		super.visitSource(source, debug);
 		classData.setSourceFileName(source);
 	}
 
 	public MethodVisitor visitMethod(final int access, final String name,
 			final String desc, final String signature,
-			final String[] exceptions)
-	{
+			final String[] exceptions){
 		MethodVisitor mv = cv.visitMethod(access, name, desc, signature,
 				exceptions);
 
@@ -152,12 +139,10 @@ class ClassInstrumenter extends ClassAdapter
 				ignoreRegexs, ignoreBranchesRegexs, ignoreMethodAnnotations, ignoreTrivial);
 	}
 
-	public void visitEnd()
-	{
+	public void visitEnd(){
 		if (instrument && classData.getNumberOfValidLines() == 0)
-			logger.warn("No line number information found for class "
+			log.warn("No line number information found for class "
 					+ this.myName
 					+ ".  Perhaps you need to compile with debug=true?");
 	}
-
 }

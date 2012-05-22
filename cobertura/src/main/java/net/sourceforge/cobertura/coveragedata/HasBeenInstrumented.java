@@ -27,8 +27,7 @@ package net.sourceforge.cobertura.coveragedata;
  * instrumented. This interface should also be implemented by those
  * classes that do not wish to be instrumented.
  */
-public interface HasBeenInstrumented
-{
+public interface HasBeenInstrumented{
 	/*
 	 * This class does not need any members.  If a given class implements
 	 * this class, it means the given class does not want to be instrumented

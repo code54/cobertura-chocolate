@@ -24,36 +24,40 @@
 
 package net.sourceforge.cobertura.coveragedata;
 
-import java.util.Iterator;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 import net.sourceforge.cobertura.util.StringUtil;
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.ElementMap;
 
-public class SourceFileData extends CoverageDataContainer
-		implements Comparable, HasBeenInstrumented
-{
+public class SourceFileData extends CoverageDataContainer<String>
+		implements Comparable, HasBeenInstrumented{
 
 	private static final long serialVersionUID = 3;
 
+    @ElementMap(entry="children", key="key", valueType = CoverageData.class,
+             keyType = String.class, attribute=true, inline=true)
+    private Map<String, CoverageData> children = new HashMap<String, CoverageData>();
+
+    @Element
 	private String name;
+
+    /*   This is needed for xml serialization   */
+    public SourceFileData(){}
 
    /**
     * @param name In the format, "net/sourceforge/cobertura/coveragedata/SourceFileData.java"
     */
-	public SourceFileData(String name)
-	{
+	public SourceFileData(String name){
 		if (name == null)
 			throw new IllegalArgumentException(
 				"Source file name must be specified.");
 		this.name = name;
 	}
 
-	public void addClassData(ClassData classData)
-	{
+	public void addClassData(ClassData classData){
 		lock.lock();
-		try
-		{
+		try{
 			if (children.containsKey(classData.getBaseName()))
 				throw new IllegalArgumentException("Source file " + this.name
 						+ " already contains a class with the name "
@@ -62,9 +66,7 @@ public class SourceFileData extends CoverageDataContainer
 			// Each key is a class basename, stored as an String object.
 			// Each value is information about the class, stored as a ClassData object.
 			children.put(classData.getBaseName(), classData);
-		}
-		finally
-		{
+		}finally{
 			lock.unlock();
 		}
 	}
@@ -72,43 +74,33 @@ public class SourceFileData extends CoverageDataContainer
 	/**
 	 * This is required because we implement Comparable.
 	 */
-	public int compareTo(Object o)
-	{
+	public int compareTo(Object o){
 		if (!o.getClass().equals(SourceFileData.class))
 			return Integer.MAX_VALUE;
 		return this.name.compareTo(((SourceFileData)o).name);
 	}
 
-	public boolean contains(String name)
-	{
+	public boolean contains(String name){
 		lock.lock();
-		try
-		{
+		try{
 			return this.children.containsKey(name);
-		}
-		finally
-		{
+		}finally{
 			lock.unlock();
 		}
 	}
 
-	public boolean containsInstrumentationInfo()
-	{
+	public boolean containsInstrumentationInfo(){
 		lock.lock();
-		try
-		{
+		try{
 			// Return false if any of our child ClassData's does not
 			// contain instrumentation info
 			Iterator iter = this.children.values().iterator();
-			while (iter.hasNext())
-			{
+			while (iter.hasNext()){
 				ClassData classData = (ClassData)iter.next();
 				if (!classData.containsInstrumentationInfo())
 					return false;
 			}
-		}
-		finally
-		{
+		}finally{
 			lock.unlock();
 		}
 		return true;
@@ -119,8 +111,7 @@ public class SourceFileData extends CoverageDataContainer
 	 * SourceFileData class, and it contains the same data as this
 	 * class.
 	 */
-	public boolean equals(Object obj)
-	{
+	public boolean equals(Object obj){
 		if (this == obj)
 			return true;
 		if ((obj == null) || !(obj.getClass().equals(this.getClass())))
@@ -128,74 +119,56 @@ public class SourceFileData extends CoverageDataContainer
 
 		SourceFileData sourceFileData = (SourceFileData)obj;
 		getBothLocks(sourceFileData);
-		try
-		{
+		try{
 			return super.equals(obj)
 					&& this.name.equals(sourceFileData.name);
-		}
-		finally
-		{
+		}finally{
 			lock.unlock();
 			sourceFileData.lock.unlock();
 		}
 	}
 
-	public String getBaseName()
-	{
+	public String getBaseName(){
 		String fullNameWithoutExtension;
 		int lastDot = this.name.lastIndexOf('.');
-		if (lastDot == -1)
-		{
+		if (lastDot == -1){
 			fullNameWithoutExtension = this.name;
-		}
-		else
-		{
+		}else{
 			fullNameWithoutExtension = this.name.substring(0, lastDot);
 		}
 
 		int lastSlash = fullNameWithoutExtension.lastIndexOf('/');
-		if (lastSlash == -1)
-		{
+		if (lastSlash == -1){
 			return fullNameWithoutExtension;
 		}
 		return fullNameWithoutExtension.substring(lastSlash + 1);
 	}
 
-	public SortedSet getClasses()
-	{
+	public SortedSet getClasses(){
 		lock.lock();
-		try
-		{
+		try{
 			return new TreeSet(this.children.values());
-		}
-		finally
-		{
+		}finally{
 			lock.unlock();
 		}
 	}
 
-	public LineData getLineCoverage(int lineNumber)
-	{
+	public LineData getLineCoverage(int lineNumber){
 		lock.lock();
-		try
-		{
+		try{
 			Iterator iter = this.children.values().iterator();
-			while (iter.hasNext())
-			{
+			while (iter.hasNext()){
 				ClassData classData = (ClassData)iter.next();
 				if (classData.isValidSourceLineNumber(lineNumber))
 					return classData.getLineCoverage(lineNumber);
 			}
-		}
-		finally
-		{
+		}finally{
 			lock.unlock();
 		}
 		return null;
 	}
 
-	public String getName()
-	{
+	public String getName(){
 		return this.name;
 	}
 
@@ -204,19 +177,14 @@ public class SourceFileData extends CoverageDataContainer
 	 *         in the format
 	 *         "net.sourceforge.cobertura.coveragedata.SourceFileData"
 	 */
-	public String getNormalizedName()
-	{
+	public String getNormalizedName(){
 		String fullNameWithoutExtension;
 		int lastDot = this.name.lastIndexOf('.');
-		if (lastDot == -1)
-		{
+		if (lastDot == -1){
 			fullNameWithoutExtension = this.name;
-		}
-		else
-		{
+		}else{
 			fullNameWithoutExtension = this.name.substring(0, lastDot);
 		}
-
 		return StringUtil.replaceAll(fullNameWithoutExtension, "/", ".");
 	}
 
@@ -224,27 +192,27 @@ public class SourceFileData extends CoverageDataContainer
 	 * @return The name of the package that this source file is in.
 	 *         In the format "net.sourceforge.cobertura.coveragedata"
 	 */
-	public String getPackageName()
-	{
+	public String getPackageName(){
 		int lastSlash = this.name.lastIndexOf('/');
-		if (lastSlash == -1)
-		{
+		if (lastSlash == -1){
 			return null;
 		}
 		return StringUtil.replaceAll(this.name.substring(0, lastSlash), "/",
 				".");
 	}
 
-	public int hashCode()
-	{
+	public int hashCode(){
 		return this.name.hashCode();
 	}
 
-	public boolean isValidSourceLineNumber(int lineNumber)
-	{
+    @Override
+    public Map<String, CoverageData> getChildren() {
+        return children;
+    }
+
+    public boolean isValidSourceLineNumber(int lineNumber){
 		lock.lock();
-		try
-		{
+		try{
 			Iterator iter = this.children.values().iterator();
 			while (iter.hasNext())
 			{
@@ -252,12 +220,9 @@ public class SourceFileData extends CoverageDataContainer
 				if (classData.isValidSourceLineNumber(lineNumber))
 					return true;
 			}
-		}
-		finally
-		{
+		}finally{
 			lock.unlock();
 		}
 		return false;
 	}
-
 }

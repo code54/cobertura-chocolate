@@ -32,11 +32,18 @@ import net.sourceforge.cobertura.coveragedata.LineData;
 import net.sourceforge.cobertura.coveragedata.PackageData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.coveragedata.SourceFileData;
+import org.junit.Test;
+
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests merge feature by calling directly ProjectData.merge method.
  */
-public class MergeTest extends TestCase {
+public class MergeTest{
 	private ClassData firstClass = new ClassData("test.First");
 	private ClassData secondClass = new ClassData("test.Second");
 	private ClassData thirdClass = new ClassData("test.Third");
@@ -49,6 +56,7 @@ public class MergeTest extends TestCase {
 	private ProjectData greenProject = new ProjectData();
 	private ProjectData redProject = new ProjectData();
 
+    @Test
 	public void testMergePackages() {
 		greenProject.addClassData( firstClass);
 		greenProject.addClassData( fourthClass);
@@ -108,7 +116,7 @@ public class MergeTest extends TestCase {
 		assertFalse( packages.hasNext());
 	}
 
-	
+	@Test
 	public void testMergeDifferentClassData() {
 		greenProject.addClassData( firstClass);
 		
@@ -128,7 +136,8 @@ public class MergeTest extends TestCase {
 		assertNotNull( redProject.getClassData("test.Second"));
 		assertNotNull( redProject.getClassData("test.Third"));
 	}
-	
+
+    @Test
 	public void testMergeSimillarClassData() {
 		greenProject.addClassData( secondClass);
 		greenProject.addClassData( thirdClass);
@@ -150,6 +159,7 @@ public class MergeTest extends TestCase {
 		assertNotNull( redProject.getClassData("test.Third"));
 	}
 
+    @Test
 	public void testMergeDifferentLineNumbers() {
 		firstClass.addLine( 2, "helloWorld","()V");
 		firstClass.addLine( 3, "helloWorld","()V");
@@ -178,6 +188,7 @@ public class MergeTest extends TestCase {
 		assertFalse( lines.hasNext());
 	}
 
+    @Test
 	public void testMergeSimillarLineNumbers() {
 		firstClass.addLine( 2, "helloWorld","()V");
 		firstClass.touch(2,1);
@@ -213,7 +224,8 @@ public class MergeTest extends TestCase {
 		assertEquals( 0, line7.getHits());
 		assertFalse( lines.hasNext());
 	}
-	
+
+    @Test
 	public void testMergeBranches() {
 		firstClass.addLine( 1, "helloWorld","()V");
 		firstClass.addLineJump(1, 0);
@@ -262,7 +274,8 @@ public class MergeTest extends TestCase {
 		assertFalse( line8.hasBranch());
 		assertFalse( lines.hasNext());
 	}
-	
+
+    @Test
 	public void testMergeSourceFiles() {
 		greenProject.addClassData( secondClass);
 		greenProject.addClassData( fourthClass);

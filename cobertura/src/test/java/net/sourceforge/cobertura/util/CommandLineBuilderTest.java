@@ -83,8 +83,7 @@ public class CommandLineBuilderTest extends TestCase {
 		builder.dispose();
 	}
 	
-	private void assertEquals(String[] first, String[] second)
-	{
+	private void assertEquals(String[] first, String[] second){
 		assertEquals(first.length, second.length);
 		for (int i = 0; i < first.length; i++)
 		{

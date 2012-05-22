@@ -90,7 +90,7 @@ import org.objectweb.asm.ClassWriter;
 public class Main
 {
 
-	private static final LoggerWrapper logger = new LoggerWrapper();
+	private static final LoggerWrapper log = new LoggerWrapper();
 
 	private File destinationDirectory = null;
 
@@ -111,8 +111,7 @@ public class Main
 	 * @return True if the specified entry has "class" as its extension,
 	 * false otherwise.
 	 */
-	private static boolean isClass(ZipEntry entry)
-	{
+	private static boolean isClass(ZipEntry entry){
 		return entry.getName().endsWith(".class");
 	}
 
@@ -199,7 +198,7 @@ public class Main
 						// class
 						if (cv.isInstrumented())
 						{
-							logger.debug("Putting instrumented entry: "
+							log.debug("Putting instrumented entry: "
 									+ entry.getName());
 							entryBytes = cw.toByteArray();
 							modified = true;
@@ -211,11 +210,11 @@ public class Main
 						if (entry.getName().endsWith("_Stub.class"))
 						{
 							//no big deal - it is probably an RMI stub, and they don't need to be instrumented
-							logger.debug("Problems instrumenting archive entry: " + entry.getName(), t);
+							log.debug("Problems instrumenting archive entry: " + entry.getName(), t);
 						}
 						else
 						{
-							logger.warn("Problems instrumenting archive entry: " + entry.getName(), t);
+							log.warn("Problems instrumenting archive entry: " + entry.getName(), t);
 						}
 					}
 				}
@@ -227,11 +226,11 @@ public class Main
 			}
 			catch (Exception e)
 			{
-				logger.warn("Problems with archive entry: " + entry.getName(), e);
+				log.warn("Problems with archive entry: " + entry.getName(), e);
 			}
 			catch (Throwable t)
 			{
-				logger.warn("Problems with archive entry: " + entry.getName(), t);
+				log.warn("Problems with archive entry: " + entry.getName(), t);
 			}
 			output.flush();
 		}
@@ -264,7 +263,7 @@ public class Main
 
 	private void addInstrumentationToArchive(CoberturaFile archive) throws Throwable
 	{
-		logger.debug("Instrumenting archive " + archive.getAbsolutePath());
+		log.debug("Instrumenting archive " + archive.getAbsolutePath());
 
 		File outputFile = null;
 		ZipInputStream input = null;
@@ -279,7 +278,7 @@ public class Main
 			}
 			catch (FileNotFoundException e)
 			{
-				logger.warn("Cannot open archive file: "
+				log.warn("Cannot open archive file: "
 						+ archive.getAbsolutePath(), e);
 				return;
 			}
@@ -304,7 +303,7 @@ public class Main
 			}
 			catch (IOException e)
 			{
-				logger.warn("Cannot open file for instrumented archive: "
+				log.warn("Cannot open file for instrumented archive: "
 						+ archive.getAbsolutePath(), e);
 				return;
 			}
@@ -316,7 +315,7 @@ public class Main
 			}
 			catch (Throwable e)
 			{
-				logger.warn("Cannot instrument archive: "
+				log.warn("Cannot instrument archive: "
 						+ archive.getAbsolutePath(), e);
 				return;
 			}
@@ -333,13 +332,13 @@ public class Main
 		{
 			try
 			{
-				logger.debug("Moving " + outputFile.getAbsolutePath() + " to "
+				log.debug("Moving " + outputFile.getAbsolutePath() + " to "
 						+ archive.getAbsolutePath());
 				IOUtil.moveFile(outputFile, archive);
 			}
 			catch (IOException e)
 			{
-				logger.warn("Cannot instrument archive: "
+				log.warn("Cannot instrument archive: "
 						+ archive.getAbsolutePath(), e);
 				return;
 			}
@@ -352,7 +351,7 @@ public class Main
 
 	private void addInstrumentationToSingleClass(File file) throws Throwable
 	{
-		logger.debug("Instrumenting class " + file.getAbsolutePath());
+		log.debug("Instrumenting class " + file.getAbsolutePath());
 
 		InputStream inputStream = null;
 		ClassWriter cw;
@@ -368,7 +367,7 @@ public class Main
 		}
 		catch (Throwable t)
 		{
-			logger.warn("Unable to instrument file " + file.getAbsolutePath(),
+			log.warn("Unable to instrument file " + file.getAbsolutePath(),
 					t);
 			return;
 		}
@@ -405,7 +404,7 @@ public class Main
 		}
 		catch (Throwable t)
 		{
-			logger.warn("Unable to instrument file " + file.getAbsolutePath(),
+			log.warn("Unable to instrument file " + file.getAbsolutePath(),
 					t);
 			return;
 		}
@@ -477,7 +476,7 @@ public class Main
 			}
 			else if (args[i].equals("--failOnError"))
 			{
-				logger.setFailOnError(true);
+				log.setFailOnError(true);
 			}
 			else
 			{
@@ -493,7 +492,7 @@ public class Main
 			projectData = new ProjectData();
 		
 		// Instrument classes
-		System.out.println("Instrumenting "	+ filePaths.size() + " "
+		log.info("Instrumenting "	+ filePaths.size() + " "
 				+ (filePaths.size() == 1 ? "file" : "files")
 				+ (destinationDirectory != null ? " to "
 						+ destinationDirectory.getAbsoluteFile() : ""));
@@ -537,32 +536,31 @@ public class Main
 	}
 
 	private static class LoggerWrapper {
-		private final Logger logger = Logger.getLogger(Main.class);
+		private final Logger log = Logger.getLogger(Main.class);
 
 		private boolean failOnError = false;
 
-		public void setFailOnError(boolean failOnError)
-		{
+		public void setFailOnError(boolean failOnError){
 			this.failOnError = failOnError;
 		}
 
-		public void debug(String message)
-		{
-			logger.debug(message);
+		public void debug(String message){
+			log.debug(message);
 		}
 
-		public void debug(String message, Throwable t)
-		{
-			logger.debug(message, t);
+		public void debug(String message, Throwable t){
+			log.debug(message, t);
 		}
 
-		public void warn(String message, Throwable t) throws Throwable
-		{
-			logger.warn(message, t);
-			if (failOnError) 
-			{
+		public void warn(String message, Throwable t) throws Throwable{
+			log.warn(message, t);
+			if (failOnError){
 				throw t;
 			}
 		}
+
+        public void info(String message){
+            log.info(message);
+        }
 	}
 }

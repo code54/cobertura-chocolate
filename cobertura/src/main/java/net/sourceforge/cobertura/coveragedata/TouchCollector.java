@@ -32,8 +32,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import net.sourceforge.cobertura.coveragedata.countermaps.AtomicCounterMap;
 import net.sourceforge.cobertura.coveragedata.countermaps.CounterMap;
+import org.apache.log4j.Logger;
 
 public class TouchCollector implements HasBeenInstrumented{
+
+    private static final Logger log = Logger.getLogger(TouchCollector.class);
 	
 	private static final CounterMap<LineTouchData> touchedLines=new AtomicCounterMap<LineTouchData>();	
 	private static final CounterMap<SwitchTouchData> switchTouchData=new AtomicCounterMap<SwitchTouchData>();	
@@ -183,7 +186,7 @@ public class TouchCollector implements HasBeenInstrumented{
 	
 	
 	public static synchronized void applyTouchesOnProjectData(ProjectData projectData){
-		System.out.println("Flushing results...");
+		log.info("Flushing results...");
 		Map<LineTouchData,Integer> touches=touchedLines.getFinalStateAndCleanIt();
 		for(Entry<LineTouchData, Integer> touch:touches.entrySet()){
 			if(touch.getValue()>0){				
@@ -210,11 +213,10 @@ public class TouchCollector implements HasBeenInstrumented{
 						touch.getKey().branch,touch.getValue());
 			}
 		}
-		System.out.println("Flushing results done");
+		log.info("Flushing results done");
 	}
 
 	private static ClassData getClassFor(LineTouchData key,ProjectData projectData) {
-//		System.out.println("\nLooking for:"+key.classId+"\n");
 		return projectData.getOrCreateClassData(classId2class.get(key.classId));
 	}
 		

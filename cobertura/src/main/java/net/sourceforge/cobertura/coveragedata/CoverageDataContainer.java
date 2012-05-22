@@ -30,6 +30,7 @@ import org.simpleframework.xml.Root;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -48,22 +49,12 @@ import java.util.concurrent.locks.ReentrantLock;
  * make use of this class.
  * </p>
  */
-@Root(name="coveragedata")
-public abstract class CoverageDataContainer
+public abstract class CoverageDataContainer<T>
 		implements CoverageData, HasBeenInstrumented, Serializable{
 
 	private static final long serialVersionUID = 2;
 
 	protected transient Lock lock;
-
-     @ElementMap(entry="property", key="key", valueType = CoverageData.class,
-             keyType = String.class, attribute=true, inline=true)
-	/**
-	 * Each key is the name of a child, usually stored as a String or
-	 * an Integer object.  Each value is information about the child,
-	 * stored as an object that implements the CoverageData interface.
-	 */
-	Map<String,CoverageData> children = new HashMap<String,CoverageData>();
 
 	public CoverageDataContainer(){
 		initLock();
@@ -90,7 +81,7 @@ public abstract class CoverageDataContainer
 		CoverageDataContainer coverageDataContainer = (CoverageDataContainer)obj;
 		lock.lock();
 		try{
-			return this.children.equals(coverageDataContainer.children);
+			return this.getChildren().equals(coverageDataContainer.getChildren());
 		}finally{
 			lock.unlock();
 		}
@@ -105,7 +96,7 @@ public abstract class CoverageDataContainer
 		int numberCovered = 0;
 		lock.lock();
 		try{
-			Iterator<CoverageData> iter = this.children.values().iterator();
+			Iterator<CoverageData> iter = getChildrenValues().iterator();
 			while (iter.hasNext()){
 				CoverageData coverageContainer = iter.next();
 				number += coverageContainer.getNumberOfValidBranches();
@@ -131,7 +122,7 @@ public abstract class CoverageDataContainer
 	public CoverageData getChild(String name){
 		lock.lock();
 		try{
-			return this.children.get(name);
+			return this.getChildren().get(name);
 		}finally{
 			lock.unlock();
 		}
@@ -147,7 +138,7 @@ public abstract class CoverageDataContainer
 		int numberCovered = 0;
 		lock.lock();
 		try{
-			Iterator<CoverageData> iter = this.children.values().iterator();
+			Iterator<CoverageData> iter = getChildrenValues().iterator();
 			while (iter.hasNext()){
 				CoverageData coverageContainer = iter.next();
 				number += coverageContainer.getNumberOfValidLines();
@@ -169,7 +160,7 @@ public abstract class CoverageDataContainer
 	public int getNumberOfChildren(){
 		lock.lock();
 		try{
-			return this.children.size();
+			return getChildrenValues().size();
 		}finally{
 			lock.unlock();
 		}
@@ -179,7 +170,7 @@ public abstract class CoverageDataContainer
 		int number = 0;
 		lock.lock();
 		try{
-			Iterator<CoverageData> iter = this.children.values().iterator();
+			Iterator<CoverageData> iter = getChildrenValues().iterator();
 			while (iter.hasNext()){
 				CoverageData coverageContainer = iter.next();
 				number += coverageContainer.getNumberOfCoveredBranches();
@@ -194,7 +185,7 @@ public abstract class CoverageDataContainer
 		int number = 0;
 		lock.lock();
 		try{
-			Iterator<CoverageData> iter = this.children.values().iterator();
+			Iterator<CoverageData> iter = getChildrenValues().iterator();
 			while (iter.hasNext()){
 				CoverageData coverageContainer = iter.next();
 				number += coverageContainer.getNumberOfCoveredLines();
@@ -209,7 +200,7 @@ public abstract class CoverageDataContainer
 		int number = 0;
 		lock.lock();
 		try{
-			Iterator<CoverageData> iter = this.children.values().iterator();
+			Iterator<CoverageData> iter = getChildrenValues().iterator();
 			while (iter.hasNext()){
 				CoverageData coverageContainer = iter.next();
 				number += coverageContainer.getNumberOfValidBranches();
@@ -224,7 +215,7 @@ public abstract class CoverageDataContainer
 		int number = 0;
 		lock.lock();
 		try{
-			Iterator<CoverageData> iter = this.children.values().iterator();
+			Iterator<CoverageData> iter = getChildrenValues().iterator();
 			while (iter.hasNext()){
 				CoverageData coverageContainer = iter.next();
 				number += coverageContainer.getNumberOfValidLines();
@@ -244,7 +235,7 @@ public abstract class CoverageDataContainer
 	public int hashCode(){
 		lock.lock();
 		try{
-			return this.children.size();
+			return this.getChildren().size();
 		}finally{
 			lock.unlock();
 		}
@@ -259,18 +250,18 @@ public abstract class CoverageDataContainer
 		CoverageDataContainer container = (CoverageDataContainer)coverageData;
 		getBothLocks(container);
 		try{
-			Iterator<String> iter = container.children.keySet().iterator();
+			Iterator<T> iter = container.getChildren().keySet().iterator();
 			while (iter.hasNext()){
-				String key = iter.next();
-				CoverageData newChild = container.children.get(key);
-				CoverageData existingChild = this.children.get(key);
+				T key = iter.next();
+				CoverageData newChild = (CoverageData)container.getChildren().get(key);
+				CoverageData existingChild = this.getChildren().get(key);
 				if (existingChild != null){
 					existingChild.merge(newChild);
 				}else{
 					// TODO: Shouldn't we be cloning newChild here?  I think so that
 					//       would be better... but we would need to override the
 					//       clone() method all over the place?
-					this.children.put(key, newChild);
+					this.getChildren().put(key, newChild);
 				}
 			}
 		}finally{
@@ -314,7 +305,24 @@ public abstract class CoverageDataContainer
 	}
 
     /*   for xml serialization support   */
-    public Map<String, CoverageData>getChildren(){
-        return children;
+    /**
+	 * Each key is the name of a child, usually stored as a String or
+	 * an Integer object.  Each value is information about the child,
+	 * stored as an object that implements the CoverageData interface.
+	 */
+    public abstract Map<T,CoverageData> getChildren();
+
+    public Collection<CoverageData> getChildrenValues(){
+        return getChildren().values();
+    }
+
+    public String toString(){
+        StringBuilder builder = new StringBuilder();
+        builder.append("\n*"+getClass()+"\n");
+        Iterator<CoverageData>it = getChildrenValues().iterator();
+        while(it.hasNext()){
+            builder.append("**"+it.next()+"\n");
+        }
+        return builder.toString();
     }
 }
