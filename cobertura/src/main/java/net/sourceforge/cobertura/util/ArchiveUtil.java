@@ -27,9 +27,16 @@
 
 package net.sourceforge.cobertura.util;
 
+import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
+import net.sourceforge.cobertura.coveragedata.ProjectData;
+import net.sourceforge.cobertura.coveragedata.TouchCollector;
+import org.apache.log4j.Logger;
+
 import java.io.File;
 import java.util.List;
 import java.util.zip.ZipEntry;
+
+import static net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler.loadProjectData;
 
 /**
  * Utility methods for working with archives.
@@ -37,6 +44,7 @@ import java.util.zip.ZipEntry;
  * @author John Lewis
  */
 public abstract class ArchiveUtil {
+    private static final Logger log = Logger.getLogger(ArchiveUtil.class);
 
     /**
      * Return true if the given name ends with .jar, .zip,
@@ -104,4 +112,49 @@ public abstract class ArchiveUtil {
         }
     }
 
+    public static void saveGlobalProjectData(ProjectData projectData){
+        TouchCollector.applyTouchesOnProjectData(projectData);
+
+        // Get a file lock
+        File dataFile = CoverageDataFileHandler.getDefaultDataFile();
+
+        /*
+         * A note about the next synchronized block:  Cobertura uses static fields to
+         * hold the data.   When there are multiple classloaders, each classloader
+         * will keep track of the line counts for the classes that it loads.
+         *
+         * The static initializers for the Cobertura classes are also called for
+         * each classloader.   So, there is one shutdown hook for each classloader.
+         * So, when the JVM exits, each shutdown hook will try to write the
+         * data it has kept to the datafile.   They will do this at the same
+         * time.   Before Java 6, this seemed to work fine, but with Java 6, there
+         * seems to have been a change with how file locks are implemented.   So,
+         * care has to be taken to make sure only one thread locks a file at a time.
+         *
+         * So, we will synchronize on the string that represents the path to the
+         * dataFile.  Apparently, there will be only one of these in the JVM
+         * even if there are multiple classloaders.  I assume that is because
+         * the String class is loaded by the JVM's root classloader.
+         */
+        synchronized (dataFile.getPath().intern() ) {
+            FileLocker fileLocker = new FileLocker(dataFile);
+
+            try{
+                // Read the old data, merge our current data into it, then
+                // write a new ser file.
+                if (fileLocker.lock()){
+                    ProjectData datafileProjectData = loadProjectData(dataFile);
+                    if (datafileProjectData == null){
+                        datafileProjectData = projectData;
+                    }else{
+                        datafileProjectData.merge(projectData);
+                    }
+                    CoverageDataFileHandler.saveProjectData(datafileProjectData, dataFile);
+                }
+            }finally{
+                // Release the file lock
+                fileLocker.release();
+            }
+        }
+    }
 }

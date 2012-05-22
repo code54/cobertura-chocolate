@@ -1,19 +1,17 @@
 package net.sourceforge.cobertura.ant;
 
-import com.sun.tools.corba.se.idl.Compile;
-import com.sun.tools.corba.se.idl.toJavaPortable.StringGen;
 import net.sourceforge.cobertura.Arguments;
 import net.sourceforge.cobertura.Cobertura;
+import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
+import net.sourceforge.cobertura.reporting.generic.BasicMetricData;
+import net.sourceforge.cobertura.reporting.generic.GenericReportEntry;
+import net.sourceforge.cobertura.reporting.xml.XmlReportFormatStrategy;
 import net.sourceforge.cobertura.util.DirectoryClassLoader;
-import org.apache.bcel.classfile.Code;
 import org.apache.log4j.Logger;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.taskdefs.Javac;
-import org.apache.tools.ant.types.FileSet;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.Ignore;
 import org.junit.runner.JUnitCore;
-import org.junit.runner.Result;
 
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
@@ -21,14 +19,20 @@ import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.*;
 
+import static junit.framework.Assert.assertEquals;
+import static net.sourceforge.cobertura.testutil.Util.removeTestReportFiles;
 import static net.sourceforge.cobertura.util.ArchiveUtil.getFiles;
 
 public class CodeInstrumentationIntegrationTest {
     private static final Logger log = Logger.getLogger(CodeInstrumentationIntegrationTest.class);
+
+    @Before
+    public void setUp(){
+        //if a default .ser file was left out there, it will alter our test results...
+        CoverageDataFileHandler.getDefaultDataFile().delete();
+    }
 
     @Test
     public void testInstrumentUsingDirSet_withoutAnt() throws Throwable {
@@ -36,40 +40,61 @@ public class CodeInstrumentationIntegrationTest {
         File instrumented = new File(basedir, "src");
         instrumented.mkdirs();
 
-        compile(basedir, null);//new CompilerOptions().setClassOutputDirectory(new File("./target/cobertura/instrumented"))
+        compile(basedir, null);
 
         Cobertura cobertura = instrumentCode(instrumented, instrumented);
 
         //Custom classloader to load instrumented classes
         ClassLoader classLoader = new DirectoryClassLoader(instrumented);
 
-        // Load tests with our own classloader.
-        URLClassLoader loader1 = new URLClassLoader(
-                new URL[] {instrumented.toURL() }, classLoader);
-        loader1.loadClass("test.first.A");
-        loader1.loadClass("test.first.B");
-        loader1.loadClass("test.second.A");
-        loader1.loadClass("test.second.B");
-        loader1.loadClass("test.first.RemoteInterface");
-        loader1.loadClass("test.first.RemoteListener");
-        loader1.loadClass("net.sourceforge.cobertura.coveragedata.HasBeenInstrumented");
+        classLoader.loadClass("test.first.A");
+        classLoader.loadClass("test.first.B");
+        classLoader.loadClass("test.second.A");
+        classLoader.loadClass("test.second.B");
+        classLoader.loadClass("test.first.RemoteInterface");
+        classLoader.loadClass("test.first.RemoteListener");
+        classLoader.loadClass("net.sourceforge.cobertura.coveragedata.HasBeenInstrumented");
 
         //run tests
-        Class testClass = loader1.loadClass("test.first.FirstTest");
+        Class testClass = classLoader.loadClass("test.first.FirstTest");
+        new JUnitCore().run(testClass);
+
+        cobertura.report();
+        cobertura.saveProjectData();
+
+        cleanFiles(basedir);
+    }
+
+    @Test
+    public void testConditionCoverage_withoutAnt() throws Throwable {
+        File basedir = new File("./src/test/resources/integration/examples/functionalconditiontest/");
+        File instrumented = new File(basedir, "src");
+        instrumented.mkdirs();
+
+        compile(basedir, null);
+
+        Cobertura cobertura = instrumentCode(instrumented, instrumented);
+
+        //Custom classloader to load instrumented classes
+        ClassLoader classLoader = new DirectoryClassLoader(instrumented);
+
+        classLoader.loadClass("test.condition.ConditionCalls");
+        classLoader.loadClass("net.sourceforge.cobertura.coveragedata.HasBeenInstrumented");
+
+        //run tests
+        Class testClass = classLoader.loadClass("test.condition.Test");
         new JUnitCore().run(testClass);
 
         //get report
-        cobertura.buildReport();
+        GenericReportEntry report = cobertura.report().getProjectsReport().get(0);
+        BasicMetricData metricData = report.getBasicMetricData();
 
-        //clean .class files
-        List<File>files = new ArrayList<File>();
-        getFiles(basedir, ".class", files);
-        for(File file:files){
-            file.delete();
-        }
+        assertEquals("Branch coverage violation", 0.25925925925925924, metricData.getBranchCoverageData().getCoverageRate());
+        assertEquals("Line coverage violation", 0.723404255319149, metricData.getLineCoverage().getCoverageRate());
+        assertEquals("Cyclomatic complexity", 0., metricData.getCyclomaticCodeComplexity());
+
+        cleanFiles(basedir);
     }
-
-
 
     /*   Aux methods   */
     private static void compile(File basedir, CompilerOptions compilerOptions){
@@ -107,6 +132,11 @@ public class CodeInstrumentationIntegrationTest {
                         .setDataFile("cobertura.ser")
                         .setDestinationFile(intrumentedCodeDestDir.getAbsolutePath());
 
+
+        for(File file:classFiles){
+            args.addFileToInstrument(file.getAbsolutePath());
+        }
+
         //TODO see a way to automatically detect test classes and get a list of classes
 //        File[]files = classFiles.toArray(new File[classFiles.size()]);
 //        List<String>tests = new ArrayList<String>();
@@ -118,6 +148,15 @@ public class CodeInstrumentationIntegrationTest {
 //        }
 
         return new Cobertura(args).instrumentCode();
+    }
+
+    private void cleanFiles(File basedir){
+        //clean .class files
+        List<File>files = new ArrayList<File>();
+        getFiles(basedir, ".class", files);
+        for(File file:files){
+            file.delete();
+        }
     }
 
     private static class CompilerOptions{

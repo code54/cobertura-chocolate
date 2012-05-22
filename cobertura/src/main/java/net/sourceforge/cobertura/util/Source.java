@@ -36,16 +36,14 @@ public class Source {
 	//streamOrigin is either a File or a ZipFile
 	private Object streamOrigin;
 	
-	private static Logger LOGGER = Logger.getLogger(Source.class);
+	private static Logger log = Logger.getLogger(Source.class);
 
-	public Source(InputStream is, Object streamOrigin)
-	{
+	public Source(InputStream is, Object streamOrigin){
 		this.is = is;
 		this.streamOrigin = streamOrigin;
 	}
 	
-	public InputStream getInputStream()
-	{
+	public InputStream getInputStream(){
 		return is;
 	}
 	
@@ -54,40 +52,28 @@ public class Source {
 	 * 
 	 * This will not throw anything.   Any throwable is caught and a warning is logged.
 	 */
-	public void close()
-	{
-		try
-		{
+	public void close(){
+		try{
 			is.close();
-		}
-		catch (Throwable t)
-		{
-			LOGGER.warn("Failure closing input stream for " + getOriginDesc(), t);
+		}catch (Throwable t){
+			log.warn("Failure closing input stream for " + getOriginDesc(), t);
 		}
 		
-		if (streamOrigin instanceof ZipFile)
-		{
-			try
-			{
+		if (streamOrigin instanceof ZipFile){
+			try{
 				((ZipFile) streamOrigin).close();
-			}
-			catch (Throwable t)
-			{
-				LOGGER.warn("Failure closing " + getOriginDesc(), t);
+			}catch (Throwable t){
+				log.warn("Failure closing " + getOriginDesc(), t);
 			}
 		}
 	}
 	
-	public String getOriginDesc()
-	{
+	public String getOriginDesc(){
 		String ret = "";
 		
-		if (streamOrigin instanceof File)
-		{
+		if (streamOrigin instanceof File){
 			ret = "file " + ((File) streamOrigin).getAbsolutePath();
-		}
-		else
-		{
+		}else{
 			ret = "archive " + ((ZipFile) streamOrigin).getName();
 		}
 		return ret;

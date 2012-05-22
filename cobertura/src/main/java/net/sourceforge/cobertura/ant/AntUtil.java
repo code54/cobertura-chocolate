@@ -54,11 +54,12 @@
 
 package net.sourceforge.cobertura.ant;
 
+import net.sourceforge.cobertura.coveragedata.ProjectData;
+import net.sourceforge.cobertura.util.ShutdownHooks;
 import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.Environment.Variable;
 
-abstract class AntUtil
-{
+abstract class AntUtil{
 
 	/**
 	 * Used to transfer the net.sourceforge.cobertura.datafile property to a JVM

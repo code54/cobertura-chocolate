@@ -2,6 +2,7 @@ package net.sourceforge.cobertura;
 
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
+import net.sourceforge.cobertura.coveragedata.TouchCollector;
 import net.sourceforge.cobertura.instrument.CodeInstrumentationTask;
 import net.sourceforge.cobertura.reporting.ComplexityCalculator;
 import net.sourceforge.cobertura.reporting.generic.GenericReport;
@@ -19,6 +20,8 @@ public class Cobertura {
     private CodeInstrumentationTask instrumentationTask;
     private CheckThresholdsTask checkThresholdsTask;
 
+    private boolean didApplyInstrumentationResults;
+
     /*
      * Private constructor so we get sure Cobertura
      * is always initialized with Arguments
@@ -29,6 +32,7 @@ public class Cobertura {
         args=arguments;
         instrumentationTask = new CodeInstrumentationTask();
         checkThresholdsTask = new CheckThresholdsTask();
+        didApplyInstrumentationResults = false;
     }
 
     public Cobertura instrumentCode() throws Throwable {
@@ -36,19 +40,27 @@ public class Cobertura {
         return this;
     }
 
+    /**
+     * This should be invoked after running tests.
+     * @return
+     */
+    public void applyInstrumentationResults(){
+        applyTouchesOnProjectData(projectData);
+        didApplyInstrumentationResults = true;
+    }
+
     public ThresholdInformation checkThresholds(){
         checkThresholdsTask.checkThresholds(args,getProjectDataInstance());
         return new ThresholdInformation(checkThresholdsTask.getCheckThresholdsExitStatus());
     }
 
-    public GenericReport buildReport(){
+    public GenericReport report(){
+        if(!didApplyInstrumentationResults){
+            applyInstrumentationResults();
+        }
         List<ProjectData> projects = new ArrayList<ProjectData>();
-        projects.add(projectData);
+        projects.add(getProjectDataInstance());
         return new GenericReport(projects, new ComplexityCalculator(new FileFinder()));
-        //Consider a buildReport format (reporting strategy?)
-        //todo: should return a report instance,
-        // that wraps a specific report and is able to perform
-        //generic actions as persist, etc + respond with GenericReportData
     }
 
     public Cobertura saveProjectData(){

@@ -78,11 +78,6 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented{
         Serializer serializer = new Persister();
         try {
             serializer.write(projectData, dataFile);
-
-            List<ProjectData> projects = new ArrayList<ProjectData>();
-            projects.add(projectData);
-            ComplexityCalculator complexity = new ComplexityCalculator(new FileFinder());
-            serializer.write(new GenericReport(projects, complexity),new File("genericReport"+UUID.randomUUID()+".xml"));
         } catch (Exception e) {
             e.printStackTrace();
         }

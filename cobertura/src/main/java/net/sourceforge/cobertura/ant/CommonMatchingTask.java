@@ -61,7 +61,9 @@
 
 package net.sourceforge.cobertura.ant;
 
+import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.util.CommandLineBuilder;
+import net.sourceforge.cobertura.util.ShutdownHooks;
 import net.sourceforge.cobertura.util.StringUtil;
 import org.apache.tools.ant.AntClassLoader;
 import org.apache.tools.ant.BuildException;
@@ -79,8 +81,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-public abstract class CommonMatchingTask extends MatchingTask
-{
+public abstract class CommonMatchingTask extends MatchingTask{
 
 	final String className;
 	final List fileSets = new LinkedList();
@@ -90,20 +91,16 @@ public abstract class CommonMatchingTask extends MatchingTask
 	private int forkedJVMDebugPort;
 	protected boolean failOnError = false;
 
-	public CommonMatchingTask(String className)
-	{
+	public CommonMatchingTask(String className){
 		this.className = className;
 	}
 
-	private String getClassName()
-	{
+	private String getClassName(){
 		return className;
 	}
 
-	protected Java getJava()
-	{
-		if (java == null)
-		{
+	protected Java getJava(){
+		if (java == null){
 			java = (Java)getProject().createTask("java");
 			java.setTaskName(getTaskName());
 			java.setClassname(getClassName());
@@ -112,8 +109,7 @@ public abstract class CommonMatchingTask extends MatchingTask
 			java.setDir(getProject().getBaseDir());
 			if (maxMemory != null)
 				java.setJvmargs("-Xmx" + maxMemory);
-			if (forkedJVMDebugPort > 0)
-			{
+			if (forkedJVMDebugPort > 0){
 				java.setJvmargs("-Xdebug");
 				java.setJvmargs("-Xrunjdwp:transport=dt_socket,address=" + forkedJVMDebugPort + ",server=y,suspend=y");
 			}
@@ -125,19 +121,15 @@ public abstract class CommonMatchingTask extends MatchingTask
 			 * don't know if this is our problem, or CruiseControl, or
 			 * ant, but this seems to fix it.  --Mark
 			 */
-			if (getClass().getClassLoader() instanceof AntClassLoader)
-			{
+			if (getClass().getClassLoader() instanceof AntClassLoader){
 				String classpath = ((AntClassLoader)getClass()
 						.getClassLoader()).getClasspath();
 				createClasspath().setPath(
 						StringUtil.replaceAll(classpath, "%20", " "));
-			}
-			else if (getClass().getClassLoader() instanceof URLClassLoader)
-			{
+			}else if (getClass().getClassLoader() instanceof URLClassLoader){
 				URL[] earls = ((URLClassLoader)getClass().getClassLoader())
 						.getURLs();
-				for (int i = 0; i < earls.length; i++)
-				{
+				for (int i = 0; i < earls.length; i++){
 					String classpath = (new File(earls[i].getFile())).getAbsolutePath();
 					createClasspath().setPath(
 							StringUtil.replaceAll(classpath, "%20", " "));
@@ -151,20 +143,15 @@ public abstract class CommonMatchingTask extends MatchingTask
 	protected void createArgumentsForFilesets( CommandLineBuilder builder) throws IOException {
 		Iterator iter = fileSets.iterator();
 		boolean filesetFound = false;
-		while (iter.hasNext())
-		{
+		while (iter.hasNext()){
 			AbstractFileSet fileSet = (AbstractFileSet)iter.next();
 
-			if (fileSet instanceof FileSet)
-			{
+			if (fileSet instanceof FileSet){
 				filesetFound = true;
 				builder.addArg("--basedir", baseDir(fileSet));
 				createArgumentsForFilenames( builder, getFilenames(fileSet));
-			}
-			else
-			{
-				if (filesetFound)
-				{
+			}else{
+				if (filesetFound){
 					/*
 					 * Once --basedir has been used, it cannot be undone without changes to the
 					 * Main methods.   So, any dirsets have to come before filesets.
@@ -176,66 +163,54 @@ public abstract class CommonMatchingTask extends MatchingTask
 		}
 	}
 
-	private void createArgumentsForFilenames( CommandLineBuilder builder, String[] filenames) throws IOException
-	{
-		for (int i = 0; i < filenames.length; i++)
-		{
+	private void createArgumentsForFilenames( CommandLineBuilder builder, String[] filenames) throws IOException{
+		for (int i = 0; i < filenames.length; i++){
 			getProject().log("Adding " + filenames[i] + " to list",
 					Project.MSG_VERBOSE);
 			builder.addArg(filenames[i]);
 		}
 	}
 
-	public Path createClasspath()
-	{
+	public Path createClasspath(){
 		return getJava().createClasspath().createPath();
 	}
 
-	public void setClasspath(Path classpath)
-	{
+	public void setClasspath(Path classpath){
 		createClasspath().append(classpath);
 	}
 
-	public void setClasspathRef(Reference r)
-	{
+	public void setClasspathRef(Reference r){
 		createClasspath().setRefid(r);
 	}
 
-	DirectoryScanner getDirectoryScanner(AbstractFileSet fileSet)
-	{
+	DirectoryScanner getDirectoryScanner(AbstractFileSet fileSet){
 		return fileSet.getDirectoryScanner(getProject());
 	}
 
-	String[] getIncludedFiles(AbstractFileSet fileSet)
-	{
+	String[] getIncludedFiles(AbstractFileSet fileSet){
 		return getDirectoryScanner(fileSet).getIncludedFiles();
 	}
 
-	String[] getExcludedFiles(FileSet fileSet)
-	{
+	String[] getExcludedFiles(FileSet fileSet){
 		return getDirectoryScanner(fileSet).getExcludedFiles();
 	}
 
-	String[] getFilenames(AbstractFileSet fileSet)
-	{
+	String[] getFilenames(AbstractFileSet fileSet){
 		String[] filesToReturn = getIncludedFiles(fileSet);
 
 		return filesToReturn;
 	}
 
-	String baseDir(AbstractFileSet fileSet)
-	{
+	String baseDir(AbstractFileSet fileSet){
 		return fileSet.getDirectoryScanner(getProject()).getBasedir()
 				.toString();
 	}
 
-	public void addDirSet(DirSet dirSet)
-	{
+	public void addDirSet(DirSet dirSet){
 		fileSets.add(dirSet);
 	}
 	
-	public void addFileset(FileSet fileSet)
-	{
+	public void addFileset(FileSet fileSet){
 		fileSets.add(fileSet);
 	}
 
@@ -256,8 +231,7 @@ public abstract class CommonMatchingTask extends MatchingTask
 	 * 
 	 * @param forkedJVMDebugPort
 	 */
-	public void setForkedJVMDebugPort(int forkedJVMDebugPort)
-	{
+	public void setForkedJVMDebugPort(int forkedJVMDebugPort){
 		this.forkedJVMDebugPort = forkedJVMDebugPort;
 	}
 

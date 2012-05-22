@@ -94,10 +94,12 @@ public class Util{
 
     public static void removeTestReportFiles(File basedir){
         File[]files = basedir.listFiles();
-        for(File file : files){
-            if(file.getName().startsWith("genericReport") ||
-                    file.getName().equals("cobertura.ser")){
-                file.delete();
+        if(files!=null){
+            for(File file : files){
+                if(file.getName().startsWith("genericReport") ||
+                        file.getName().equals("cobertura.ser")){
+                    file.delete();
+                }
             }
         }
     }

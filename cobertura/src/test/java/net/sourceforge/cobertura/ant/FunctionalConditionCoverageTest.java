@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import net.sourceforge.cobertura.reporting.JUnitXMLHelper;
 
@@ -51,9 +52,7 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.xpath.XPath;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import test.condition.ConditionCalls;
 
 import static net.sourceforge.cobertura.testutil.Util.createRequiredDirectories;
@@ -70,6 +69,7 @@ import static org.junit.Assert.*;
  * @author jwlewi
  */
 
+@org.junit.Ignore("Ignored since we have a similar test without requiring ant.")
 public class FunctionalConditionCoverageTest{
     private static final Logger log = Logger.getLogger(FunctionalConditionCoverageTest.class);
 

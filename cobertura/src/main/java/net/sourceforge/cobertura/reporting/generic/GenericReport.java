@@ -48,6 +48,7 @@ public class GenericReport {
         thresholdsLookup.add(threshold);
     }
 
+    //TODO this should be removed
     public List<GenericReportEntry>getProjectsReport(){
         return Collections.unmodifiableList(projectsReport);
     }
@@ -195,5 +196,9 @@ public class GenericReport {
             }
         }
         */
+    }
+
+    public void export(IReportFormatStrategy reportFormat){
+        reportFormat.save(this);
     }
 }

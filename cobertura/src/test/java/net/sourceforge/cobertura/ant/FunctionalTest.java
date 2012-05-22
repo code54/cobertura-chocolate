@@ -31,14 +31,22 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
 import net.sourceforge.cobertura.Arguments;
+import net.sourceforge.cobertura.Cobertura;
+import net.sourceforge.cobertura.coveragedata.ProjectData;
+import net.sourceforge.cobertura.coveragedata.TouchCollector;
 import net.sourceforge.cobertura.reporting.JUnitXMLHelper;
 
 import net.sourceforge.cobertura.testutil.Util;
+import net.sourceforge.cobertura.util.DirectoryClassLoader;
+import net.sourceforge.cobertura.util.ShutdownHooks;
 import org.apache.log4j.Logger;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Java;
@@ -49,10 +57,14 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.xpath.XPath;
 import org.junit.*;
+import org.junit.Ignore;
+import org.junit.runner.JUnitCore;
 
 import static net.sourceforge.cobertura.testutil.Util.createRequiredDirectories;
 import static net.sourceforge.cobertura.testutil.Util.removeRequiredDirectories;
 import static net.sourceforge.cobertura.testutil.Util.removeTestReportFiles;
+import static net.sourceforge.cobertura.util.ArchiveUtil.getFiles;
+import static net.sourceforge.cobertura.util.ArchiveUtil.saveGlobalProjectData;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -103,12 +115,14 @@ public class FunctionalTest{
     @Test
 	public void testInstrumentUsingIncludesAndExcludes() throws Exception{
 		runTestAntScript("includes-and-excludes", "test-includes-and-excludes");
+        saveGlobalProjectData(new ProjectData());
 		verify("includes-and-excludes");
 	}
 
     @Test
 	public void testInstrumentUsingClassPath() throws Exception{
 		runTestAntScript("classpath", "test-classpath");
+        saveGlobalProjectData(new ProjectData());
 		verify("classpath");
 	}
 

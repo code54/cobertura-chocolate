@@ -34,6 +34,9 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Collects data about lines of code that were hit by tests.
+ */
 public class TouchCollector implements HasBeenInstrumented{
 
     private static final Logger log = Logger.getLogger(TouchCollector.class);
@@ -45,21 +48,6 @@ public class TouchCollector implements HasBeenInstrumented{
 	private static AtomicInteger lastClassId=new AtomicInteger(1);
 	private static final Map<String,Integer> class2classId=new ConcurrentHashMap<String, Integer>();
 	private static final Map<Integer,String> classId2class=new ConcurrentHashMap<Integer,String>();
-
-	static{
-		ProjectData.initialize();
-	}
-	
-	private static final int registerClassData(String name){		
-		Integer res=class2classId.get(name);
-		if (res==null){
-			int new_id=lastClassId.incrementAndGet();
-			class2classId.put(name, new_id);
-			classId2class.put(new_id, name);
-			return new_id;
-		}
-		return res;
-	}
 	
 	/**
 	 * This method is only called by code that has been instrumented.  It
@@ -83,7 +71,61 @@ public class TouchCollector implements HasBeenInstrumented{
 	 */
 	public static final void touchJump(String classId,int lineNumber, int branchNumber, boolean branch) {
 		jumpTouchData.incrementValue(new JumpTouchData(registerClassData(classId),lineNumber, branchNumber, branch));
-	}	
+	}
+
+    /**
+     * Applies collected touch data to given ProjectData and cleans
+     * all collected information.
+     * @param projectData
+     */
+    public static synchronized void applyTouchesOnProjectData(ProjectData projectData){
+		log.info("Flushing results...");
+		Map<LineTouchData,Integer> touches=touchedLines.getFinalStateAndCleanIt();
+		for(Entry<LineTouchData, Integer> touch:touches.entrySet()){
+			if(touch.getValue()>0){
+				getClassFor(touch.getKey(),projectData).touch(touch.getKey().lineNumber,touch.getValue());
+			}
+		}
+
+		Map<SwitchTouchData,Integer> switchTouches=switchTouchData.getFinalStateAndCleanIt();
+		for(Entry<SwitchTouchData, Integer> touch:switchTouches.entrySet()){
+			if(touch.getValue()>0){
+				getClassFor(touch.getKey(),projectData).touchSwitch(
+						touch.getKey().lineNumber,
+						touch.getKey().switchNumber,
+						touch.getKey().branch,touch.getValue());
+			}
+		}
+
+		Map<JumpTouchData,Integer> jumpTouches=jumpTouchData.getFinalStateAndCleanIt();
+		for(Entry<JumpTouchData, Integer> touch:jumpTouches.entrySet()){
+			if(touch.getValue()>0){
+				getClassFor(touch.getKey(),projectData).touchJump(
+						touch.getKey().lineNumber,
+						touch.getKey().branchNumber,
+						touch.getKey().branch,touch.getValue());
+			}
+		}
+		log.info("Flushing results done");
+	}
+
+    /*  Aux classes and methods   */
+
+    private static ClassData getClassFor(LineTouchData key,ProjectData projectData) {
+		return projectData.getOrCreateClassData(classId2class.get(key.classId));
+	}
+
+    private static final int registerClassData(String name){
+		Integer res=class2classId.get(name);
+		if (res==null){
+			int new_id=lastClassId.incrementAndGet();
+			class2classId.put(name, new_id);
+			classId2class.put(new_id, name);
+			return new_id;
+		}
+		return res;
+	}
+
 
 	private static class LineTouchData implements HasBeenInstrumented{
 		int classId,lineNumber;
@@ -182,42 +224,5 @@ public class TouchCollector implements HasBeenInstrumented{
 				return false;
 			return true;
 		}		
-	}	
-	
-	
-	public static synchronized void applyTouchesOnProjectData(ProjectData projectData){
-		log.info("Flushing results...");
-		Map<LineTouchData,Integer> touches=touchedLines.getFinalStateAndCleanIt();
-		for(Entry<LineTouchData, Integer> touch:touches.entrySet()){
-			if(touch.getValue()>0){				
-				getClassFor(touch.getKey(),projectData).touch(touch.getKey().lineNumber,touch.getValue());
-			}
-		}
-		
-		Map<SwitchTouchData,Integer> switchTouches=switchTouchData.getFinalStateAndCleanIt();
-		for(Entry<SwitchTouchData, Integer> touch:switchTouches.entrySet()){
-			if(touch.getValue()>0){
-				getClassFor(touch.getKey(),projectData).touchSwitch(
-						touch.getKey().lineNumber,
-						touch.getKey().switchNumber,
-						touch.getKey().branch,touch.getValue());
-			}
-		}
-		
-		Map<JumpTouchData,Integer> jumpTouches=jumpTouchData.getFinalStateAndCleanIt();
-		for(Entry<JumpTouchData, Integer> touch:jumpTouches.entrySet()){
-			if(touch.getValue()>0){
-				getClassFor(touch.getKey(),projectData).touchJump(
-						touch.getKey().lineNumber,
-						touch.getKey().branchNumber,
-						touch.getKey().branch,touch.getValue());
-			}
-		}
-		log.info("Flushing results done");
 	}
-
-	private static ClassData getClassFor(LineTouchData key,ProjectData projectData) {
-		return projectData.getOrCreateClassData(classId2class.get(key.classId));
-	}
-		
 }

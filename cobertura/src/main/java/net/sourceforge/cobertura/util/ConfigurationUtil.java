@@ -69,7 +69,7 @@ public class ConfigurationUtil
     }
 
     public String getProperty( String key, String defvalue ){
-        String value = System.getProperty( key );
+        String value = System.getProperty(key);
         if ( value != null ){
             DEBUG("Using system property value [" + value + "] for key [" + key + "]");
             return value;
@@ -86,7 +86,7 @@ public class ConfigurationUtil
     }
 
     public String getDatafile(){
-        return getProperty( "net.sourceforge.cobertura.datafile", "cobertura.ser" );
+        return getProperty("net.sourceforge.cobertura.datafile", "cobertura.ser" );
     }
     
     /**

@@ -58,8 +58,10 @@
 
 package net.sourceforge.cobertura.ant;
 
+import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.util.CommandLineBuilder;
 import net.sourceforge.cobertura.util.Constants;
+import net.sourceforge.cobertura.util.ShutdownHooks;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 
@@ -70,14 +72,13 @@ import java.io.IOException;
  * Generate a coverage report based on coverage data generated 
  * by instrumented classes.
  */
-public class ReportTask extends CommonMatchingTask
-{
+public class ReportTask extends CommonMatchingTask{
 
 	private String dataFile = null;
 	private String format = "html";
 	private File destDir;
 	private String srcDir;
-   private String encoding;
+    private String encoding;
 
 	public ReportTask() {
 		super(Constants.reporting_main);
