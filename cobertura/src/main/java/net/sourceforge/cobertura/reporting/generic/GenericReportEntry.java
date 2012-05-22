@@ -33,14 +33,12 @@ public class GenericReportEntry {
 
     public GenericReportEntry(String entryLevel, String name,
                               CoverageData branchCoverage, CoverageData lineCoverage,
-                              double cyclomaticCodeComplexity, int numberOfClasses,
-                              int numberOfSourceFiles) {
+                              double cyclomaticCodeComplexity) {
         this.entryLevel = entryLevel;
         this.name = name;
         this.basicMetricData =
                 new BasicMetricData(branchCoverage, lineCoverage,
-                        cyclomaticCodeComplexity, numberOfClasses,
-                        numberOfSourceFiles);
+                        cyclomaticCodeComplexity);
 
         childs = new HashSet<GenericReportEntry>();
         loadMetrics();

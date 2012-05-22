@@ -14,11 +14,9 @@ public class ReportEntryWithCodeFragment extends GenericReportEntry{
 
     public ReportEntryWithCodeFragment(String entryLevel, String name,
                               CoverageData branchCoverage, CoverageData lineCoverage,
-                              double cyclomaticCodeComplexity, int numberOfClasses,
-                              int numberOfSourceFiles){
+                              double cyclomaticCodeComplexity){
         super(entryLevel, name, branchCoverage,
-                lineCoverage, cyclomaticCodeComplexity,
-                numberOfClasses, numberOfSourceFiles);
+                lineCoverage, cyclomaticCodeComplexity);
         codeFragment = new ArrayList<CodeLine>();
     }
 

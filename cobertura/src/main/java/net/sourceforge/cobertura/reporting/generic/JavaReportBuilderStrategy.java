@@ -56,9 +56,7 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
         GenericReportEntry entry =
                 new GenericReportEntry(ReportConstants.level_project,
                 project.getName(), branchCoverage, lineCoverage,
-                        complexity.getCCNForProject(project),
-                        project.getClasses().size(),
-                        project.getSourceFiles().size());
+                        complexity.getCCNForProject(project));
         entries.add(entry);
 
         return entry;
@@ -88,9 +86,7 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
          GenericReportEntry packageEntry =
                  new GenericReportEntry(ReportConstants.level_package,
                         data.getName(), branchCoverage, lineCoverage,
-                        complexity.getCCNForPackage(data),
-                        data.getClasses().size(),
-                        data.getSourceFiles().size());
+                        complexity.getCCNForPackage(data));
             projectEntry.addChild(packageEntry);
 
             /*   Extract source files for package   */
@@ -126,8 +122,7 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
         ReportEntryWithCodeFragment entry =
                 new ReportEntryWithCodeFragment(ReportConstants.level_sourcefile,
                      data.getName(), branchCoverage, lineCoverage,
-                     complexity.getCCNForSourceFile(data),
-                        data.getClasses().size(),1);
+                     complexity.getCCNForSourceFile(data));
 
         //TODO retrieve lines from sourcefile and add them to entry
 
@@ -152,7 +147,7 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
         GenericReportEntry entry =
                 new GenericReportEntry(ReportConstants.level_class,
                      data.getName(), branchCoverage, lineCoverage,
-                     complexity.getCCNForClass(data),1,1);
+                     complexity.getCCNForClass(data));
 
         sfentry.addChild(entry);
 
