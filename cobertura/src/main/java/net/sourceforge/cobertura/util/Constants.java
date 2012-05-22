@@ -58,4 +58,9 @@ public class Constants {
     public static final String merge_main = "net.sourceforge.cobertura.merge.Main";
     public static final String reporting_main = "net.sourceforge.cobertura.reporting.BuildReportMain";
 
+    /*   Targeted language constants   */
+    public static final String targeted_lang_java = "java";
+    public static final String targeted_lang_groovy = "groovy";
+    public static final String targeted_lang_scala = "scala";
+    public static final String targeted_lang_clojure = "clojure";
 }

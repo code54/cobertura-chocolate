@@ -2,11 +2,10 @@ package net.sourceforge.cobertura;
 
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
-import net.sourceforge.cobertura.coveragedata.TouchCollector;
 import net.sourceforge.cobertura.instrument.CodeInstrumentationTask;
-import net.sourceforge.cobertura.reporting.ComplexityCalculator;
 import net.sourceforge.cobertura.reporting.generic.GenericReport;
-import net.sourceforge.cobertura.util.FileFinder;
+import net.sourceforge.cobertura.reporting.generic.IReportBuilderFactory;
+import net.sourceforge.cobertura.reporting.generic.ReportBuilderFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +18,8 @@ public class Cobertura {
     private ProjectData projectData;
     private CodeInstrumentationTask instrumentationTask;
     private CheckThresholdsTask checkThresholdsTask;
+    private IReportBuilderFactory reportBuilderFactory;
+
 
     private boolean didApplyInstrumentationResults;
 
@@ -32,6 +33,8 @@ public class Cobertura {
         args=arguments;
         instrumentationTask = new CodeInstrumentationTask();
         checkThresholdsTask = new CheckThresholdsTask();
+        reportBuilderFactory = new ReportBuilderFactory();
+
         didApplyInstrumentationResults = false;
     }
 
@@ -60,7 +63,7 @@ public class Cobertura {
         }
         List<ProjectData> projects = new ArrayList<ProjectData>();
         projects.add(getProjectDataInstance());
-        return new GenericReport(projects, new ComplexityCalculator(new FileFinder()));
+        return reportBuilderFactory.getInstance(args.getTargetedLanguage()).getReport(projects);
     }
 
     public Cobertura saveProjectData(){

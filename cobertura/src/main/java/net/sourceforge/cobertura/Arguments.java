@@ -2,6 +2,7 @@ package net.sourceforge.cobertura;
 
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.instrument.CoberturaFile;
+import net.sourceforge.cobertura.util.Constants;
 import net.sourceforge.cobertura.util.RegexUtil;
 
 import java.io.File;
@@ -40,6 +41,8 @@ public class Arguments {
 
     private Set<File>filesToInstrument;
     private Set<File>filesToMerge;
+
+    private String targetedLanguage;
 
 
     public Arguments(){
@@ -178,6 +181,8 @@ public class Arguments {
         packageLineThreshold = 0.;
         totalBranchThreshold = 0.;
         totalLineThreshold = 0.;
+
+        targetedLanguage = Constants.targeted_lang_java;
     }
 
     private double inRangeAndDivideByOneHundred(String coverageRateAsPercentage){
@@ -223,6 +228,10 @@ public class Arguments {
 
     public String getEncoding() {
         return encoding;
+    }
+
+    public void setTargetedLanguage(String targetedLanguage) {
+        this.targetedLanguage = targetedLanguage;
     }
 
     public double getClassLineThreshold() {
@@ -277,4 +286,7 @@ public class Arguments {
         return filesToMerge;
     }
 
+    public String getTargetedLanguage() {
+        return targetedLanguage;
+    }
 }

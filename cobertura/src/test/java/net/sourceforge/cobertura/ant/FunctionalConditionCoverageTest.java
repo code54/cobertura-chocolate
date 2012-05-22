@@ -69,7 +69,6 @@ import static org.junit.Assert.*;
  * @author jwlewi
  */
 
-@org.junit.Ignore("Ignored since we have a similar test without requiring ant.")
 public class FunctionalConditionCoverageTest{
     private static final Logger log = Logger.getLogger(FunctionalConditionCoverageTest.class);
 

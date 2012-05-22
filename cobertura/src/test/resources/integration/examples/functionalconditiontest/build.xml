@@ -62,6 +62,7 @@
 			<classpath refid="project.classpath" />
 
 			<formatter type="plain" usefile="false" />
+			<formatter classname="net.sourceforge.cobertura.ant.CoberturaJUnitResultFormatter" usefile="false" />
 			<test name="test.condition.Test" />
 		</junit>
 	</target>
