@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import junit.framework.TestCase;
 import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
@@ -95,8 +94,8 @@ public class MergeMainTest{
 		File dataFile = createTempSerFile();
 		
 		// Save coverage data for created data
-		CoverageDataFileHandler.saveCoverageData(greenProject, greenFile);
-		CoverageDataFileHandler.saveCoverageData(redProject, redFile);
+		CoverageDataFileHandler.saveProjectData(greenProject, greenFile);
+		CoverageDataFileHandler.saveProjectData(redProject, redFile);
 		
 		// Run merge task
 		String[] args = {Constants.datafile, dataFile.getAbsolutePath(),
@@ -105,7 +104,7 @@ public class MergeMainTest{
 		Main.main(args);
 		
 		// Read merged data
-		ProjectData merged = CoverageDataFileHandler.loadCoverageData(dataFile);
+		ProjectData merged = CoverageDataFileHandler.loadProjectData(dataFile);
 		
 		// Check if everything is ok
 		assertEquals( 3, merged.getNumberOfClasses());
@@ -126,8 +125,8 @@ public class MergeMainTest{
 		File dataFile = createTempSerFile();
 		
 		// Save coverage data for created data
-		CoverageDataFileHandler.saveCoverageData( greenProject, greenFile);
-		CoverageDataFileHandler.saveCoverageData( redProject, dataFile);
+		CoverageDataFileHandler.saveProjectData(greenProject, greenFile);
+		CoverageDataFileHandler.saveProjectData(redProject, dataFile);
 		
 		// Run merge task
 		String[] args = {Constants.datafile, dataFile.getAbsolutePath(),
@@ -136,7 +135,7 @@ public class MergeMainTest{
 		Main.main( args);
 		
 		// Read merged data
-		ProjectData merged = CoverageDataFileHandler.loadCoverageData( dataFile);
+		ProjectData merged = CoverageDataFileHandler.loadProjectData(dataFile);
 		
 		// Check if  everything is ok
 		assertEquals( 2, merged.getNumberOfClasses());
@@ -160,9 +159,9 @@ public class MergeMainTest{
 		dataFile.delete();
 		
 		// Save coverage data for created data
-		CoverageDataFileHandler.saveCoverageData( greenProject, greenFile);
-		CoverageDataFileHandler.saveCoverageData( redProject, redFile);
-		CoverageDataFileHandler.saveCoverageData( blueProject, blueFile);
+		CoverageDataFileHandler.saveProjectData(greenProject, greenFile);
+		CoverageDataFileHandler.saveProjectData(redProject, redFile);
+		CoverageDataFileHandler.saveProjectData(blueProject, blueFile);
 		
 		// Run merge task
 		String[] args = {Constants.datafile, dataFile.getAbsolutePath(),
@@ -172,7 +171,7 @@ public class MergeMainTest{
 		Main.main( args);
 		
 		// Read merged data
-		ProjectData merged = CoverageDataFileHandler.loadCoverageData( dataFile);
+		ProjectData merged = CoverageDataFileHandler.loadProjectData(dataFile);
 		
 		// Check if everything is ok
 		assertEquals( 3, merged.getNumberOfClasses());

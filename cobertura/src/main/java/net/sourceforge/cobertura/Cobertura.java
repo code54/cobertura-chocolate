@@ -24,7 +24,7 @@ public class Cobertura {
     }
 
     public Cobertura instrumentCode() throws Throwable {
-        instrumentationTask.instrument(args,getProjectDataInstance());
+        instrumentationTask.instrument(args, getProjectDataInstance());
         return this;
     }
 
@@ -42,7 +42,7 @@ public class Cobertura {
     }
 
     public Cobertura saveProjectData(){
-        CoverageDataFileHandler.saveCoverageData(getProjectDataInstance(), args.getDataFile());
+        CoverageDataFileHandler.saveProjectData(getProjectDataInstance(), args.getDataFile());
         return this;
     }
 
@@ -53,7 +53,7 @@ public class Cobertura {
             return projectData;
         }
 		if (args.getDataFile().isFile())
-			projectData = CoverageDataFileHandler.loadCoverageData(args.getDataFile());
+			projectData = CoverageDataFileHandler.loadProjectData(args.getDataFile());
 		if (projectData == null)
 			projectData = new ProjectData();
 

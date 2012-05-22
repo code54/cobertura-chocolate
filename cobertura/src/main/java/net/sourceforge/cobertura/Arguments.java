@@ -142,12 +142,11 @@ public class Arguments {
     }
 
     public Arguments addFileToInstrument(String file){
-        String baseDir = ".";
-        if(getBaseDirectory()!=null){
-            baseDir = getBaseDirectory().getAbsolutePath();
-        }
+        String baseDir = getBaseDirectory().getAbsolutePath();
 
-        filesToInstrument.add(new CoberturaFile(baseDir, file));//FIXME
+        file = file.replace(baseDir,"");
+
+        filesToInstrument.add(new CoberturaFile(baseDir, file));
         return this;
     }
 
@@ -160,6 +159,7 @@ public class Arguments {
     /*   Aux methods   */
     private void initVariables(){
         dataFile = CoverageDataFileHandler.getDefaultDataFile();
+        baseDirectory = new File(".");
         ignoreRegexes = new Vector();
 	    ignoreBranchesRegexes = new Vector();
         ignoreMethodAnnotations = new HashSet();

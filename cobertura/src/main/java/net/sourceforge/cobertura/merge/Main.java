@@ -59,7 +59,7 @@ public class Main{
 		// Load coverage data
 		ProjectData projectData = null;
 		if (dataFile.isFile())
-			projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
+			projectData = CoverageDataFileHandler.loadProjectData(dataFile);
 		if (projectData == null)
 			projectData = new ProjectData();
 
@@ -73,13 +73,13 @@ public class Main{
 		while (iter.hasNext()){
 			File newDataFile = (File)iter.next();
 			ProjectData projectDataNew = CoverageDataFileHandler
-					.loadCoverageData(newDataFile);
+					.loadProjectData(newDataFile);
 			if (projectDataNew != null)
 				projectData.merge(projectDataNew);
 		}
 
 		// Save the combined data file
-		CoverageDataFileHandler.saveCoverageData(projectData, dataFile);
+		CoverageDataFileHandler.saveProjectData(projectData, dataFile);
 	}
 
 	public static void main(String[] args){

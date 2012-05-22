@@ -90,7 +90,7 @@ public class BuildReportMain {
 					+ destinationDir.getAbsolutePath());
 		}
 
-		ProjectData projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
+		ProjectData projectData = CoverageDataFileHandler.loadProjectData(dataFile);
 
 		if (projectData == null) {
 			log.error("Error: Unable to read from data file " + dataFile.getAbsolutePath());

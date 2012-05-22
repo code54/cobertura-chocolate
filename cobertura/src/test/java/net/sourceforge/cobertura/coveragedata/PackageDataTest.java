@@ -43,7 +43,7 @@ public class PackageDataTest{
 		assertEquals(comExample, packageData.getName());
 	}
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
 	public void testAddClass(){
 		ClassData classData;
 
@@ -70,15 +70,11 @@ public class PackageDataTest{
 		classData.setSourceFileName(comExampleHelloWorldJava);
 		for (int i = 0; i < 19; i++)
 			classData.addLine(i, "test", "(I)B");
-		try{
-			packageData.addClassData(classData);
-			// removed by Jeremy Thomerson when changing PackageData
-			// fail("Expected an IllegalArgumentException but did not receive one!");
-		}catch (IllegalArgumentException e){
-			// Good!
-		}
 
-		assertEquals(2, packageData.getNumberOfChildren());
+        assertEquals(2, packageData.getNumberOfChildren());
+
+        //this should throw an IllegalArgumentException
+        packageData.addClassData(classData);
 	}
 
     @Test
@@ -119,13 +115,9 @@ public class PackageDataTest{
 		assertEquals(0.33d, packageData.getBranchCoverageRate(), 0.01d);
 	}
 
+    @Test(expected = IllegalArgumentException.class)
 	public void testConstructor(){
-		try{
-			new PackageData(null);
-			fail("Expected an IllegalArgumentException but did not receive one!");
-		}catch (IllegalArgumentException e){
-			// Good!
-		}
+		new PackageData(null);
 	}
 
     @Test

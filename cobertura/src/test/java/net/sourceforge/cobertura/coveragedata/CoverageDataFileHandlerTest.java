@@ -83,10 +83,10 @@ public class CoverageDataFileHandlerTest{
 
 
 		File dataFile = new File(tmp, "cobertura.ser");
-		CoverageDataFileHandler.saveCoverageData(a, dataFile);
+		CoverageDataFileHandler.saveProjectData(a, dataFile);
 
 		ProjectData b;
-		b = CoverageDataFileHandler.loadCoverageData(dataFile);
+		b = CoverageDataFileHandler.loadProjectData(dataFile);
         //TODO temporary solution; we should provide a correct equals for ProjectData
 		assertEquals(a.toString(), b.toString());
 	}

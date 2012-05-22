@@ -59,7 +59,7 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented{
 		return defaultFile;
 	}
 
-	public static ProjectData loadCoverageData(File dataFile){
+	public static ProjectData loadProjectData(File dataFile){
 		try{
             Serializer serializer = new Persister();
             return serializer.read(ProjectData.class, dataFile);
@@ -74,7 +74,7 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented{
         }
 	}
 
-	public static void saveCoverageData(ProjectData projectData, File dataFile){
+	public static void saveProjectData(ProjectData projectData, File dataFile){
         Serializer serializer = new Persister();
         try {
             serializer.write(projectData, dataFile);

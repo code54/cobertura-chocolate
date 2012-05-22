@@ -29,6 +29,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import static net.sourceforge.cobertura.testutil.Util.createRequiredDirectories;
+import static net.sourceforge.cobertura.testutil.Util.removeRequiredDirectories;
+import static net.sourceforge.cobertura.testutil.Util.removeTestReportFiles;
 import static org.junit.Assert.assertTrue;
 
 public class CopyFilesTest{
@@ -40,13 +43,13 @@ public class CopyFilesTest{
 
     @Before
 	public void setUp(){
-		tmpDir.mkdirs();
+		createRequiredDirectories(new File[]{tmpDir});
 	}
 
 	@After
 	public void tearDown(){
-		removeDir(rootDir);
-        new File(basedir, "cobertura.ser").delete();
+		removeRequiredDirectories(new File[]{rootDir});
+        removeTestReportFiles(new File(basedir));
 	}
 
     @Test
@@ -75,17 +78,5 @@ public class CopyFilesTest{
 		assertTrue(new File(jsDir, "popup.js").isFile());
 		assertTrue(new File(jsDir, "sortabletable.js").isFile());
 		assertTrue(new File(jsDir, "stringbuilder.js").isFile());
-	}
-
-    /*  Aux methods */
-    private final static void removeDir(File dir){
-		File files[] = dir.listFiles();
-		for (int i = 0; i < files.length; i++){
-			if (files[i].isDirectory())
-				removeDir(files[i]);
-			else
-				files[i].delete();
-		}
-		dir.delete();
 	}
 }

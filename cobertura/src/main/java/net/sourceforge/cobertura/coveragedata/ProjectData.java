@@ -285,7 +285,7 @@ public class ProjectData extends CoverageDataContainer<String> implements HasBee
 					}else{
 						datafileProjectData.merge(projectDataToSave);
 					}
-					CoverageDataFileHandler.saveCoverageData(datafileProjectData, dataFile);
+					CoverageDataFileHandler.saveProjectData(datafileProjectData, dataFile);
 				}
 			}finally{
 				// Release the file lock
@@ -299,7 +299,7 @@ public class ProjectData extends CoverageDataContainer<String> implements HasBee
 
 		// Read projectData from the serialized file.
 		if (dataFile.isFile()){
-			projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
+			projectData = CoverageDataFileHandler.loadProjectData(dataFile);
 		}
 
 		if (projectData == null){

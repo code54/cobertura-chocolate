@@ -42,7 +42,7 @@ public class ProjectDataTest{
 		coverageData = new ProjectData();
 	}
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
 	public void testAddClass(){
 		ClassData classData;
 
@@ -73,15 +73,11 @@ public class ProjectDataTest{
 		classData.setSourceFileName("com/example/HelloWorld.java");
 		for (int i = 0; i < 19; i++)
 			classData.addLine(i, "test", "(I)B");
-		try{
-			coverageData.addClassData(classData);
-			// removed by Jeremy Thomerson when changing PackageData
-			// fail("Expected an IllegalArgumentException but did not receive one!");
-		}catch (IllegalArgumentException e){
-			// Good!
-		}
-		assertEquals(1, coverageData.getNumberOfChildren());
+
+        assertEquals(1, coverageData.getNumberOfChildren());
 		assertEquals(2, coverageData.getClasses().size());
+
+		coverageData.addClassData(classData);
 	}
 
     @Test

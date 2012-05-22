@@ -35,7 +35,7 @@ public class Test{
 	/**
 	 * Call the methods called "call"
 	 */
-    @org.junit.Test
+	@org.junit.Test
 	public void testMethod(){
 		test.first.A a = new test.first.A();
 		a.call();

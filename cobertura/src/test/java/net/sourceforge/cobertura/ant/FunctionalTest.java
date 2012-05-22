@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import net.sourceforge.cobertura.Arguments;
 import net.sourceforge.cobertura.reporting.JUnitXMLHelper;
 
 import net.sourceforge.cobertura.testutil.Util;
@@ -52,7 +53,6 @@ import org.junit.*;
 import static net.sourceforge.cobertura.testutil.Util.createRequiredDirectories;
 import static net.sourceforge.cobertura.testutil.Util.removeRequiredDirectories;
 import static net.sourceforge.cobertura.testutil.Util.removeTestReportFiles;
-import static net.sourceforge.cobertura.util.ArchiveUtil.deleteDir;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -68,7 +68,7 @@ public class FunctionalTest{
     private static final Logger log = Logger.getLogger(FunctionalTest.class);
 	private static int forkedJVMDebugPort = 0;
 
-	private final static File BASEDIR = new File((System.getProperty("basedir") != null) ? System
+	private final static File basedir = new File((System.getProperty("basedir") != null) ? System
 			.getProperty("basedir") : ".", "src/test/resources/integration/examples/functionaltest1");
 
     private File reports;
@@ -79,21 +79,21 @@ public class FunctionalTest{
 
     @Before
 	public void setUp(){
-        reports = new File(BASEDIR, "reports");
-        instrumented = new File(BASEDIR, "instrumented");
-        classes = new File(BASEDIR, "classes");
-        lib = new File(BASEDIR, "lib");
-        tmp = new File(BASEDIR, "tmp");
+        reports = new File(basedir, "reports");
+        instrumented = new File(basedir, "instrumented");
+        classes = new File(basedir, "classes");
+        lib = new File(basedir, "lib");
+        tmp = new File(basedir, "tmp");
         createRequiredDirectories(new File[]{reports, instrumented, classes, lib, tmp});
 	}
 
     @After
     public void tearDown(){
-        removeTestReportFiles(BASEDIR);
+        removeTestReportFiles(basedir);
         removeRequiredDirectories(new File[]{reports, instrumented, classes, lib, tmp});
 	}
 
-    @org.junit.Ignore("Runs ok on Idea, not on Maven due to antlib.xml location")
+    @org.junit.Ignore("Not running ok due to antlib.xml location")
     @Test
 	public void testInstrumentUsingDirSet() throws Exception{
 		runTestAntScript("dirset", "test-dirset");
@@ -176,13 +176,13 @@ public class FunctionalTest{
 	}
 
 	private static Document getXmlReportDocument() throws IOException, JDOMException{
-		File xmlFile = new File(BASEDIR, "reports/cobertura-xml/coverage.xml");
+		File xmlFile = new File(basedir, "reports/cobertura-xml/coverage.xml");
 		Document document = JUnitXMLHelper.readXmlFile(xmlFile, true);
 		return document;
 	}
 
 	private static Document getSummaryXmlReportDocument() throws IOException, JDOMException{
-		File xmlFile = new File(BASEDIR, "reports/cobertura-xml/coverage-summary.xml");
+		File xmlFile = new File(basedir, "reports/cobertura-xml/coverage-summary.xml");
 		Document document = JUnitXMLHelper.readXmlFile(xmlFile, true);
 		return document;
 	}
@@ -277,7 +277,7 @@ public class FunctionalTest{
 	}
 
 	private static void verifyHtml(String testName) throws Exception{
-		File htmlReportDir = new File(BASEDIR, "reports/cobertura-html");
+		File htmlReportDir = new File(basedir, "reports/cobertura-html");
 
 		// Get all files from report directory
 		String htmlFiles[] = htmlReportDir.list(new FilenameFilter(){
@@ -357,7 +357,7 @@ public class FunctionalTest{
 
 
 		task.createArg().setValue("-f");
-		task.createArg().setValue(BASEDIR + "/build.xml");
+		task.createArg().setValue(basedir + "/build.xml");
 		task.createArg().setValue(target);
 
 		task.setFailonerror(true);

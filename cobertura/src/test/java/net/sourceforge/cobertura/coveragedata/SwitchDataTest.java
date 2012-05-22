@@ -34,7 +34,6 @@ import static org.junit.Assert.assertTrue;
 public class SwitchDataTest{
 
 	private SwitchData a;
-
 	private SwitchData b;
 
     @Before
