@@ -435,23 +435,4 @@ public class LineData
     public String toString(){
         return ""+getClass();
     }
-
-    /*   getters   */
-
-    public long getHitsCount(){
-        return hitsCount;
-    }
-
-	public List<JumpData> getJumps(){
-        return jumps;
-    }
-
-//	private List<SwitchData> switches;
-//    @Attribute(required = false)
-//	private final int lineNumber;
-//    @Attribute(required = false)
-//	private String methodDescriptor;
-//    @Attribute(required = false)
-//	private String methodName;
-
 }

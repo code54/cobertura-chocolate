@@ -63,6 +63,7 @@ import java.io.IOException;
 
 import net.sourceforge.cobertura.util.CommandLineBuilder;
 
+import net.sourceforge.cobertura.util.Constants;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 
@@ -88,13 +89,13 @@ public class ReportTask extends CommonMatchingTask
 		try {
 			builder = new CommandLineBuilder();
 			if (dataFile != null)
-				builder.addArg("--datafile", dataFile);
+				builder.addArg(Constants.datafile, dataFile);
 			if (destDir != null)
-				builder.addArg("--destination", destDir.getAbsolutePath());
+				builder.addArg(Constants.destination, destDir.getAbsolutePath());
 			if (format != null)
-				builder.addArg("--format", format);
+				builder.addArg(Constants.format, format);
          if (encoding != null)
-            builder.addArg("--encoding", encoding);
+            builder.addArg(Constants.encoding, encoding);
 			if (srcDir != null)
 				builder.addArg(srcDir);
 			createArgumentsForFilesets(builder);
@@ -106,7 +107,7 @@ public class ReportTask extends CommonMatchingTask
 		}
 
 		// Execute GPL licensed code in separate virtual machine
-		getJava().createArg().setValue("--commandsfile");
+		getJava().createArg().setValue(Constants.commandsfile);
 		getJava().createArg().setValue(builder.getCommandLineFile());
 		AntUtil.transferCoberturaDataFileProperty(getJava());
 		if (getJava().executeJava() != 0) {

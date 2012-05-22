@@ -26,13 +26,11 @@ import java.util.Comparator;
 
 import net.sourceforge.cobertura.coveragedata.SourceFileData;
 
-public class SourceFileDataBaseNameComparator implements Comparator, Serializable
-{
+public class SourceFileDataBaseNameComparator implements Comparator, Serializable{
 
 	private static final long serialVersionUID = 0L;
 
-	public int compare(Object arg0, Object arg1)
-	{
+	public int compare(Object arg0, Object arg1){
 		SourceFileData sourceFileData0 = (SourceFileData)arg0;
 		SourceFileData sourceFileData1 = (SourceFileData)arg1;
 		int comparison = sourceFileData0.getBaseName().compareTo(sourceFileData1.getBaseName());
@@ -40,5 +38,4 @@ public class SourceFileDataBaseNameComparator implements Comparator, Serializabl
 			return comparison;
 		return sourceFileData0.getName().compareTo(sourceFileData1.getName());
 	}
-
 }

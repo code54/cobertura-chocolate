@@ -49,10 +49,9 @@ import net.sourceforge.cobertura.util.StringUtil;
 
 import org.apache.log4j.Logger;
 
-public class XMLReport
-{
+public class XMLReport{
 
-	private static final Logger logger = Logger.getLogger(XMLReport.class);
+	private static final Logger log = Logger.getLogger(XMLReport.class);
 
 	protected final static String coverageDTD = "coverage-04.dtd";
 
@@ -62,16 +61,14 @@ public class XMLReport
 	private int indent = 0;
 
 	public XMLReport(ProjectData projectData, File destinationDir,
-			FileFinder finder, ComplexityCalculator complexity) throws IOException
-	{
+			FileFinder finder, ComplexityCalculator complexity) throws IOException{
 		this.complexity = complexity;
 		this.finder = finder;
 
 		File file = new File(destinationDir, "coverage.xml");
 		pw = IOUtil.getPrintWriter(file);
 
-		try
-		{
+		try{
 			println("<?xml version=\"1.0\"?>");
 			println("<!DOCTYPE coverage SYSTEM \"http://cobertura.sourceforge.net/xml/"
 					+ coverageDTD + "\">");
@@ -104,40 +101,32 @@ public class XMLReport
 			dumpPackages(projectData);
 			decreaseIndentation();
 			println("</coverage>");
-		}
-		finally
-		{
+		}finally{
 			pw.close();
 		}
 	}
 
-	void increaseIndentation()
-	{
+	void increaseIndentation(){
 		indent++;
 	}
 
-	void decreaseIndentation()
-	{
+	void decreaseIndentation(){
 		if (indent > 0)
 			indent--;
 	}
 
-	void indent()
-	{
-		for (int i = 0; i < indent; i++)
-		{
+	void indent(){
+		for (int i = 0; i < indent; i++){
 			pw.print("\t");
 		}
 	}
 
-	void println(String ln)
-	{
+	void println(String ln){
 		indent();
 		pw.println(ln);
 	}
 
-	private void dumpSources()
-	{
+	private void dumpSources(){
 		println("<sources>");
 		increaseIndentation();
 		for (Iterator it = finder.getSourceDirectoryList().iterator(); it.hasNext(); ) {
@@ -148,19 +137,16 @@ public class XMLReport
 		println("</sources>");
 	}
 
-	private void dumpSource(String sourceDirectory)
-	{
+	private void dumpSource(String sourceDirectory){
 		println("<source>" + sourceDirectory + "</source>");
 	}
 
-	private void dumpPackages(ProjectData projectData)
-	{
+	private void dumpPackages(ProjectData projectData){
 		println("<packages>");
 		increaseIndentation();
 
 		Iterator it = projectData.getPackages().iterator();
-		while (it.hasNext())
-		{
+		while (it.hasNext()){
 			dumpPackage((PackageData)it.next());
 		}
 
@@ -168,9 +154,8 @@ public class XMLReport
 		println("</packages>");
 	}
 
-	private void dumpPackage(PackageData packageData)
-	{
-		logger.debug("Dumping package " + packageData.getName());
+	private void dumpPackage(PackageData packageData){
+		log.debug("Dumping package " + packageData.getName());
 
 		println("<package name=\"" + packageData.getName()
 				+ "\" line-rate=\"" + packageData.getLineCoverageRate()
@@ -182,14 +167,12 @@ public class XMLReport
 		println("</package>");
 	}
 
-	private void dumpSourceFiles(PackageData packageData)
-	{
+	private void dumpSourceFiles(PackageData packageData){
 		println("<classes>");
 		increaseIndentation();
 
 		Iterator it = packageData.getSourceFiles().iterator();
-		while (it.hasNext())
-		{
+		while (it.hasNext()){
 			dumpClasses((SourceFileData)it.next());
 		}
 
@@ -197,18 +180,15 @@ public class XMLReport
 		println("</classes>");
 	}
 
-	private void dumpClasses(SourceFileData sourceFileData)
-	{
+	private void dumpClasses(SourceFileData sourceFileData){
 		Iterator it = sourceFileData.getClasses().iterator();
-		while (it.hasNext())
-		{
+		while (it.hasNext()){
 			dumpClass((ClassData)it.next());
 		}
 	}
 
-	private void dumpClass(ClassData classData)
-	{
-		logger.debug("Dumping class " + classData.getName());
+	private void dumpClass(ClassData classData){
+		log.debug("Dumping class " + classData.getName());
 
 		println("<class name=\"" + classData.getName() + "\" filename=\""
 				+ classData.getSourceFileName() + "\" line-rate=\""
@@ -224,16 +204,14 @@ public class XMLReport
 		println("</class>");
 	}
 
-	private void dumpMethods(ClassData classData)
-	{
+	private void dumpMethods(ClassData classData){
 		println("<methods>");
 		increaseIndentation();
 
 		SortedSet sortedMethods = new TreeSet();
 		sortedMethods.addAll(classData.getMethodNamesAndDescriptors());
 		Iterator iter = sortedMethods.iterator();
-		while (iter.hasNext())
-		{
+		while (iter.hasNext()){
 			dumpMethod(classData, (String)iter.next());
 		}
 
@@ -241,8 +219,7 @@ public class XMLReport
 		println("</methods>");
 	}
 
-	private void dumpMethod(ClassData classData, String nameAndSig)
-	{
+	private void dumpMethod(ClassData classData, String nameAndSig){
 		String name = nameAndSig.substring(0, nameAndSig.indexOf('('));
 		String signature = nameAndSig.substring(nameAndSig.indexOf('('));
 		double lineRate = classData.getLineCoverageRate(nameAndSig);
@@ -257,33 +234,28 @@ public class XMLReport
 		println("</method>");
 	}
 
-	private static String xmlEscape(String str)
-	{
+	private static String xmlEscape(String str){
 		str = StringUtil.replaceAll(str, "<", "&lt;");
 		str = StringUtil.replaceAll(str, ">", "&gt;");
 		return str;
 	}
 
-	private void dumpLines(ClassData classData)
-	{
+	private void dumpLines(ClassData classData){
 		dumpLines(classData.getLines());
 	}
 
-	private void dumpLines(ClassData classData, String methodNameAndSig)
-	{
+	private void dumpLines(ClassData classData, String methodNameAndSig){
 		dumpLines(classData.getLines(methodNameAndSig));
 	}
 
-	private void dumpLines(Collection lines)
-	{
+	private void dumpLines(Collection lines){
 		println("<lines>");
 		increaseIndentation();
 
 		SortedSet sortedLines = new TreeSet();
 		sortedLines.addAll(lines);
 		Iterator iter = sortedLines.iterator();
-		while (iter.hasNext())
-		{
+		while (iter.hasNext()){
 			dumpLine((LineData)iter.next());
 		}
 
@@ -291,8 +263,7 @@ public class XMLReport
 		println("</lines>");
 	}
 
-	private void dumpLine(LineData lineData)
-	{
+	private void dumpLine(LineData lineData){
 		int lineNumber = lineData.getLineNumber();
 		long hitCount = lineData.getHits();
 		boolean hasBranch = lineData.hasBranch();
@@ -300,24 +271,20 @@ public class XMLReport
 
 		String lineInfo = "<line number=\"" + lineNumber + "\" hits=\"" + hitCount
 				+ "\" branch=\"" + hasBranch + "\"";
-		if (hasBranch)
-		{
+		if (hasBranch){
 			println(lineInfo + " condition-coverage=\"" + conditionCoverage + "\">");
 			dumpConditions(lineData);
 			println("</line>");
-		} else
-		{
+		} else{
 			println(lineInfo + "/>");
 		}
 	}
 
-	private void dumpConditions(LineData lineData)
-	{
+	private void dumpConditions(LineData lineData){
 		increaseIndentation();
 		println("<conditions>");
 
-		for (int i = 0; i < lineData.getConditionSize(); i++)
-		{
+		for (int i = 0; i < lineData.getConditionSize(); i++){
 			Object conditionData = lineData.getConditionData(i);
 			String coverage = lineData.getConditionCoverage(i);
 			dumpCondition(conditionData, coverage);
@@ -327,19 +294,15 @@ public class XMLReport
 		decreaseIndentation();
 	}
 
-	private void dumpCondition(Object conditionData, String coverage)
-	{
+	private void dumpCondition(Object conditionData, String coverage){
 		increaseIndentation();
 		StringBuffer buffer = new StringBuffer("<condition");
-		if (conditionData instanceof JumpData)
-		{
+		if (conditionData instanceof JumpData){
 			JumpData jumpData = (JumpData) conditionData;
 			buffer.append(" number=\"").append(jumpData.getConditionNumber()).append("\"");
 			buffer.append(" type=\"").append("jump").append("\"");
 			buffer.append(" coverage=\"").append(coverage).append("\"");
-		}
-		else
-		{
+		}else{
 			SwitchData switchData = (SwitchData) conditionData;
 			buffer.append(" number=\"").append(switchData.getSwitchNumber()).append("\"");
 			buffer.append(" type=\"").append("switch").append("\"");
@@ -349,5 +312,4 @@ public class XMLReport
 		println(buffer.toString());
 		decreaseIndentation();
 	}
-
 }

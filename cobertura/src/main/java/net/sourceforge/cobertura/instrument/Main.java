@@ -49,11 +49,7 @@ import java.util.zip.ZipOutputStream;
 
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
-import net.sourceforge.cobertura.util.ArchiveUtil;
-import net.sourceforge.cobertura.util.CommandLineBuilder;
-import net.sourceforge.cobertura.util.Header;
-import net.sourceforge.cobertura.util.IOUtil;
-import net.sourceforge.cobertura.util.RegexUtil;
+import net.sourceforge.cobertura.util.*;
 
 import org.apache.log4j.Logger;
 import org.objectweb.asm.ClassReader;
@@ -135,8 +131,7 @@ public class Main
 	}
 
 	private boolean addInstrumentationToArchive(CoberturaFile file, ZipInputStream archive,
-			ZipOutputStream output) throws Throwable
-	{
+			ZipOutputStream output) throws Throwable{
 		/*
 		 * "modified" is returned and indicates that something was instrumented.
 		 * If nothing is instrumented, the original entry will be used by the
@@ -144,10 +139,8 @@ public class Main
 		 */
 		boolean modified = false;
 		ZipEntry entry;
-		while ((entry = archive.getNextEntry()) != null)
-		{
-			try
-			{
+		while ((entry = archive.getNextEntry()) != null){
+			try{
 				String entryName = entry.getName();
 
 				/*
@@ -156,8 +149,7 @@ public class Main
 				 * thing we do is strip the signature, just use
 				 * the original entry.
 				 */
-				if (ArchiveUtil.isSignatureFile(entry.getName()))
-				{
+				if (ArchiveUtil.isSignatureFile(entry.getName())){
 					continue;
 				}
 				ZipEntry outputEntry = new ZipEntry(entry.getName());
@@ -181,11 +173,8 @@ public class Main
 						entryBytes = archiveObj.getBytes();
 						outputEntry.setTime(System.currentTimeMillis());
 					}
-				}
-				else if (isClass(entry) && classPattern.matches(entryName))
-				{
-					try
-					{
+				}else if (isClass(entry) && classPattern.matches(entryName)){
+					try{
 						// Instrument class
 						ClassReader cr = new ClassReader(entryBytes);
 						ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
@@ -196,24 +185,18 @@ public class Main
 	
 						// If class was instrumented, get bytes that define the
 						// class
-						if (cv.isInstrumented())
-						{
+						if (cv.isInstrumented()){
 							log.debug("Putting instrumented entry: "
 									+ entry.getName());
 							entryBytes = cw.toByteArray();
 							modified = true;
 							outputEntry.setTime(System.currentTimeMillis());
 						}
-					}
-					catch (Throwable t)
-					{
-						if (entry.getName().endsWith("_Stub.class"))
-						{
+					}catch (Throwable t){
+						if (entry.getName().endsWith("_Stub.class")){
 							//no big deal - it is probably an RMI stub, and they don't need to be instrumented
 							log.debug("Problems instrumenting archive entry: " + entry.getName(), t);
-						}
-						else
-						{
+						}else{
 							log.warn("Problems instrumenting archive entry: " + entry.getName(), t);
 						}
 					}
@@ -446,35 +429,35 @@ public class Main
 		String baseDir = null;
 		for (int i = 0; i < args.length; i++)
 		{
-			if (args[i].equals("--basedir"))
+			if (args[i].equals(Constants.basedir))
 				baseDir = args[++i];
-			else if (args[i].equals("--datafile"))
+			else if (args[i].equals(Constants.datafile))
 				dataFile = new File(args[++i]);
-			else if (args[i].equals("--destination"))
+			else if (args[i].equals(Constants.destination))
 				destinationDirectory = new File(args[++i]);
-			else if (args[i].equals("--ignore"))
+			else if (args[i].equals(Constants.ignore))
 			{
 				RegexUtil.addRegex(ignoreRegexes, args[++i]);
 			}
-			else if (args[i].equals("--ignoreBranches"))
+			else if (args[i].equals(Constants.ignoreBranches))
 			{
 				RegexUtil.addRegex(ignoreBranchesRegexes, args[++i]);
 			}
-			else if (args[i].equals("--ignoreMethodAnnotation")) {
+			else if (args[i].equals(Constants.ignoreMethodAnnotation)) {
 				ignoreMethodAnnotations.add(args[++i]);
 			}
-			else if (args[i].equals("--ignoreTrivial")) {
+			else if (args[i].equals(Constants.ignoreTrivial)) {
 				ignoreTrivial = true;
 			}
-			else if (args[i].equals("--includeClasses"))
+			else if (args[i].equals(Constants.includeClasses))
 			{
 				classPattern.addIncludeClassesRegex(args[++i]);
 			}
-			else if (args[i].equals("--excludeClasses"))
+			else if (args[i].equals(Constants.excludeClasses))
 			{
 				classPattern.addExcludeClassesRegex(args[++i]);
 			}
-			else if (args[i].equals("--failOnError"))
+			else if (args[i].equals(Constants.failOnError))
 			{
 				log.setFailOnError(true);
 			}
@@ -515,8 +498,7 @@ public class Main
 		CoverageDataFileHandler.saveCoverageData(projectData, dataFile);
 	}
 
-	public static void main(String[] args) throws Throwable
-	{
+	public static void main(String[] args) throws Throwable{
 		Header.print(System.out);
 
 		long startTime = System.currentTimeMillis();
@@ -526,13 +508,13 @@ public class Main
 		try {
 			args = CommandLineBuilder.preprocessCommandLineArguments( args);
 		} catch( Exception ex) {
-			System.err.println( "Error: Cannot process arguments: " + ex.getMessage());
+			log.error( "Error: Cannot process arguments: " + ex.getMessage());
 			System.exit(1);
 		}
 		main.parseArguments(args);
 
 		long stopTime = System.currentTimeMillis();
-		System.out.println("Instrument time: " + (stopTime - startTime) + "ms");
+		log.info("Instrument time: " + (stopTime - startTime) + "ms");
 	}
 
 	private static class LoggerWrapper {
@@ -561,6 +543,10 @@ public class Main
 
         public void info(String message){
             log.info(message);
+        }
+
+        public void error(String message){
+            log.error(message);
         }
 	}
 }

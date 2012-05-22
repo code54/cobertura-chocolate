@@ -58,8 +58,7 @@ import net.sourceforge.cobertura.util.StringUtil;
 
 import org.apache.log4j.Logger;
 
-public class HTMLReport
-{
+public class HTMLReport{
 
 	private static final Logger LOGGER = Logger.getLogger(HTMLReport.class);
 
@@ -79,8 +78,7 @@ public class HTMLReport
 	 */
 	public HTMLReport(ProjectData projectData, File outputDir,
 			FileFinder finder, ComplexityCalculator complexity, String encoding)
-			throws Exception
-	{
+			throws Exception{
 		this.destinationDir = outputDir;
 		this.finder = finder;
 		this.complexity = complexity;
@@ -501,11 +499,8 @@ public class HTMLReport
 
 			out.println("</body>");
 			out.println("</html>");
-		}
-		finally
-		{
-			if (out != null)
-			{
+		}finally{
+			if (out != null){
 				out.close();
 			}
 		}

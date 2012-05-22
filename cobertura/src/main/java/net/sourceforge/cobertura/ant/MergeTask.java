@@ -62,16 +62,15 @@ import java.io.IOException;
 
 import net.sourceforge.cobertura.util.CommandLineBuilder;
 
+import net.sourceforge.cobertura.util.Constants;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 
-public class MergeTask extends CommonMatchingTask
-{
+public class MergeTask extends CommonMatchingTask{
 
 	private String dataFile = null;
 
-	public MergeTask()
-	{
+	public MergeTask(){
 		super("net.sourceforge.cobertura.merge.Main");
 	}
 
@@ -80,7 +79,7 @@ public class MergeTask extends CommonMatchingTask
 		try {
 			builder = new CommandLineBuilder();
 			if (dataFile != null)
-				builder.addArg("--datafile", dataFile);
+				builder.addArg(Constants.datafile, dataFile);
 
 			createArgumentsForFilesets(builder);
 
@@ -91,7 +90,7 @@ public class MergeTask extends CommonMatchingTask
 		}
 
 		// Execute GPL licensed code in separate virtual machine
-		getJava().createArg().setValue("--commandsfile");
+		getJava().createArg().setValue(Constants.commandsfile);
 		getJava().createArg().setValue(builder.getCommandLineFile());
 		AntUtil.transferCoberturaDataFileProperty(getJava());
 		if (getJava().executeJava() != 0) {
@@ -102,8 +101,7 @@ public class MergeTask extends CommonMatchingTask
 		builder.dispose();
 	}
 
-	public void setDataFile(String dataFile)
-	{
+	public void setDataFile(String dataFile){
 		this.dataFile = dataFile;
 	}
 

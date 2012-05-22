@@ -31,8 +31,7 @@ import org.objectweb.asm.Opcodes;
 /*
  * TODO: If class is abstract then do not count the "public abstract class bleh" line as a SLOC.
  */
-public class SecondPassMethodInstrumenter extends NewLocalVariableMethodAdapter implements Opcodes
-{
+public class SecondPassMethodInstrumenter extends NewLocalVariableMethodAdapter implements Opcodes{
 	private String TOUCH_COLLECTOR_CLASS="net/sourceforge/cobertura/coveragedata/TouchCollector";
 	
 	private int currentLine;
@@ -54,8 +53,7 @@ public class SecondPassMethodInstrumenter extends NewLocalVariableMethodAdapter 
 	private static final int BOOLEAN_TRUE = ICONST_0;
 	private static final int BOOLEAN_FALSE = ICONST_1;
 
-	public SecondPassMethodInstrumenter(FirstPassMethodInstrumenter firstPass)
-	{
+	public SecondPassMethodInstrumenter(FirstPassMethodInstrumenter firstPass){
 		super(firstPass.getWriterMethodVisitor(), firstPass.getMyAccess(), firstPass.getMyDescriptor(), 2);
 		this.firstPass = firstPass;
 		this.currentLine = 0;

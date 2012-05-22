@@ -32,22 +32,18 @@ import net.sourceforge.cobertura.util.FileFinder;
 import net.sourceforge.cobertura.util.Header;
 import net.sourceforge.cobertura.util.IOUtil;
 
-public class SummaryXMLReport
-{
-	
+public class SummaryXMLReport{
 
 	private final PrintWriter pw;
 	private int indent = 0;
 
 	
 	public SummaryXMLReport(ProjectData projectData, File destinationDir,
-			FileFinder finder, ComplexityCalculator complexity) throws IOException
-	{
+			FileFinder finder, ComplexityCalculator complexity) throws IOException{
 		File file = new File(destinationDir, "coverage-summary.xml");
 		pw = IOUtil.getPrintWriter(file);
 
-		try
-		{
+		try{
 			println("<?xml version=\"1.0\"?>");
 			println("<!DOCTYPE coverage SYSTEM \"http://cobertura.sourceforge.net/xml/"
 					+ XMLReport.coverageDTD + "\">");
@@ -82,35 +78,27 @@ public class SummaryXMLReport
 			decreaseIndentation();
 			
 			println("</coverage>");
-		}
-		finally
-		{
+		}finally{
 			pw.close();
 		}
-
 	}
 	
-	void increaseIndentation()
-	{
+	void increaseIndentation(){
 		indent++;
 	}
 
-	void decreaseIndentation()
-	{
+	void decreaseIndentation(){
 		if (indent > 0)
 			indent--;
 	}
 
-	private void println(String ln)
-	{
+	private void println(String ln){
 		indent();
 		pw.println(ln);
 	}
 
-	private void indent()
-	{
-		for (int i = 0; i < indent; i++)
-		{
+	private void indent(){
+		for (int i = 0; i < indent; i++){
 			pw.print("\t");
 		}
 	}

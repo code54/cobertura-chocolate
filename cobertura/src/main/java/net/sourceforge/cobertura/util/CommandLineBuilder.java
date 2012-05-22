@@ -183,9 +183,9 @@ public class CommandLineBuilder {
 		boolean hasCommandsFile = false;
 		String commandsFileName = null;
 		for (int i = 0; i < args.length; i++) {
-			if ( args[i].equals( "--commandsfile")) {
+			if ( args[i].equals(Constants.commandsfile)) {
 				if( i==args.length-1) {
-					throw new IllegalArgumentException("'--commandsfile' specified as last option.");
+					throw new IllegalArgumentException("'"+ Constants.commandsfile+"' specified as last option.");
 				}
 				hasCommandsFile = true;
 				commandsFileName = args[++i];

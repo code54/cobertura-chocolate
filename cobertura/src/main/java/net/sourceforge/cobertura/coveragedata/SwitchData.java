@@ -39,8 +39,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * </p>
  */
 public class SwitchData implements BranchCoverageData, Comparable, Serializable,
-		HasBeenInstrumented
-{
+		HasBeenInstrumented {
 	private static final long serialVersionUID = 9;
 
 	private transient Lock lock;
@@ -83,34 +82,27 @@ public class SwitchData implements BranchCoverageData, Comparable, Serializable,
 		initLock();
 	}
 
-	public SwitchData(int switchNumber)
-	{
+	public SwitchData(int switchNumber){
 		this(switchNumber, new int[0]);
 	}
 	
-	private void initLock()
-	{
+	private void initLock(){
 		 lock = new ReentrantLock();
 	}
 
-	public int compareTo(Object o)
-	{
+	public int compareTo(Object o){
 		if (!o.getClass().equals(SwitchData.class))
 			return Integer.MAX_VALUE;
 		return this.switchNumber - ((SwitchData) o).switchNumber;
 	}
 	
-	void touchBranch(int branch,int new_hits) 
-	{
+	void touchBranch(int branch,int new_hits){
 		lock.lock();
-		try
-		{
+		try{
 			if (branch == -1)
 				defaultHits++;
-			else 
-			{
-				if (hits.length <= branch)
-				{
+			else{
+				if (hits.length <= branch){
 					long[] old = hits;
 					hits = new long[branch + 1];
 					System.arraycopy(old, 0, hits, 0, old.length);
@@ -118,64 +110,48 @@ public class SwitchData implements BranchCoverageData, Comparable, Serializable,
 				}
 				hits[branch]+=new_hits;
 			}
-		}
-		finally
-		{
+		}finally{
 			lock.unlock();
 		}
 	}
 	
-	public int getSwitchNumber()
-	{
+	public int getSwitchNumber(){
 		return this.switchNumber;
 	}
 
-	public long getHits(int branch)
-	{
+	public long getHits(int branch){
 		lock.lock();
-		try
-		{
+		try{
 			if (hits.length > branch)
 				return hits[branch];
 			return -1;
-		}
-		finally
-		{
+		}finally{
 			lock.unlock();
 		}
 	}
 
-	public long getDefaultHits()
-	{
+	public long getDefaultHits(){
 		lock.lock();
-		try
-		{
+		try{
 			return defaultHits;
-		}
-		finally
-		{
+		}finally{
 			lock.unlock();
 		}
 	}
 
-	public double getBranchCoverageRate()
-	{
+	public double getBranchCoverageRate(){
 		lock.lock();
-		try
-		{
+		try{
 			int branches = hits.length + 1;
 			int hit = (defaultHits > 0) ? 1 : 0;
 			for (int i = hits.length - 1; i >= 0; hit += ((hits[i--] > 0) ? 1 : 0));
 			return ((double) hit) / branches;
-		}
-		finally
-		{
+		}finally{
 			lock.unlock();
 		}
 	}
 
-	public boolean equals(Object obj)
-	{
+	public boolean equals(Object obj){
 		if (this == obj)
 			return true;
 		if ((obj == null) || !(obj.getClass().equals(this.getClass())))
@@ -183,66 +159,51 @@ public class SwitchData implements BranchCoverageData, Comparable, Serializable,
 
 		SwitchData switchData = (SwitchData) obj;
 		getBothLocks(switchData);
-		try
-		{
+		try{
 			return (this.defaultHits == switchData.defaultHits)
 					&& (Arrays.equals(this.hits, switchData.hits))
 					&& (this.switchNumber == switchData.switchNumber);
-		}
-		finally
-		{
+		}finally{
 			lock.unlock();
 			switchData.lock.unlock();
 		}
 	}
 
-	public int hashCode()
-	{
+	public int hashCode(){
 		return this.switchNumber;
 	}
 
-	public int getNumberOfCoveredBranches()
-	{
+	public int getNumberOfCoveredBranches()	{
 		lock.lock();
-		try
-		{
+		try{
 			int ret = (defaultHits > 0) ? 1 : 0;
 			for (int i = hits.length -1; i >= 0;i--) 
 			{
 				if (hits[i] > 0) ret++;
 			}
 			return ret;
-		}
-		finally
-		{
+		}finally{
 			lock.unlock();
 		}
 	}
 
-	public int getNumberOfValidBranches()
-	{
+	public int getNumberOfValidBranches(){
 		lock.lock();
-		try
-		{
+		try{
 			return hits.length + 1;
-		}
-		finally
-		{
+		}finally{
 			lock.unlock();
 		}
 	}
 
-	public void merge(BranchCoverageData coverageData)
-	{
+	public void merge(BranchCoverageData coverageData){
 		SwitchData switchData = (SwitchData) coverageData;
 		getBothLocks(switchData);
-		try
-		{
+		try{
 			defaultHits += switchData.defaultHits;
 			for (int i = Math.min(hits.length, switchData.hits.length) - 1; i >= 0; i--)
 				hits[i] += switchData.hits[i];
-			if (switchData.hits.length > hits.length)
-			{
+			if (switchData.hits.length > hits.length){
 				long[] old = hits;
 				hits = new long[switchData.hits.length];
 				System.arraycopy(old, 0, hits, 0, old.length);
@@ -250,9 +211,7 @@ public class SwitchData implements BranchCoverageData, Comparable, Serializable,
 			}
 			if ((this.keys.length == 0) && (switchData.keys.length > 0))
 				this.keys = switchData.keys;
-		}
-		finally
-		{
+		}finally{
 			lock.unlock();
 			switchData.lock.unlock();
 		}
@@ -268,24 +227,17 @@ public class SwitchData implements BranchCoverageData, Comparable, Serializable,
 		 */
 		boolean myLock = false;
 		boolean otherLock = false;
-		while ((!myLock) || (!otherLock))
-		{
-			try
-			{
+		while ((!myLock) || (!otherLock)){
+			try{
 				myLock = lock.tryLock();
 				otherLock = other.lock.tryLock();
-			}
-			finally
-			{
-				if ((!myLock) || (!otherLock))
-				{
+			}finally{
+				if ((!myLock) || (!otherLock)){
 					//could not obtain both locks - so unlock the one we got.
-					if (myLock)
-					{
+					if (myLock){
 						lock.unlock();
 					}
-					if (otherLock)
-					{
+					if (otherLock){
 						other.lock.unlock();
 					}
 					//do a yield so the other threads will get to work.
@@ -295,8 +247,7 @@ public class SwitchData implements BranchCoverageData, Comparable, Serializable,
 		}
 	}
 
-	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
-	{
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException{
 		in.defaultReadObject();
 		initLock();
 	}

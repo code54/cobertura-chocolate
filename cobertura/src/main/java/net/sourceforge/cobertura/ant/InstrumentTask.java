@@ -71,13 +71,13 @@ import java.util.List;
 
 import net.sourceforge.cobertura.util.CommandLineBuilder;
 
+import net.sourceforge.cobertura.util.Constants;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;
 
-public class InstrumentTask extends CommonMatchingTask
-{
+public class InstrumentTask extends CommonMatchingTask{
 
 	private String dataFile = null;
 
@@ -101,50 +101,43 @@ public class InstrumentTask extends CommonMatchingTask
 
 	private HashMap fileSetMap = new HashMap();
 
-	public InstrumentTask()
-	{
+	public InstrumentTask(){
 		super("net.sourceforge.cobertura.instrument.Main");
 	}
 
-	public Ignore createIgnore()
-	{
+	public Ignore createIgnore(){
 		Ignore ignoreRegex = new Ignore();
 		ignoreRegexs.add(ignoreRegex);
 		return ignoreRegex;
 	}
 
-	public IgnoreBranches createIgnoreBranches()
-	{
+	public IgnoreBranches createIgnoreBranches(){
 		IgnoreBranches ignoreBranchesRegex = new IgnoreBranches();
 		ignoreBranchesRegexs.add(ignoreBranchesRegex);
 		return ignoreBranchesRegex;
 	}
 
 	
-	public IgnoreMethodAnnotation createIgnoreMethodAnnotation()
-	{
+	public IgnoreMethodAnnotation createIgnoreMethodAnnotation(){
 		IgnoreMethodAnnotation ignoreAnnotation = new IgnoreMethodAnnotation();
 		ignoreMethodAnnotations.add(ignoreAnnotation);
 		return ignoreAnnotation;
 	}
 	
 	
-	public IncludeClasses createIncludeClasses()
-	{
+	public IncludeClasses createIncludeClasses(){
 		IncludeClasses includeClassesRegex = new IncludeClasses();
 		includeClassesRegexs.add(includeClassesRegex);
 		return includeClassesRegex;
 	}
 
-	public ExcludeClasses createExcludeClasses()
-	{
+	public ExcludeClasses createExcludeClasses(){
 		ExcludeClasses excludeClassesRegex = new ExcludeClasses();
 		excludeClassesRegexs.add(excludeClassesRegex);
 		return excludeClassesRegex;
 	}
 
-	public Path createInstrumentationClasspath()
-	{
+	public Path createInstrumentationClasspath(){
 		if (instrumentationClasspath == null) {
 			instrumentationClasspath = new Path(getProject());
 		}
@@ -156,52 +149,50 @@ public class InstrumentTask extends CommonMatchingTask
 	 *       test it and uncomment it.
 	 */
 	/*
-	public void setInstrumentationClasspathRef(Reference r)
-	{
+	public void setInstrumentationClasspathRef(Reference r){
 		createInstrumentationClasspath().setRefid(r);
 	}
 	*/
 
-	public void execute() throws BuildException
-	{
+	public void execute() throws BuildException{
 		CommandLineBuilder builder = null;
 		try {
 			builder = new CommandLineBuilder();
 			if (dataFile != null)
-				builder.addArg("--datafile", dataFile);
+				builder.addArg(Constants.datafile, dataFile);
 			if (toDir != null)
-				builder.addArg("--destination", toDir.getAbsolutePath());
+				builder.addArg(Constants.destination, toDir.getAbsolutePath());
 
 			for (int i = 0; i < ignoreRegexs.size(); i++) {
 				Ignore ignoreRegex = (Ignore)ignoreRegexs.get(i);
-				builder.addArg("--ignore", ignoreRegex.getRegex());
+				builder.addArg(Constants.ignore, ignoreRegex.getRegex());
 			}
 
 			for (int i = 0; i < ignoreBranchesRegexs.size(); i++) {
 				IgnoreBranches ignoreBranchesRegex = (IgnoreBranches)ignoreBranchesRegexs.get(i);
-				builder.addArg("--ignoreBranches", ignoreBranchesRegex.getRegex());
+				builder.addArg(Constants.ignoreBranches, ignoreBranchesRegex.getRegex());
 			}
 
 			for (int i = 0; i < ignoreMethodAnnotations.size(); i++) {
 				IgnoreMethodAnnotation ignoreMethodAnn = (IgnoreMethodAnnotation)ignoreMethodAnnotations.get(i);
-				builder.addArg("--ignoreMethodAnnotation", ignoreMethodAnn.getAnnotationName());
+				builder.addArg(Constants.ignoreMethodAnnotation, ignoreMethodAnn.getAnnotationName());
 			}
 			
 			for (int i = 0; i < includeClassesRegexs.size(); i++) {
 				IncludeClasses includeClassesRegex = (IncludeClasses)includeClassesRegexs.get(i);
-				builder.addArg("--includeClasses", includeClassesRegex.getRegex());
+				builder.addArg(Constants.includeClasses, includeClassesRegex.getRegex());
 			}
 
 			for (int i = 0; i < excludeClassesRegexs.size(); i++) {
 				ExcludeClasses excludeClassesRegex = (ExcludeClasses)excludeClassesRegexs.get(i);
-				builder.addArg("--excludeClasses", excludeClassesRegex.getRegex());
+				builder.addArg(Constants.excludeClasses, excludeClassesRegex.getRegex());
 			}
 
 			if (ignoreTrivial)
-				builder.addArg("--ignoreTrivial");
+				builder.addArg(Constants.ignoreTrivial);
 			
 			if (failOnError)
-				builder.addArg("--failOnError");
+				builder.addArg(Constants.failOnError);
 
 			if (instrumentationClasspath != null) {
 				processInstrumentationClasspath();
@@ -215,7 +206,7 @@ public class InstrumentTask extends CommonMatchingTask
 		}
 
 		// Execute GPL licensed code in separate virtual machine
-		getJava().createArg().setValue("--commandsfile");
+		getJava().createArg().setValue(Constants.commandsfile);
 		getJava().createArg().setValue(builder.getCommandLineFile());
 		if (forkedJVMDebugPort != null && forkedJVMDebugPort.intValue() > 0) {
 			getJava().createJvmarg().setValue("-Xdebug");
@@ -230,18 +221,15 @@ public class InstrumentTask extends CommonMatchingTask
 		builder.dispose();
 	}
 
-	private void processInstrumentationClasspath()
-	{
-		if (includeClassesRegexs.size() == 0)
-		{
+	private void processInstrumentationClasspath(){
+		if (includeClassesRegexs.size() == 0){
 			throw new BuildException("'includeClasses' is required when 'instrumentationClasspath' is used");
 		}
 
 		String[] sources = instrumentationClasspath.list();
 		for (int i = 0; i < sources.length; i++) {
 			File fileOrDir = new File(sources[i]);
-			if (fileOrDir.exists())
-			{
+			if (fileOrDir.exists()){
 				if (fileOrDir.isDirectory()) {
 					createFilesetForDirectory(fileOrDir);
 				} else {
@@ -251,20 +239,17 @@ public class InstrumentTask extends CommonMatchingTask
 		}
 	}
 
-	private void addFileToFilesets(File file)
-	{
+	private void addFileToFilesets(File file){
 		File dir = file.getParentFile();
 		String filename = file.getName();
 		FileSet fileSet = getFileSet(dir);
 		fileSet.createInclude().setName(filename);
 	}
 
-	private FileSet getFileSet(File dir)
-	{
+	private FileSet getFileSet(File dir){
 		String key = dir.getAbsolutePath();
 		FileSet fileSet = (FileSet)fileSetMap.get(key);
-		if (fileSet == null)
-		{
+		if (fileSet == null){
 	        fileSet = new FileSet();
 	        fileSet.setProject(getProject());
 	        fileSet.setDir(dir);
@@ -276,29 +261,24 @@ public class InstrumentTask extends CommonMatchingTask
 		return fileSet;
 	}
 
-	private void createFilesetForDirectory(File dir)
-	{
+	private void createFilesetForDirectory(File dir){
 		FileSet fileSet = getFileSet(dir);
 		fileSet.createInclude().setName("**/*.class");
 	}
 
-	public void setDataFile(String dataFile)
-	{
+	public void setDataFile(String dataFile){
 		this.dataFile = dataFile;
 	}
 
-	public void setToDir(File toDir)
-	{
+	public void setToDir(File toDir){
 		this.toDir = toDir;
 	}
 
-	public void setIgnoreTrivial(boolean ignoreTrivial)
-	{
+	public void setIgnoreTrivial(boolean ignoreTrivial){
 		this.ignoreTrivial = ignoreTrivial;
 	}
 	
-	public void setForkedJVMDebugPort(Integer forkedJVMDebugPort)
-	{
+	public void setForkedJVMDebugPort(Integer forkedJVMDebugPort){
 		this.forkedJVMDebugPort = forkedJVMDebugPort;
 	}
 

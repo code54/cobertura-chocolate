@@ -33,9 +33,13 @@ import java.util.List;
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.util.CommandLineBuilder;
+import net.sourceforge.cobertura.util.Constants;
 import net.sourceforge.cobertura.util.Header;
+import org.apache.log4j.Logger;
 
 public class Main{
+
+    private static final Logger log = Logger.getLogger(Main.class);
 
 	public Main(String[] args){
 		File dataFile = CoverageDataFileHandler.getDefaultDataFile();
@@ -43,11 +47,10 @@ public class Main{
 		List filesToMerge = new ArrayList();
 
 		// Go through all the parameters
-		for (int i = 0; i < args.length; i++)
-		{
-			if (args[i].equals("--datafile"))
+		for (int i = 0; i < args.length; i++){
+			if (args[i].equals(Constants.datafile))
 				dataFile = new File(args[++i]);
-			else if (args[i].equals("--basedir"))
+			else if (args[i].equals(Constants.basedir))
 				baseDir = new File(args[++i]);
 			else
 				filesToMerge.add( new File(baseDir, args[i]));
@@ -60,16 +63,14 @@ public class Main{
 		if (projectData == null)
 			projectData = new ProjectData();
 
-		if (filesToMerge.isEmpty())
-		{
-			System.err.println("Error: No files were specified for merging.");
+		if (filesToMerge.isEmpty()){
+			log.error("Error: No files were specified for merging.");
 			System.exit(1);
 		}
 
 		// Merge everything
 		Iterator iter = filesToMerge.iterator();
-		while (iter.hasNext())
-		{
+		while (iter.hasNext()){
 			File newDataFile = (File)iter.next();
 			ProjectData projectDataNew = CoverageDataFileHandler
 					.loadCoverageData(newDataFile);
@@ -87,7 +88,7 @@ public class Main{
 		try {
 			args = CommandLineBuilder.preprocessCommandLineArguments( args);
 		} catch( Exception ex) {
-			System.err.println( "Error: Cannot process arguments: " + ex.getMessage());
+			log.error("Error: Cannot process arguments: " + ex.getMessage());
 			System.exit(1);
 		}
 		new Main(args);

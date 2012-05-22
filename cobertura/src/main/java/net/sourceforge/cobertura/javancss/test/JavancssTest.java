@@ -23,8 +23,4 @@
 
 package net.sourceforge.cobertura.javancss.test;
 
-public class JavancssTest
-
-{
-
-}
+public class JavancssTest{}

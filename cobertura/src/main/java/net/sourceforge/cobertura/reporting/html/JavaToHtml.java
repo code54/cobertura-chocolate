@@ -25,8 +25,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
-public class JavaToHtml
-{
+public class JavaToHtml{
 
 	// Could use a J2SE 5.0 enum instead of this.
 	public abstract static class State
@@ -48,8 +47,7 @@ public class JavaToHtml
 	private static final Collection javaPrimitiveLiterals;
 	private static final Collection javaPrimitiveTypes;
 
-	static
-	{
+	static{
 		// TODO: Probably need to add anything new in J2SE 5.0
 		//final String javaJavaDocTagsArray[] = { "see", "author", "version", "param", "return", "exception",
 		//		"deprecated", "throws", "link", "since", "serial", "serialField", "serialData", "beaninfo" };
@@ -75,8 +73,7 @@ public class JavaToHtml
 
 	private int state = State.DEFAULT;
 
-	private static String escapeEntity(final char character)
-	{
+	private static String escapeEntity(final char character){
 		if (character == '&')
 			return "&amp;";
 		else if (character == '<')
@@ -96,8 +93,7 @@ public class JavaToHtml
 	 * @return The same block of Java code with added span tags.
 	 *         Newlines are preserved.
 	 */
-	public String process(final String text)
-	{
+	public String process(final String text){
 		if (text == null)
 			throw new IllegalArgumentException("\"text\" can not be null.");
 
@@ -111,19 +107,15 @@ public class JavaToHtml
 		nextCR = text.indexOf('\r', begin);
 		if ((nextCR != -1) && ((end == -1) || (nextCR < end)))
 			end = nextCR;
-		while (end != -1)
-		{
+		while (end != -1){
 			ret.append(processLine(text.substring(begin, end)) + "<br/>");
 
 			if ((end + 1 < text.length())
 					&& ((text.charAt(end + 1) == '\n') || (text
-							.charAt(end + 1) == '\r')))
-			{
+							.charAt(end + 1) == '\r'))){
 				ret.append(text.substring(end, end + 1));
 				begin = end + 2;
-			}
-			else
-			{
+			}else{
 				ret.append(text.charAt(end));
 				begin = end + 1;
 			}
@@ -144,8 +136,7 @@ public class JavaToHtml
 	 * @param line One line of Java code.
 	 * @return The same line of Java code with added span tags.
 	 */
-	private String processLine(final String line)
-	{
+	private String processLine(final String line){
 		if (line == null)
 			throw new IllegalArgumentException("\"line\" can not be null.");
 		if ((line.indexOf('\n') != -1) || (line.indexOf('\r') != -1))
@@ -155,86 +146,56 @@ public class JavaToHtml
 		StringBuffer ret = new StringBuffer();
 		int currentIndex = 0;
 
-		while (currentIndex != line.length())
-		{
-			if (state == State.DEFAULT)
-			{
+		while (currentIndex != line.length()){
+			if (state == State.DEFAULT){
 				if ((currentIndex + 2 < line.length())
 						&& line.substring(currentIndex, currentIndex + 3)
-								.equals("/**"))
-				{
+								.equals("/**")){
 					state = State.COMMENT_JAVADOC;
-
-				}
-				else if ((currentIndex + 1 < line.length())
+				}else if ((currentIndex + 1 < line.length())
 						&& line.substring(currentIndex, currentIndex + 2)
-								.equals("/*"))
-				{
+								.equals("/*")){
 					state = State.COMMENT_MULTI;
-
-				}
-				else if ((currentIndex + 1 < line.length())
+				}else if ((currentIndex + 1 < line.length())
 						&& (line.substring(currentIndex, currentIndex + 2)
-								.equals("//")))
-				{
+								.equals("//"))){
 					state = State.COMMENT_SINGLE;
-
-				}
-				else if (Character.isJavaIdentifierStart(line
-						.charAt(currentIndex)))
-				{
+				}else if (Character.isJavaIdentifierStart(line
+						.charAt(currentIndex))){
 					state = State.KEYWORD;
-
-				}
-				else if (line.charAt(currentIndex) == '\'')
-				{
+				}else if (line.charAt(currentIndex) == '\''){
 					state = State.QUOTE_SINGLE;
-
-				}
-				else if (line.charAt(currentIndex) == '"')
-				{
+				}else if (line.charAt(currentIndex) == '"'){
 					state = State.QUOTE_DOUBLE;
-
-				}
-				else
-				{
+				}else{
 					// Default: No highlighting.
 					ret.append(escapeEntity(line.charAt(currentIndex++)));
 				}
 			} // End of State.DEFAULT
-
 			else if ((state == State.COMMENT_MULTI)
-					|| (state == State.COMMENT_JAVADOC))
-			{
+					|| (state == State.COMMENT_JAVADOC)){
 				// Print everything from the current character until the
 				// closing */  No exceptions.
 				ret.append("<span class=\"comment\">");
 				while ((currentIndex != line.length())
 						&& !((currentIndex + 1 < line.length()) && (line
 								.substring(currentIndex, currentIndex + 2)
-								.equals("*/"))))
-				{
+								.equals("*/")))){
 					ret.append(escapeEntity(line.charAt(currentIndex++)));
 				}
-				if (currentIndex == line.length())
-				{
+                if (currentIndex == line.length()){
 					ret.append("</span>");
-				}
-				else
-				{
+				}else{
 					ret.append("*/</span>");
 					state = State.DEFAULT;
 					currentIndex += 2;
 				}
 			} // End of State.COMMENT_MULTI
-
-			else if (state == State.COMMENT_SINGLE)
-			{
+			else if (state == State.COMMENT_SINGLE){
 				// Print everything from the current character until the 
 				// end of the line
 				ret.append("<span class=\"comment\">");
-				while (currentIndex != line.length())
-				{
+				while (currentIndex != line.length()){
 					ret.append(escapeEntity(line.charAt(currentIndex++)));
 				}
 				ret.append("</span>");
@@ -242,11 +203,9 @@ public class JavaToHtml
 
 			} // End of State.COMMENT_SINGLE
 
-			else if (state == State.KEYWORD)
-			{
+			else if (state == State.KEYWORD){
 				StringBuffer tmp = new StringBuffer();
-				do
-				{
+				do{
 					tmp.append(line.charAt(currentIndex++));
 				} while ((currentIndex != line.length())
 						&& (Character.isJavaIdentifierPart(line
@@ -267,68 +226,52 @@ public class JavaToHtml
 					state = State.DEFAULT;
 			} // End of State.KEYWORD
 
-			else if (state == State.IMPORT_NAME)
-			{
+			else if (state == State.IMPORT_NAME){
 				ret.append(escapeEntity(line.charAt(currentIndex++)));
 				state = State.DEFAULT;
 			} // End of State.IMPORT_NAME
-
-			else if (state == State.PACKAGE_NAME)
-			{
+			else if (state == State.PACKAGE_NAME){
 				ret.append(escapeEntity(line.charAt(currentIndex++)));
 				state = State.DEFAULT;
 			} // End of State.PACKAGE_NAME
-
-			else if (state == State.QUOTE_DOUBLE)
-			{
+			else if (state == State.QUOTE_DOUBLE){
 				// Print everything from the current character until the
 				// closing ", checking for \"
 				ret.append("<span class=\"string\">");
-				do
-				{
+				do{
 					ret.append(escapeEntity(line.charAt(currentIndex++)));
 				} while ((currentIndex != line.length())
 						&& (!(line.charAt(currentIndex) == '"') || ((line
 								.charAt(currentIndex - 1) == '\\') && (line
 								.charAt(currentIndex - 2) != '\\'))));
-				if (currentIndex == line.length())
-				{
+				if (currentIndex == line.length()){
 					ret.append("</span>");
-				}
-				else
-				{
+				}else{
 					ret.append("\"</span>");
 					state = State.DEFAULT;
 					currentIndex++;
 				}
 			} // End of State.QUOTE_DOUBLE
 
-			else if (state == State.QUOTE_SINGLE)
-			{
+			else if (state == State.QUOTE_SINGLE){
 				// Print everything from the current character until the
 				// closing ', checking for \'
 				ret.append("<span class=\"string\">");
-				do
-				{
+				do{
 					ret.append(escapeEntity(line.charAt(currentIndex++)));
 				} while ((currentIndex != line.length())
 						&& (!(line.charAt(currentIndex) == '\'') || ((line
 								.charAt(currentIndex - 1) == '\\') && (line
 								.charAt(currentIndex - 2) != '\\'))));
-				if (currentIndex == line.length())
-				{
+				if (currentIndex == line.length()){
 					ret.append("</span>");
-				}
-				else
-				{
+				}else{
 					ret.append("\'</span>");
 					state = State.DEFAULT;
 					currentIndex++;
 				}
 			} // End of State.QUOTE_SINGLE
-
-			else
-			{
+			else{
 				// Default: No highlighting.
 				ret.append(escapeEntity(line.charAt(currentIndex++)));
 			} // End of unknown state
@@ -343,9 +286,7 @@ public class JavaToHtml
 	 * another Java file.
 	 *
 	 */
-	public void reset()
-	{
+	public void reset(){
 		state = State.DEFAULT;
 	}
-
 }

@@ -488,11 +488,10 @@ public class ClassData extends CoverageDataContainer<Integer>
     }
 
     public void removeLine(int lineNumber){
-		Integer lineObject = Integer.valueOf(lineNumber);
 		lock.lock();
 		try{
-			children.remove(lineObject);
-			branches.remove(lineObject);
+			children.remove(lineNumber);
+			branches.remove(lineNumber);
 		}finally{
 			lock.unlock();
 		}

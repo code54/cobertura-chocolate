@@ -34,6 +34,7 @@ import java.util.StringTokenizer;
 import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
+import net.sourceforge.cobertura.util.Constants;
 import net.sourceforge.cobertura.util.Header;
 
 import org.apache.log4j.Logger;
@@ -128,21 +129,21 @@ public class Main{
 		double totalLineCoverageRate = -1.0;
 
 		for (int i = 0; i < args.length; i++){
-			if (args[i].equals("--branch")){
+			if (args[i].equals(Constants.branch)){
 				branchCoverageRate = inRangeAndDivideByOneHundred(args[++i]);
-			}else if (args[i].equals("--datafile")){
+			}else if (args[i].equals(Constants.datafile)){
 				dataFile = new File(args[++i]);
-			}else if (args[i].equals("--line")){
+			}else if (args[i].equals(Constants.line)){
 				lineCoverageRate = inRangeAndDivideByOneHundred(args[++i]);
-			}else if (args[i].equals("--regex")){
+			}else if (args[i].equals(Constants.regex)){
 				setMinimumCoverageRate(args[++i]);
-			}else if (args[i].equals("--packagebranch")){
+			}else if (args[i].equals(Constants.packagebranch)){
 				packageBranchCoverageRate = inRangeAndDivideByOneHundred(args[++i]);
-			}else if (args[i].equals("--packageline")){
+			}else if (args[i].equals(Constants.packageline)){
 				packageLineCoverageRate = inRangeAndDivideByOneHundred(args[++i]);
-			}else if (args[i].equals("--totalbranch")){
+			}else if (args[i].equals(Constants.totalbranch)){
 				totalBranchCoverageRate = inRangeAndDivideByOneHundred(args[++i]);
-			}else if (args[i].equals("--totalline")){
+			}else if (args[i].equals(Constants.totalline)){
 				totalLineCoverageRate = inRangeAndDivideByOneHundred(args[++i]);
 			}
 		}

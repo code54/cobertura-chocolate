@@ -22,6 +22,8 @@
 
 package net.sourceforge.cobertura.reporting.html.files;
 
+import net.sourceforge.cobertura.util.Constants;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -31,32 +33,32 @@ public abstract class CopyFiles
 {
 
 	public static void copy(File destinationDir) throws IOException{
-		File cssOutputDir = new File(destinationDir, "css");
-		File imagesOutputDir = new File(destinationDir, "images");
-		File jsOutputDir = new File(destinationDir, "js");
+		File cssOutputDir = new File(destinationDir, Constants.css);
+		File imagesOutputDir = new File(destinationDir, Constants.images);
+		File jsOutputDir = new File(destinationDir, Constants.js);
 
 		destinationDir.mkdirs();
 		cssOutputDir.mkdir();
 		imagesOutputDir.mkdir();
 		jsOutputDir.mkdir();
 
-		copyResourceFromJar("help.css", cssOutputDir);
-		copyResourceFromJar("main.css", cssOutputDir);
-		copyResourceFromJar("sortabletable.css", cssOutputDir);
-		copyResourceFromJar("source-viewer.css", cssOutputDir);
-		copyResourceFromJar("tooltip.css", cssOutputDir);
+		copyResourceFromJar(Constants.helpcss, cssOutputDir);
+		copyResourceFromJar(Constants.maincss, cssOutputDir);
+		copyResourceFromJar(Constants.sortabletablecss, cssOutputDir);
+		copyResourceFromJar(Constants.sourceviewercss, cssOutputDir);
+		copyResourceFromJar(Constants.tooltipcss, cssOutputDir);
 
-		copyResourceFromJar("blank.png", imagesOutputDir);
-		copyResourceFromJar("downsimple.png", imagesOutputDir);
-		copyResourceFromJar("upsimple.png", imagesOutputDir);
+		copyResourceFromJar(Constants.blankpng, imagesOutputDir);
+		copyResourceFromJar(Constants.downsimplepng, imagesOutputDir);
+		copyResourceFromJar(Constants.upsimplepng, imagesOutputDir);
 
-		copyResourceFromJar("customsorttypes.js", jsOutputDir);
-		copyResourceFromJar("popup.js", jsOutputDir);
-		copyResourceFromJar("sortabletable.js", jsOutputDir);
-		copyResourceFromJar("stringbuilder.js", jsOutputDir);
+		copyResourceFromJar(Constants.customsorttypesjs, jsOutputDir);
+		copyResourceFromJar(Constants.popupjs, jsOutputDir);
+		copyResourceFromJar(Constants.sortabletablejs, jsOutputDir);
+		copyResourceFromJar(Constants.stringbuilderjs, jsOutputDir);
 
-		copyResourceFromJar("help.html", destinationDir);
-		copyResourceFromJar("index.html", destinationDir);
+		copyResourceFromJar(Constants.helphtml, destinationDir);
+		copyResourceFromJar(Constants.indexhtml, destinationDir);
 	}
 
 	/**

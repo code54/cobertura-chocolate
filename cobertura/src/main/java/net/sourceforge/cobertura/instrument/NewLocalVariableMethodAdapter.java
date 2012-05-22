@@ -31,13 +31,11 @@ import org.objectweb.asm.Type;
 /**
  * Expects that the visitMaxs is calculated for me .... 
  */
-public class NewLocalVariableMethodAdapter extends MethodAdapter implements Opcodes
-{
+public class NewLocalVariableMethodAdapter extends MethodAdapter implements Opcodes{
 	protected int firstStackVariable;
 	protected int addedStackWords;
 
-	public NewLocalVariableMethodAdapter(MethodVisitor mv, int access, String desc, int addedStackWords)
-	{
+	public NewLocalVariableMethodAdapter(MethodVisitor mv, int access, String desc, int addedStackWords){
 		super(mv);
 		Type[] args = Type.getArgumentTypes(desc);
 		firstStackVariable = ((ACC_STATIC & access) != 0) ? 0 : 1;
@@ -47,8 +45,7 @@ public class NewLocalVariableMethodAdapter extends MethodAdapter implements Opco
 		this.addedStackWords = addedStackWords;
 	}
 	
-	public void visitVarInsn(int opcode, int var) 
-	{
+	public void visitVarInsn(int opcode, int var){
 		mv.visitVarInsn(opcode, (var >= firstStackVariable) ? var + addedStackWords : var);
 	}
 
@@ -56,18 +53,15 @@ public class NewLocalVariableMethodAdapter extends MethodAdapter implements Opco
 		mv.visitIincInsn((var >= firstStackVariable) ? var + addedStackWords : var, increment);
 	}
 
-	public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index)
-	{
+	public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index){
 		mv.visitLocalVariable(name, desc, signature, start, end, (index >= firstStackVariable) ? index + addedStackWords : index);
 	}
 
-	public int getAddedStackWords()
-	{
+	public int getAddedStackWords(){
 		return addedStackWords;
 	}
 
-	public int getFirstStackVariable()
-	{
+	public int getFirstStackVariable(){
 		return firstStackVariable;
 	}
 
