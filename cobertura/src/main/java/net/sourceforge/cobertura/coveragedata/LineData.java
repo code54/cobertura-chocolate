@@ -143,7 +143,8 @@ public class LineData
 		}
 		return ret.toString();
 	}
-	
+
+    @Override
 	public long getHits(){
 		lock.lock();
 		try{

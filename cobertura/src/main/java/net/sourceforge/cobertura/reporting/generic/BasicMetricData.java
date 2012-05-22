@@ -11,15 +11,18 @@ public class BasicMetricData {
     private CoverageData lineCoverage;
     @Attribute
     private double cyclomaticCodeComplexity;
+    @Element
+    private long hits;
 
     public BasicMetricData(){}
 
     public BasicMetricData(
             CoverageData branchCoverage, CoverageData lineCoverage,
-            double cyclomaticCodeComplexity){
+            double cyclomaticCodeComplexity, long hits){
         this.branchCoverage = branchCoverage;
         this.lineCoverage = lineCoverage;
         this.cyclomaticCodeComplexity = cyclomaticCodeComplexity;
+        this.hits = hits;
     }
 
     public CoverageData getBranchCoverageData(){
@@ -32,5 +35,9 @@ public class BasicMetricData {
 
     public double getCyclomaticCodeComplexity(){
         return cyclomaticCodeComplexity;
+    }
+
+    public long getHits(){
+        return hits;
     }
 }

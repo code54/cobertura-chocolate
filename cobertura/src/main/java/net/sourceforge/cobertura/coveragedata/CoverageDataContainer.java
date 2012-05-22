@@ -266,6 +266,17 @@ public abstract class CoverageDataContainer<T>
 		}
 	}
 
+    @Override
+    public long getHits(){
+        long hits = 0;
+        Iterator<CoverageData> iter = getChildrenValues().iterator();
+			while (iter.hasNext()){
+				CoverageData coverageContainer = iter.next();
+				hits += coverageContainer.getHits();
+			}
+        return hits;
+    }
+
 	protected void getBothLocks(CoverageDataContainer other) {
 		/*
 		 * To prevent deadlock, we need to get both locks or none at all.

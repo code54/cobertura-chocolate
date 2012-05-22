@@ -46,6 +46,13 @@ public interface CoverageData{
 	void merge(CoverageData coverageData);
 
     /**
+     * Returns the number of times the element it
+     * refers to was hitted by tests;
+     * @return
+     */
+    long getHits();
+
+    /**
      * Should return an ID of the type
      * getClass()+some instance specific data.
      *

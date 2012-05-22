@@ -56,7 +56,8 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
         GenericReportEntry entry =
                 new GenericReportEntry(ReportConstants.level_project,
                 project.getName(), branchCoverage, lineCoverage,
-                        complexity.getCCNForProject(project));
+                        complexity.getCCNForProject(project),
+                        project.getHits());
         entries.add(entry);
 
         return entry;
@@ -86,7 +87,8 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
          GenericReportEntry packageEntry =
                  new GenericReportEntry(ReportConstants.level_package,
                         data.getName(), branchCoverage, lineCoverage,
-                        complexity.getCCNForPackage(data));
+                        complexity.getCCNForPackage(data),
+                         data.getHits());
             projectEntry.addChild(packageEntry);
 
             /*   Extract source files for package   */
@@ -122,7 +124,8 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
         ReportEntryWithCodeFragment entry =
                 new ReportEntryWithCodeFragment(ReportConstants.level_sourcefile,
                      data.getName(), branchCoverage, lineCoverage,
-                     complexity.getCCNForSourceFile(data));
+                     complexity.getCCNForSourceFile(data),
+                        data.getHits());
 
         //TODO retrieve lines from sourcefile and add them to entry
 
@@ -147,7 +150,8 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
         GenericReportEntry entry =
                 new GenericReportEntry(ReportConstants.level_class,
                      data.getName(), branchCoverage, lineCoverage,
-                     complexity.getCCNForClass(data));
+                     complexity.getCCNForClass(data),
+                        data.getHits());
 
         sfentry.addChild(entry);
 
