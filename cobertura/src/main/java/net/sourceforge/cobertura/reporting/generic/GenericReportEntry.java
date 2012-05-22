@@ -4,7 +4,6 @@ import org.apache.log4j.Logger;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
-import sun.net.www.content.text.Generic;
 
 import java.util.*;
 
@@ -53,6 +52,11 @@ public class GenericReportEntry {
     public void addChild(GenericReportEntry entry) {
         childs.add(entry);
     }
+
+// should only access via getEntriesForLevel...
+// public Set<GenericReportEntry> getChilds(){
+//        return Collections.unmodifiableSet(childs);
+//    }
 
     /**
      * Returns level to which this information applies.
@@ -117,28 +121,59 @@ public class GenericReportEntry {
     private void buildMetricsMap(){
         //custom metrics should be add in the loadMetrics() method
         //add basicMetricData as IMetric
+        addBranchCoverageData();
+        addLineCoverageData();
+
         IMetric metric = new BasicMetric(
-                ReportConstants.metric_name_branch_coverage,
-                ReportConstants.metric_name_branch_coverage_desc,
-                basicMetricData.getBranchCoverageData().getCoverageRate());
-        metrics.put(metric.getName(), metric);
-
-        metric = new BasicMetric(
-                ReportConstants.metric_name_line_coverage,
-                ReportConstants.metric_name_line_coverage_desc,
-                basicMetricData.getLineCoverage().getCoverageRate());
-        metrics.put(metric.getName(), metric);
-
-        metric = new BasicMetric(
-                ReportConstants.metric_name_ccn,
-                ReportConstants.metric_name_ccn_desc,
+                ReportConstants.metricName_ccn,
+                ReportConstants.metricName_ccnDesc,
                 basicMetricData.getCyclomaticCodeComplexity());
         metrics.put(metric.getName(), metric);
 
         metric = new BasicMetric(
-                ReportConstants.metric_name_hits,
-                ReportConstants.metric_name_hits_desc,
+                ReportConstants.metricName_hits,
+                ReportConstants.metricName_hitsDesc,
                 basicMetricData.getHits());
+        metrics.put(metric.getName(), metric);
+    }
+
+    private void addBranchCoverageData(){
+        IMetric metric = new BasicMetric(
+                ReportConstants.metricName_branchCoverageRate,
+                ReportConstants.metricName_branchCoverageRateDesc,
+                basicMetricData.getBranchCoverageData().getCoverageRate());
+        metrics.put(metric.getName(), metric);
+
+        metric = new BasicMetric(
+                ReportConstants.metricName_coveredBranches,
+                ReportConstants.metricName_coveredBranchesDesc,
+                basicMetricData.getBranchCoverageData().getCovered());
+        metrics.put(metric.getName(), metric);
+
+        metric = new BasicMetric(
+                ReportConstants.metricName_totalBranches,
+                ReportConstants.metricName_totalBranchesDesc,
+                basicMetricData.getBranchCoverageData().getTotal());
+        metrics.put(metric.getName(), metric);
+    }
+
+    private void addLineCoverageData(){
+        IMetric metric = new BasicMetric(
+                ReportConstants.metricName_lineCoverageRate,
+                ReportConstants.metricName_lineCoverageRateDesc,
+                basicMetricData.getLineCoverage().getCoverageRate());
+        metrics.put(metric.getName(), metric);
+
+        metric = new BasicMetric(
+                ReportConstants.metricName_coveredLines,
+                ReportConstants.metricName_coveredLinesDesc,
+                basicMetricData.getLineCoverage().getCovered());
+        metrics.put(metric.getName(), metric);
+
+        metric = new BasicMetric(
+                ReportConstants.metricName_totalLines,
+                ReportConstants.metricName_totalLinesDesc,
+                basicMetricData.getLineCoverage().getTotal());
         metrics.put(metric.getName(), metric);
     }
 }

@@ -114,7 +114,7 @@ public class ThresholdsLookup {
                         thresholdsLookup.get(buildKey(currentLevel, levelName)).containsKey(metric.getName())){
                     threshold = thresholdsLookup.get(buildKey(currentLevel, levelName)).get(metric.getName());
                 }
-            }while(threshold==null && ((currentLevel=levels.getNextLevel(currentLevel))!=null));
+            }while(threshold==null && ((currentLevel=levels.getHigherLevel(currentLevel))!=null));
         }
         return threshold;
     }

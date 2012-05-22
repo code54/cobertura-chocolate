@@ -14,11 +14,21 @@ public class Levels {
         };
     }
 
-    public String getNextLevel(String currentLevel){
+    public String getHigherLevel(String currentLevel){
         for(int j=0;j<levels.length;j++){
             if(levels[j].equals(currentLevel)&&
                     !currentLevel.equals(ReportConstants.level_project)){
                 return levels[j+1];
+            }
+        }
+        return null;
+    }
+
+    public String getLowerLevel(String currentLevel){
+        for(int j=0;j<levels.length;j++){
+            if(levels[j].equals(currentLevel)&&
+                    !currentLevel.equals(ReportConstants.level_method)){
+                return levels[j-1];
             }
         }
         return null;

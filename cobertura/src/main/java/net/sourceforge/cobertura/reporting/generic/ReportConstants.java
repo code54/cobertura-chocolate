@@ -11,12 +11,26 @@ public class ReportConstants {
 
     public static final String threshold_criteria_all = "all";
 
-    public static final String metric_name_branch_coverage = "branch_coverage";
-    public static final String metric_name_branch_coverage_desc = "Branch coverage";
-    public static final String metric_name_line_coverage = "line_coverage";
-    public static final String metric_name_line_coverage_desc = "Line coverage";
-    public static final String metric_name_ccn = "ccn";
-    public static final String metric_name_ccn_desc = "Cyclic Complexity Number";
-    public static final String metric_name_hits = "hits";
-    public static final String metric_name_hits_desc = "Hits";
+    public static final String metricName_branchCoverageRate = "branch_coverage_rate";
+    public static final String metricName_branchCoverageRateDesc = "Branch coverage rate";
+
+    public static final String metricName_totalBranches = "total_branches";
+    public static final String metricName_totalBranchesDesc = "Total branches";
+
+    public static final String metricName_coveredBranches = "covered_branches";
+    public static final String metricName_coveredBranchesDesc = "Covered branches";
+
+    public static final String metricName_lineCoverageRate = "line_coverage_rate";
+    public static final String metricName_lineCoverageRateDesc = "Line coverage rate";
+
+    public static final String metricName_totalLines = "total_lines";
+    public static final String metricName_totalLinesDesc = "Total lines";
+
+    public static final String metricName_coveredLines = "covered_lines";
+    public static final String metricName_coveredLinesDesc = "Covered lines";
+
+    public static final String metricName_ccn = "ccn";
+    public static final String metricName_ccnDesc = "Cyclic Complexity Number";
+    public static final String metricName_hits = "hits";
+    public static final String metricName_hitsDesc = "Hits";
 }

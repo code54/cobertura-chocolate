@@ -3,13 +3,10 @@ package net.sourceforge.cobertura.ant;
 import net.sourceforge.cobertura.Arguments;
 import net.sourceforge.cobertura.Cobertura;
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
-import net.sourceforge.cobertura.reporting.generic.BasicMetricData;
 import net.sourceforge.cobertura.reporting.generic.GenericReportEntry;
 import net.sourceforge.cobertura.reporting.generic.ReportConstants;
-import net.sourceforge.cobertura.reporting.xml.XmlReportFormatStrategy;
 import net.sourceforge.cobertura.util.DirectoryClassLoader;
 import org.apache.log4j.Logger;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
@@ -23,7 +20,6 @@ import java.io.IOException;
 import java.util.*;
 
 import static junit.framework.Assert.assertEquals;
-import static net.sourceforge.cobertura.testutil.Util.removeTestReportFiles;
 import static net.sourceforge.cobertura.util.ArchiveUtil.getFiles;
 
 public class CodeInstrumentationIntegrationTest {
@@ -90,11 +86,11 @@ public class CodeInstrumentationIntegrationTest {
         GenericReportEntry report = cobertura.report().getEntriesForLevel(ReportConstants.level_project).get(0);
 
         assertEquals("Branch coverage violation", 0.25925925925925924,
-                report.getMetric(ReportConstants.metric_name_branch_coverage).getValue());
+                report.getMetric(ReportConstants.metricName_branchCoverageRate).getValue());
         assertEquals("Line coverage violation", 0.723404255319149,
-                report.getMetric(ReportConstants.metric_name_line_coverage).getValue());
+                report.getMetric(ReportConstants.metricName_lineCoverageRate).getValue());
         //assertEquals("Cyclomatic complexity", 0.,
-        //      report.getMetric(ReportConstants.metric_name_ccn));
+        //      report.getMetric(ReportConstants.metricName_ccn));
 
         cleanFiles(basedir);
     }
