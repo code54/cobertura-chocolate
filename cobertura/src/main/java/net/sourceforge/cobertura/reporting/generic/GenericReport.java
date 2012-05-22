@@ -1,7 +1,9 @@
 package net.sourceforge.cobertura.reporting.generic;
 
+import net.sourceforge.cobertura.coveragedata.*;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.ElementList;
+import org.simpleframework.xml.ElementMap;
 
 import java.util.*;
 
@@ -19,18 +21,24 @@ public class GenericReport {
     //create a thresholds lookup object; not persisted, loaded on initialization
     private ThresholdsLookup thresholdsLookup;
 
-
     @ElementList(inline=true)
     private List<GenericReportEntry> entries;
+
+    @ElementList(inline=true)
+    private Set<SourceFile> sourceFiles;
+
+    private SourceFilesLookup sourceFilesLookup;
 
     public GenericReport(){
         init();
     }
 
-    public GenericReport(List<GenericReportEntry> entries){
+    public GenericReport(List<GenericReportEntry> entries, Set<SourceFile> sourceFiles){
         init();
         created = new Date();
         this.entries = Collections.unmodifiableList(entries);
+        this.sourceFiles = Collections.unmodifiableSet(sourceFiles);
+        sourceFilesLookup = new SourceFilesLookup(this.sourceFiles);
     }
 
     public void addThreshold(Threshold threshold){
@@ -40,7 +48,7 @@ public class GenericReport {
 
     public List<GenericReportEntry>getEntriesForLevel(String level){
         List<GenericReportEntry>entries = new ArrayList<GenericReportEntry>();
-        for(GenericReportEntry entry : entries){
+        for(GenericReportEntry entry : this.entries){
             entry.getEntriesForLevel(entries, level);
         }
         return entries;
@@ -50,9 +58,18 @@ public class GenericReport {
         return thresholdsLookup.getThresholds(entry.getEntryLevel(), entry.getName());
     }
 
+    public Set<SourceFileEntry> getSourceLinesByClass(String className){
+        return sourceFilesLookup.getSourceLinesByClass(className);
+    }
+
+    public Set<SourceFileEntry> getSourceLinesByMethod(String className, String method){
+        return sourceFilesLookup.getSourceLinesByMethod(className, method);
+    }
+
     /*   Aux init method   */
     private void init(){
         entries = new ArrayList<GenericReportEntry>();
+        sourceFiles = new HashSet<SourceFile>();
         thresholds = new HashSet<Threshold>();
         thresholdsLookup = new ThresholdsLookup(new MetricsLoader().getMetrics());
     }

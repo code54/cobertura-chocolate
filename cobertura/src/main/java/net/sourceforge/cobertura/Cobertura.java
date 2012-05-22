@@ -6,6 +6,7 @@ import net.sourceforge.cobertura.instrument.CodeInstrumentationTask;
 import net.sourceforge.cobertura.reporting.generic.GenericReport;
 import net.sourceforge.cobertura.reporting.generic.IReportBuilderFactory;
 import net.sourceforge.cobertura.reporting.generic.ReportBuilderFactory;
+import net.sourceforge.cobertura.util.FileFinder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +64,13 @@ public class Cobertura {
         }
         List<ProjectData> projects = new ArrayList<ProjectData>();
         projects.add(getProjectDataInstance());
-        return reportBuilderFactory.getInstance(args.getTargetedLanguage()).getReport(projects);
+
+        //TODO currently we set up a fileFinder with baseDir; see how to restructure args...
+        FileFinder fileFinder = new FileFinder();
+        fileFinder.addSourceDirectory(args.getBaseDirectory().getAbsolutePath());
+
+        return reportBuilderFactory.getInstance(args.getTargetedLanguage())
+                .getReport(projects, args.getEncoding(), fileFinder);
     }
 
     public Cobertura saveProjectData(){

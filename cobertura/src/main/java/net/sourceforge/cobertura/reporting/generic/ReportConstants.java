@@ -6,6 +6,7 @@ public class ReportConstants {
     public static final String level_sourcefile = "sourcefile";
     public static final String level_class = "class";
     public static final String level_method = "method";
+    public static final String level_line = "line";
     public static final String level_all = "all";
 
     public static final String threshold_criteria_all = "all";

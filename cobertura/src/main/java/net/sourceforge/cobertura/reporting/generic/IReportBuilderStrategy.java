@@ -1,6 +1,7 @@
 package net.sourceforge.cobertura.reporting.generic;
 
 import net.sourceforge.cobertura.coveragedata.ProjectData;
+import net.sourceforge.cobertura.util.FileFinder;
 
 import java.util.List;
 
@@ -16,7 +17,8 @@ public interface IReportBuilderStrategy {
      * Returns a GenericReport instance with collected data.
      * @return
      */
-    GenericReport getReport(List<ProjectData> projects);
+    GenericReport getReport(List<ProjectData> projects,
+                            String sourceEncoding, FileFinder finder);
 
     /**
      * Returns the name of the targeted lang is capable

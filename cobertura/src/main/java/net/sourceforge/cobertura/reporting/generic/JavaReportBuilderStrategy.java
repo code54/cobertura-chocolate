@@ -1,16 +1,17 @@
 package net.sourceforge.cobertura.reporting.generic;
 
-import net.sourceforge.cobertura.coveragedata.ClassData;
-import net.sourceforge.cobertura.coveragedata.PackageData;
-import net.sourceforge.cobertura.coveragedata.ProjectData;
-import net.sourceforge.cobertura.coveragedata.SourceFileData;
+import net.sourceforge.cobertura.coveragedata.*;
 import net.sourceforge.cobertura.reporting.ComplexityCalculator;
 import net.sourceforge.cobertura.util.Constants;
 import net.sourceforge.cobertura.util.FileFinder;
+import net.sourceforge.cobertura.util.Source;
+import org.apache.xerces.impl.xpath.regex.Match;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
 
 /**
  * Handles ProjectData information and puts it into a GenericReport object.
@@ -18,18 +19,28 @@ import java.util.List;
 public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
 
     private List<GenericReportEntry> entries;
+    private Set<SourceFile> sourceFiles;
+
+    private String encoding;
+    private FileFinder fileFinder;
 
     public JavaReportBuilderStrategy(){}
 
-    public GenericReport getReport(List<ProjectData> projects){
+    public GenericReport getReport(
+            List<ProjectData> projects,
+            String sourceEncoding, FileFinder finder){
+        this.encoding = sourceEncoding;
+        this.fileFinder = finder;
         entries = new ArrayList<GenericReportEntry>();
-        ComplexityCalculator complexity = new ComplexityCalculator(new FileFinder());
+        sourceFiles = new HashSet<SourceFile>();
+        ComplexityCalculator complexity = new ComplexityCalculator(fileFinder);
 
         for(ProjectData project : projects){
             buildPackageAndSourceFilesAndClassesReportEntries(project, complexity,
                 buildProjectReportEntry(project, complexity));
+            processSourceFileData(project);
         }
-        return new GenericReport(entries);
+        return new GenericReport(entries, sourceFiles);
     }
 
     @Override
@@ -121,13 +132,11 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
                         data.getNumberOfCoveredLines(),
                         data.getLineCoverageRate());
 
-        ReportEntryWithCodeFragment entry =
-                new ReportEntryWithCodeFragment(ReportConstants.level_sourcefile,
+        GenericReportEntry entry =
+                new GenericReportEntry(ReportConstants.level_sourcefile,
                      data.getName(), branchCoverage, lineCoverage,
                      complexity.getCCNForSourceFile(data),
                         data.getHits());
-
-        //TODO retrieve lines from sourcefile and add them to entry
 
         return entry;
     }
@@ -155,20 +164,128 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
 
         sfentry.addChild(entry);
 
-        //TODO finish adding method level data support
-        /*
         Iterator<String>methodNames = data.getMethodNamesAndDescriptors().iterator();
+
         while(methodNames.hasNext()){
             String methodName = methodNames.next();
             Iterator<LineData>lines = data.getLines(methodName).iterator();
 
+            Set<GenericReportEntry>lineEntries = new HashSet<GenericReportEntry>();
             //declare method level variables to collect data
+            long methodValidBranches = 0;
+            long methodCoveredBranches = 0;
+            long methodValidLines = 0;
+            long methodCoveredLines = 0;
+            long methodHits = 0;
+            //TODO we are setting line level complexity to 0 and method level complexity to 0
             while(lines.hasNext()){
                 LineData line = lines.next();
-                //retrieve and aggregate data
+                lineEntries.add(
+                        new GenericReportEntry(ReportConstants.level_line,
+                                ""+line.getLineNumber(),
+                                new CoverageData(line.getNumberOfCoveredBranches(),
+                                    line.getNumberOfValidBranches(),
+                                    line.getBranchCoverageRate()),
+                                new CoverageData(line.getNumberOfCoveredLines(),
+                                    line.getNumberOfValidLines(),
+                                    line.getLineCoverageRate()),
+                                0, line.getHits()));
+
+                methodValidBranches+=line.getNumberOfValidBranches();
+                methodCoveredBranches+=line.getNumberOfCoveredBranches();
+
+                methodValidLines+=line.getNumberOfValidLines();
+                methodCoveredLines+=line.getNumberOfCoveredLines();
+
+                methodHits+=line.getHits();
+            }
+
+            GenericReportEntry methodLevelEntry =
+                    new GenericReportEntry(
+                            ReportConstants.level_method,
+                            methodName,
+                            new CoverageData(methodCoveredBranches,
+                                    methodValidBranches,
+                                    getRate(methodCoveredBranches,methodValidBranches)),
+                            new CoverageData(methodCoveredLines,
+                                    methodValidLines,
+                                    getRate(methodCoveredLines,methodValidLines)),
+                            -1,methodHits);
+
+            entry.addChild(methodLevelEntry);
+
+            for(GenericReportEntry lineLevelEntry : lineEntries){
+                methodLevelEntry.addChild(lineLevelEntry);
             }
         }
-        */
     }
 
+    private void processSourceFileData(ProjectData project){
+        Iterator<SourceFileData>sourceFiles = project.getSourceFiles().iterator();
+        SourceFileData sourceFileData;
+        SourceFile sourceFile;
+        while (sourceFiles.hasNext()){
+            sourceFileData = sourceFiles.next();
+            sourceFile = new SourceFile(sourceFileData.getName());
+            this.sourceFiles.add(sourceFile);
+            //we need to get the file and parse its lines
+            Map<Integer, String> lines = getSourceFileLines(sourceFileData);
+
+            //get class, method and line data
+            Iterator<ClassData>classes = sourceFileData.getClasses().iterator();
+            ClassData classData;
+            while(classes.hasNext()){
+                classData = classes.next();
+                Iterator<String>methods = classData.getMethodNamesAndDescriptors().iterator();
+                String method;
+                while(methods.hasNext()){
+                    Iterator<LineData>line = classData.getLines(method = methods.next()).iterator();
+                    while(line.hasNext()){
+                        int linenumber = line.next().getLineNumber();
+                        sourceFile.addEntry(
+                                new SourceFileEntry(
+                                        classData.getName(),
+                                        method,
+                                        linenumber,
+                                        lines.get(linenumber)));
+                    }
+                }
+            }
+        }
+    }
+
+    private Map<Integer, String> getSourceFileLines(SourceFileData data) {
+        Map<Integer, String> lines = new HashMap<Integer, String>();
+        Source source = fileFinder.getSource(data.getName());
+
+        if (source == null) {
+            throw new RuntimeException("Unable to locate " + data.getName());
+        }
+        BufferedReader br;
+        try {
+            br = new BufferedReader(new InputStreamReader(source.getInputStream(), encoding));
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            String lineStr;
+            int lineNumber = 1;
+            while ((lineStr = br.readLine()) != null) {
+                if (data.isValidSourceLineNumber(lineNumber)) {
+                    lines.put(lineNumber, lineStr);
+                }
+                lineNumber++;
+            }
+        } catch (IOException e) {
+            //TODO see how to deal with this. We wont blow up just because of a singe file...
+        }
+        return lines;
+    }
+
+    private double getRate(double first, double total){
+        if(total==0){
+            return 0;
+        }
+        return first/total;
+    }
 }

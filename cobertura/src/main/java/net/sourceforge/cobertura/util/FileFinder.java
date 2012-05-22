@@ -137,6 +137,9 @@ public class FileFinder {
 	 * @throws NullPointerException if fileName is null
 	 */
 	public File getFileForSource(String fileName) throws IOException {
+
+        System.out.println("[FileFinder] Looking for "+fileName);//todo delete
+
 		// Correct file name
 		if( LOGGER.isDebugEnabled())
 			LOGGER.debug( "Searching for file, name=[" + fileName + "]");
@@ -184,6 +187,9 @@ public class FileFinder {
 		try
 		{
 			file = getFileForSource(fileName);
+
+            System.out.println("[FileFinder] absolute path is "+file.getAbsolutePath());
+
 			return new Source(new FileInputStream(file), file);
 		}
 		catch (IOException e)
