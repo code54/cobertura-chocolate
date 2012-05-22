@@ -12,17 +12,19 @@ public class ValidateThresholdReportStrategy implements IReportFormatStrategy {
     public void save(GenericReport report) {
         List<GenericReportEntry> entries =
                 report.getEntriesForLevel(ReportConstants.level_all);
+
+        //retrieve all thresholds and compare for each entry
+        //if dont pass, add to result
         for(GenericReportEntry e : entries){
             Iterator<Threshold>thresholds =
                     report.getThresholds(e).iterator();
             while (thresholds.hasNext()){
                 Threshold t = thresholds.next();
-                e.getCustomMetrics();
+                if(t.isBelowThreshold(e.getMetric(t.getMetricName()).getValue())){
+                    //todo save metric+entry data
+                }
             }
         }
-
-        //retrieve all thresholds and compare for each entry
-        //if dont pass, add to result
 
         //produce an xml
     }

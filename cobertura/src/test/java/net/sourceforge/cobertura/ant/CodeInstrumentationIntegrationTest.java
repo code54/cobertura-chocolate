@@ -88,11 +88,13 @@ public class CodeInstrumentationIntegrationTest {
 
         //get report
         GenericReportEntry report = cobertura.report().getEntriesForLevel(ReportConstants.level_project).get(0);
-        BasicMetricData metricData = report.getBasicMetricData();
 
-        assertEquals("Branch coverage violation", 0.25925925925925924, metricData.getBranchCoverageData().getCoverageRate());
-        assertEquals("Line coverage violation", 0.723404255319149, metricData.getLineCoverage().getCoverageRate());
-        //assertEquals("Cyclomatic complexity", 0., metricData.getCyclomaticCodeComplexity());
+        assertEquals("Branch coverage violation", 0.25925925925925924,
+                report.getMetric(ReportConstants.metric_name_branch_coverage).getValue());
+        assertEquals("Line coverage violation", 0.723404255319149,
+                report.getMetric(ReportConstants.metric_name_line_coverage).getValue());
+        //assertEquals("Cyclomatic complexity", 0.,
+        //      report.getMetric(ReportConstants.metric_name_ccn));
 
         cleanFiles(basedir);
     }
