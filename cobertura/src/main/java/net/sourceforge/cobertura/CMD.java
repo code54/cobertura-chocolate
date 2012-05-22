@@ -54,7 +54,7 @@ public class CMD {
 			}else{
                 //if no constant is specified,
                 // we assume the string indicates a file to be instrumented
-                arguments.addFileToInstrument(args[++i]);
+                arguments.addFileToInstrument(args[i]);
                 //TODO see that at merge task files are specified in the same way:
                 //we should decide if in the future is more convenient to merge reports...
 			}

@@ -26,6 +26,7 @@
 package net.sourceforge.cobertura.instrument;
 
 import net.sourceforge.cobertura.util.RegexUtil;
+import org.apache.oro.text.regex.Pattern;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -110,6 +111,10 @@ public class ClassPattern{
 		RegexUtil.addRegex(includeClassesRegexes, regex);
 	}
 
+    void addIncludeClassesRegex(Collection<Pattern>regexes){
+		includeClassesRegexes.addAll(regexes);
+	}
+
 	/**
 	 * Add a regex to the list of class regexes to exclude.
 	 * 
@@ -117,5 +122,9 @@ public class ClassPattern{
 	 */
 	void addExcludeClassesRegex(String regex){
 		RegexUtil.addRegex(excludeClassesRegexes, regex);
+	}
+
+    void addExcludeClassesRegex(Collection<Pattern> regexes){
+		excludeClassesRegexes.addAll(regexes);
 	}
 }

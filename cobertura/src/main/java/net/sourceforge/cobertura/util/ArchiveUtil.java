@@ -28,6 +28,7 @@
 package net.sourceforge.cobertura.util;
 
 import java.io.File;
+import java.util.zip.ZipEntry;
 
 /**
  * Utility methods for working with archives.
@@ -74,5 +75,14 @@ public abstract class ArchiveUtil {
         // The directory is now empty so delete it
         return dir.delete();
     }
+
+    /**
+	 * @param entry A zip entry.
+	 * @return True if the specified entry has "class" as its extension,
+	 * false otherwise.
+	 */
+	public static boolean isClass(ZipEntry entry){
+		return entry.getName().endsWith(".class");
+	}
 
 }

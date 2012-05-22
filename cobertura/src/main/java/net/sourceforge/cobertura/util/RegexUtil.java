@@ -57,14 +57,11 @@ public abstract class RegexUtil
 	 * @param str The string to check for a match.
 	 * @return True if a match is found.
 	 */
-	public static boolean matches(Collection regexs, String str)
-	{
+	public static boolean matches(Collection regexs, String str){
 		Iterator iter = regexs.iterator();
-		while (iter.hasNext())
-		{
+		while (iter.hasNext()){
 			Pattern regex = (Pattern)iter.next();
-			if (pm.matches(str, regex))
-			{
+			if (pm.matches(str, regex)){
 				return true;
 			}
 		}

@@ -1,6 +1,7 @@
 package net.sourceforge.cobertura;
 
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
+import net.sourceforge.cobertura.instrument.CoberturaFile;
 import net.sourceforge.cobertura.util.RegexUtil;
 
 import java.io.File;
@@ -43,6 +44,7 @@ public class Arguments {
     }
 
     public Arguments setBaseDirectory(String baseDir){
+        System.out.println("****** Base dir is "+baseDir);//TODO remove;
         baseDirectory = new File(baseDir);
         return this;
     }
@@ -138,7 +140,12 @@ public class Arguments {
     }
 
     public Arguments addFileToInstrument(String file){
-        filesToInstrument.add(new File(file));
+        String baseDir = ".";
+        if(getBaseDirectory()!=null){
+            baseDir = getBaseDirectory().getAbsolutePath();
+        }
+
+        filesToInstrument.add(new CoberturaFile(baseDir, file));//FIXME
         return this;
     }
 
@@ -200,11 +207,11 @@ public class Arguments {
         return commandsFile;
     }
 
-    public boolean isFailOnError() {
+    public boolean failOnError() {
         return failOnError;
     }
 
-    public boolean isIgnoreTrivial() {
+    public boolean ignoreTrivial() {
         return ignoreTrivial;
     }
 
@@ -239,4 +246,33 @@ public class Arguments {
     public double getTotalBranchThreshold() {
         return totalBranchThreshold;
     }
+
+    public Collection getIgnoreRegexes(){
+        return ignoreRegexes;
+    }
+
+    public Collection getIgnoreBranchesRegexes(){
+        return ignoreBranchesRegexes;
+    }
+
+    public Collection getIgnoreMethodAnnotations(){
+        return ignoreMethodAnnotations;
+    }
+
+    public Collection getClassPatternIncludeClassesRegexes(){
+        return classPatternIncludeClassesRegexes;
+    }
+
+    public Collection getClassPatternExcludeClassesRegexes(){
+        return classPatternExcludeClassesRegexes;
+    }
+
+    public Set<File>getFilesToInstrument(){
+        return filesToInstrument;
+    }
+
+    public Set<File>getFilesToMerge(){
+        return filesToMerge;
+    }
+
 }
