@@ -1,10 +1,10 @@
 package net.sourceforge.cobertura.reporting.generic;
 
 public interface ICustomMetric {
-    public static final String level_project = GenericReportEntry.level_project;
-    public static final String level_package = GenericReportEntry.level_package;
-    public static final String level_class = GenericReportEntry.level_class;
-    public static final String level_method = GenericReportEntry.level_method;
+    public static final String level_project = ReportConstants.level_project;
+    public static final String level_package = ReportConstants.level_package;
+    public static final String level_class = ReportConstants.level_class;
+    public static final String level_method = ReportConstants.level_method;
 
     /**
      * Metrics name;
@@ -37,5 +37,4 @@ public interface ICustomMetric {
      * @param data
      */
     void setBasicMetricData(BasicMetricData data);
-
 }

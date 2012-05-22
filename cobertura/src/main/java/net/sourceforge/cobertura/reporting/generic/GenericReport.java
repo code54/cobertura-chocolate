@@ -20,11 +20,11 @@ public class GenericReport {
     @Attribute
     private Date created;
 
-    //TODO makes sense move this to GenericReportEntry, so that different thresholds
-    //are supported per project, etc?  See CoverageData thresholds...
-    @ElementMap(entry="threshold", key="name", valueType = java.lang.Double.class,
-             keyType = String.class, attribute=true, inline=true, required = false)
-    private Map<String, Double>thresholds;
+    @ElementList(inline=true)
+    private Set<Threshold>thresholds;
+    //create a thresholds lookup object; not persisted, loaded on initialization
+    private ThresholdsLookup thresholdsLookup;
+
 
     @ElementList(inline=true)
     private List<GenericReportEntry> projectsReport;
@@ -43,14 +43,24 @@ public class GenericReport {
         }
     }
 
-    public void addThreshold(String name, double value){
-        thresholds.put(name, value);
+    public void addThreshold(Threshold threshold){
+        thresholds.add(threshold);
+        thresholdsLookup.add(threshold);
+    }
+
+    public List<GenericReportEntry>getProjectsReport(){
+        return Collections.unmodifiableList(projectsReport);
+    }
+
+    public Set<Threshold> getThresholds(GenericReportEntry entry){
+        return thresholdsLookup.getThresholds(entry.getEntryLevel(), entry.getName());
     }
 
     /*   Aux init method   */
     private void init(){
         projectsReport = new ArrayList<GenericReportEntry>();
-        thresholds = new HashMap<String, Double>();
+        thresholds = new HashSet<Threshold>();
+        thresholdsLookup = new ThresholdsLookup(new MetricsLoader().getMetrics());
     }
 
     /*  Aux methods to extract data from model object   */
@@ -60,16 +70,16 @@ public class GenericReport {
                 new CoverageData(
                         project.getNumberOfValidBranches(),
                         project.getNumberOfCoveredBranches(),
-                        project.getBranchCoverageRate(), 0);
+                        project.getBranchCoverageRate());
 
         CoverageData lineCoverage =
                 new CoverageData(
                         project.getNumberOfValidLines(),
                         project.getNumberOfCoveredLines(),
-                        project.getLineCoverageRate(), 0);
+                        project.getLineCoverageRate());
 
         GenericReportEntry entry =
-                new GenericReportEntry(GenericReportEntry.level_project,
+                new GenericReportEntry(ReportConstants.level_project,
                 project.getName(), branchCoverage, lineCoverage,
                         complexity.getCCNForProject(project),
                         project.getClasses().size(),
@@ -92,16 +102,16 @@ public class GenericReport {
                 new CoverageData(
                         data.getNumberOfValidBranches(),
                         data.getNumberOfCoveredBranches(),
-                        data.getBranchCoverageRate(), 0);
+                        data.getBranchCoverageRate());
 
         CoverageData lineCoverage =
                 new CoverageData(
                         data.getNumberOfValidLines(),
                         data.getNumberOfCoveredLines(),
-                        data.getLineCoverageRate(), 0);
+                        data.getLineCoverageRate());
 
          GenericReportEntry packageEntry =
-                 new GenericReportEntry(GenericReportEntry.level_package,
+                 new GenericReportEntry(ReportConstants.level_package,
                         data.getName(), branchCoverage, lineCoverage,
                         complexity.getCCNForPackage(data),
                         data.getClasses().size(),
@@ -130,16 +140,16 @@ public class GenericReport {
                 new CoverageData(
                         data.getNumberOfValidBranches(),
                         data.getNumberOfCoveredBranches(),
-                        data.getBranchCoverageRate(), 0);
+                        data.getBranchCoverageRate());
 
         CoverageData lineCoverage =
                 new CoverageData(
                         data.getNumberOfValidLines(),
                         data.getNumberOfCoveredLines(),
-                        data.getLineCoverageRate(), 0);
+                        data.getLineCoverageRate());
 
         ReportEntryWithCodeFragment entry =
-                new ReportEntryWithCodeFragment(GenericReportEntry.level_sourcefile,
+                new ReportEntryWithCodeFragment(ReportConstants.level_sourcefile,
                      data.getName(), branchCoverage, lineCoverage,
                      complexity.getCCNForSourceFile(data),
                         data.getClasses().size(),1);
@@ -156,16 +166,16 @@ public class GenericReport {
                 new CoverageData(
                         data.getNumberOfValidBranches(),
                         data.getNumberOfCoveredBranches(),
-                        data.getBranchCoverageRate(), 0);
+                        data.getBranchCoverageRate());
 
         CoverageData lineCoverage =
                 new CoverageData(
                         data.getNumberOfValidLines(),
                         data.getNumberOfCoveredLines(),
-                        data.getLineCoverageRate(), 0);
+                        data.getLineCoverageRate());
 
         GenericReportEntry entry =
-                new GenericReportEntry(GenericReportEntry.level_class,
+                new GenericReportEntry(ReportConstants.level_class,
                      data.getName(), branchCoverage, lineCoverage,
                      complexity.getCCNForClass(data),1,1);
 

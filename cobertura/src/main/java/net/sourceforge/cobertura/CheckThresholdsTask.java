@@ -3,9 +3,15 @@ package net.sourceforge.cobertura;
 import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.PackageData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
+import net.sourceforge.cobertura.reporting.ComplexityCalculator;
+import net.sourceforge.cobertura.reporting.generic.GenericReport;
+import net.sourceforge.cobertura.util.FileFinder;
 import org.apache.log4j.Logger;
+import sun.net.www.content.text.Generic;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class CheckThresholdsTask {
     private static final Logger log = Logger.getLogger(CheckThresholdsTask.class);
