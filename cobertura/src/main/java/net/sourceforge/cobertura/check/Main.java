@@ -24,14 +24,9 @@
 
 package net.sourceforge.cobertura.check;
 
-import net.sourceforge.cobertura.Arguments;
 import net.sourceforge.cobertura.CMD;
-import net.sourceforge.cobertura.CheckThresholdsTask;
 import net.sourceforge.cobertura.Cobertura;
-import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
-import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.util.Header;
-
 import org.apache.log4j.Logger;
 import org.apache.oro.text.regex.MalformedPatternException;
 

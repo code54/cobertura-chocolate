@@ -5,7 +5,10 @@ import net.sourceforge.cobertura.instrument.CoberturaFile;
 import net.sourceforge.cobertura.util.RegexUtil;
 
 import java.io.File;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * Encapsulates arguments;

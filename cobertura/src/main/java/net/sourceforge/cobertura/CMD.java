@@ -2,8 +2,6 @@ package net.sourceforge.cobertura;
 
 import net.sourceforge.cobertura.util.Constants;
 
-import java.util.*;
-
 /**
  * This class receives cmd parameters,
  * parses them and passes them to the

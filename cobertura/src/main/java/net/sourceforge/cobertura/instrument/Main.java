@@ -29,15 +29,11 @@
 
 package net.sourceforge.cobertura.instrument;
 
-import net.sourceforge.cobertura.Arguments;
 import net.sourceforge.cobertura.CMD;
 import net.sourceforge.cobertura.Cobertura;
-import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
-import net.sourceforge.cobertura.coveragedata.ProjectData;
-import net.sourceforge.cobertura.util.*;
+import net.sourceforge.cobertura.util.CommandLineBuilder;
+import net.sourceforge.cobertura.util.Header;
 import org.apache.log4j.Logger;
-
-import java.util.Arrays;
 
 public class Main{
 
