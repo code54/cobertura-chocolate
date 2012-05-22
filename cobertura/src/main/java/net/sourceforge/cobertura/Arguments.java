@@ -159,12 +159,16 @@ public class Arguments {
         filesToInstrument = new HashSet<File>();
         filesToMerge = new HashSet<File>();
 
-        classBranchThreshold = 0.5;
-        classLineThreshold = 0.5;
-        packageBranchThreshold = 0.5;
-        packageLineThreshold = 0.5;
-        totalBranchThreshold = 0.5;
-        totalLineThreshold = 0.5;
+        //previous rule was: default threshold is 0.5 for all
+        //if a threshold is specified, the others are defaulted to 0
+        //TODO review where that rule may make sense or
+        //if it makes sense to specify a "defaulthreshold" value
+        classBranchThreshold = 0.;
+        classLineThreshold = 0.;
+        packageBranchThreshold = 0.;
+        packageLineThreshold = 0.;
+        totalBranchThreshold = 0.;
+        totalLineThreshold = 0.;
     }
 
     private double inRangeAndDivideByOneHundred(String coverageRateAsPercentage){
