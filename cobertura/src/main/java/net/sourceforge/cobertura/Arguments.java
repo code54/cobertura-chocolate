@@ -44,7 +44,6 @@ public class Arguments {
     }
 
     public Arguments setBaseDirectory(String baseDir){
-        System.out.println("****** Base dir is "+baseDir);//TODO remove;
         baseDirectory = new File(baseDir);
         return this;
     }

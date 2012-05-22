@@ -27,6 +27,7 @@ package net.sourceforge.cobertura.check;
 import net.sourceforge.cobertura.Arguments;
 import net.sourceforge.cobertura.CMD;
 import net.sourceforge.cobertura.CheckThresholdsTask;
+import net.sourceforge.cobertura.Cobertura;
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.util.Header;
@@ -39,16 +40,10 @@ public class Main{
 
 	public static void main(String[] args) throws MalformedPatternException{
         Header.print(System.out);
-		Arguments arguments = new CMD().parseArguments(args).getArguments();
-        ProjectData projectData = CoverageDataFileHandler
-				.loadCoverageData(arguments.getDataFile());
-
-		if (projectData == null){
-			log.error("Error: Unable to read from data file "
-					+ arguments.getDataFile().getAbsolutePath());
-			System.exit(1);
-		}
-
-		System.exit(new CheckThresholdsTask().checkThresholds(arguments, projectData).getCheckThresholdsExitStatus());
+		System.exit(
+                new Cobertura(
+                        new CMD().parseArguments(args).getArguments()
+                ).checkThresholds().getCheckThresholdsExitStatus()
+        );
 	}
 }

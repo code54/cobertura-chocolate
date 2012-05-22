@@ -31,6 +31,7 @@ package net.sourceforge.cobertura.instrument;
 
 import net.sourceforge.cobertura.Arguments;
 import net.sourceforge.cobertura.CMD;
+import net.sourceforge.cobertura.Cobertura;
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.util.*;
@@ -43,11 +44,6 @@ public class Main{
     private static final Logger log = Logger.getLogger(Main.class);
 
 	public static void main(String[] args) throws Throwable{
-
-        log.info("Arguments are: "+ Arrays.asList(args));
-
-
-
 		Header.print(System.out);
 		long startTime = System.currentTimeMillis();
 
@@ -58,21 +54,7 @@ public class Main{
 			System.exit(1);
 		}
 
-        Arguments arguments = new CMD().parseArguments(args).getArguments();
-		// Parse our parameters
-
-		ProjectData projectData=null;
-
-		// Load coverage data; see notes at the beginning of this class
-		if (arguments.getDataFile().isFile())
-			projectData = CoverageDataFileHandler.loadCoverageData(arguments.getDataFile());
-		if (projectData == null)
-			projectData = new ProjectData();
-
-        new CodeInstrumentationTask().instrument(arguments,projectData);
-
-		// Save coverage data
-		CoverageDataFileHandler.saveCoverageData(projectData, arguments.getDataFile());
+		new Cobertura(new CMD().parseArguments(args).getArguments()).instrumentCode().saveProjectData();
 
 		log.info("Instrument time: " + (System.currentTimeMillis() - startTime) + "ms");
 	}

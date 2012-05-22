@@ -9,8 +9,6 @@ import java.util.Iterator;
 
 public class CheckThresholdsTask {
     private static final Logger log = Logger.getLogger(CheckThresholdsTask.class);
-
-    private ProjectData projectData;
     private int checkThresholdsExitStatus;
 
     /**
@@ -64,6 +62,18 @@ public class CheckThresholdsTask {
         return this;
     }
 
+    /**
+     * Exit status values are:
+     * <ul>
+     *     <li>2- class branch coverage rate violation</li>
+     *     <li>4- class line coverage rate violation</li>
+     *     <li>8- total branch coverage rate violation</li>
+     *     <li>8- total line coverage rate violation</li>
+     *     <li>32- package branch coverage rate violation</li>
+     *     <li>64- package line coverage rate violation</li>
+     * </ul>
+     * @return
+     */
     public int getCheckThresholdsExitStatus() {
         return checkThresholdsExitStatus;
     }
