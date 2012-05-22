@@ -28,6 +28,7 @@
 package net.sourceforge.cobertura.util;
 
 import java.io.File;
+import java.util.List;
 import java.util.zip.ZipEntry;
 
 /**
@@ -84,5 +85,23 @@ public abstract class ArchiveUtil {
 	public static boolean isClass(ZipEntry entry){
 		return entry.getName().endsWith(".class");
 	}
+
+    public static void getFiles(File baseDir, String validExtension, List<File> files){
+        String[] children = baseDir.list();
+        if (children == null) {
+            // Either dir does not exist or is not a directory
+        } else {
+            for (String filename : children) {
+                File file = new File(baseDir, filename);
+                if(filename.endsWith(validExtension)){
+                    files.add(file);
+                }else{
+                    if(file.isDirectory()){
+                        getFiles(file, validExtension, files);
+                    }
+                }
+            }
+        }
+    }
 
 }

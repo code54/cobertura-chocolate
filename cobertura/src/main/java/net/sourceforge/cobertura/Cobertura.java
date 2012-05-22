@@ -3,11 +3,19 @@ package net.sourceforge.cobertura;
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.instrument.CodeInstrumentationTask;
+import net.sourceforge.cobertura.reporting.ComplexityCalculator;
+import net.sourceforge.cobertura.reporting.generic.GenericReport;
+import net.sourceforge.cobertura.util.FileFinder;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static net.sourceforge.cobertura.coveragedata.TouchCollector.applyTouchesOnProjectData;
 
 public class Cobertura {
 
     private Arguments args;
-    ProjectData projectData;
+    private ProjectData projectData;
     private CodeInstrumentationTask instrumentationTask;
     private CheckThresholdsTask checkThresholdsTask;
 
@@ -33,12 +41,14 @@ public class Cobertura {
         return new ThresholdInformation(checkThresholdsTask.getCheckThresholdsExitStatus());
     }
 
-    public Cobertura report(String format){
-        //the format may be a reporting strategy, not a string
+    public GenericReport buildReport(){
+        List<ProjectData> projects = new ArrayList<ProjectData>();
+        projects.add(projectData);
+        return new GenericReport(projects, new ComplexityCalculator(new FileFinder()));
+        //Consider a buildReport format (reporting strategy?)
         //todo: should return a report instance,
-        // that wrappes a specific report and is able to perform
+        // that wraps a specific report and is able to perform
         //generic actions as persist, etc + respond with GenericReportData
-        return this;
     }
 
     public Cobertura saveProjectData(){
@@ -48,7 +58,7 @@ public class Cobertura {
 
     /*  Aux methods  */
     private ProjectData getProjectDataInstance(){
-        // Load coverage data; see notes at the beginning of CodeInstrumentationTask class
+        // Load project data; see notes at the beginning of CodeInstrumentationTask class
         if(projectData!=null){
             return projectData;
         }

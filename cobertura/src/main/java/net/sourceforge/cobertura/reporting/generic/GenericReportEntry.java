@@ -30,6 +30,7 @@ public class GenericReportEntry {
     @Element
     private BasicMetricData basicMetricData;
 
+    @ElementList(inline=true)
     private Set<CustomMetricWrapper>customMetrics;
 
     @ElementList(inline=true)

@@ -131,7 +131,7 @@
 			</lib>
 			<classes dir="${classes.dir}">
 				<include name="test/first/B.class" />
-				<include name="test/first/Test.class" />
+				<include name="test/first/FirstTest.class" />
 				<include name="test/second/A.class" />
 			</classes>
 		</war>
@@ -173,7 +173,7 @@
 			<classpath refid="project.classpath" />
 
 			<formatter type="plain" usefile="false" />
-			<test name="test.first.Test" />
+			<test name="test.first.FirstTest" />
 		</junit>
 	</target>
 

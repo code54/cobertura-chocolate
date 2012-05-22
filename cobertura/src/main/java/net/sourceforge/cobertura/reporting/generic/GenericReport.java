@@ -24,10 +24,10 @@ public class GenericReport {
     //are supported per project, etc?  See CoverageData thresholds...
     @ElementMap(entry="threshold", key="name", valueType = java.lang.Double.class,
              keyType = String.class, attribute=true, inline=true, required = false)
-    Map<String, Double>thresholds;
+    private Map<String, Double>thresholds;
 
     @ElementList(inline=true)
-    List<GenericReportEntry> projectsReport;
+    private List<GenericReportEntry> projectsReport;
 
     public GenericReport(){
         init();

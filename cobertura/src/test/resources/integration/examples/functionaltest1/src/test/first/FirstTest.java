@@ -25,17 +25,20 @@
 
 package test.first;
 
+//import org.junit.Test;
+import junit.framework.TestCase;
+
 /**
  * Simple class used in functional testing.
  * 
  * @author John Lewis
  */
-public class Test{
+public class FirstTest extends TestCase{
 
 	/**
 	 * Call the methods called "call"
 	 */
-	@org.junit.Test
+	//@org.junit.Test //if we use the annotation, it will cause a  java.lang.reflect.GenericSignatureFormatError if run from a JUnit4 test
 	public void testMethod(){
 		test.first.A a = new test.first.A();
 		a.call();

@@ -44,8 +44,8 @@ public class Main{
 		long startTime = System.currentTimeMillis();
 
         try {
-			args = CommandLineBuilder.preprocessCommandLineArguments( args);
-		} catch( Exception ex) {
+			args = CommandLineBuilder.preprocessCommandLineArguments(args);
+		} catch(Exception ex) {
 			log.error( "Error: Cannot process arguments: " + ex.getMessage());
 			System.exit(1);
 		}
