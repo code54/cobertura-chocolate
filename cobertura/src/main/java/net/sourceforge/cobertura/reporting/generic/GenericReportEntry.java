@@ -30,7 +30,7 @@ public class GenericReportEntry {
     @Element
     private BasicMetricData basicMetricData;
 
-    private Set<ICustomMetric>customMetrics;
+    private Set<CustomMetricWrapper>customMetrics;
 
     @ElementList(inline=true)
     private Set<GenericReportEntry>childs;
@@ -53,7 +53,7 @@ public class GenericReportEntry {
     }
 
     public void loadMetrics(){
-        customMetrics = new HashSet<ICustomMetric>();
+        customMetrics = new HashSet<CustomMetricWrapper>();
 
         Reflections reflections = new Reflections(new ConfigurationBuilder()
                 .addUrls(ClasspathHelper.forClass(ICustomMetric.class))
@@ -68,7 +68,7 @@ public class GenericReportEntry {
                 if(metric.getApplicableLevel().equals(getEntryLevel())||
                     level_all.equals(getEntryLevel())){
                         metric.setBasicMetricData(basicMetricData);
-                        customMetrics.add(metric);
+                        customMetrics.add(new CustomMetricWrapper(metric));
                 }
             }catch (Exception e){
                 log.error("An error occurred while loading metrics", e);
@@ -76,7 +76,7 @@ public class GenericReportEntry {
         }
     }
 
-    public Set<ICustomMetric> getCustomMetrics(){
+    public Set<CustomMetricWrapper> getCustomMetrics(){
         return Collections.unmodifiableSet(customMetrics);
     }
 

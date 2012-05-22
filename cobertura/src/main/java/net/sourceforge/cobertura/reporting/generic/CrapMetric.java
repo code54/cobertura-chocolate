@@ -4,7 +4,6 @@ public class CrapMetric implements ICustomMetric {
 
     private double crapMetric;
 
-
     public CrapMetric(){}
 
     @Override
