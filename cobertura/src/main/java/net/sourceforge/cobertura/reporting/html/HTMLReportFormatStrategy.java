@@ -21,6 +21,7 @@ import java.util.*;
 /**
  * Implements HTML reporting strategy.
  */
+//TODO This class was/is not tested! Should test and refactor to make code more mantainable...
 public class HTMLReportFormatStrategy  implements IReportFormatStrategy {
 
     private static final Logger log = Logger.getLogger(HTMLReportFormatStrategy.class);

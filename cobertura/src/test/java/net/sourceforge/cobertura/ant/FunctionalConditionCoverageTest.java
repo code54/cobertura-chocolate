@@ -43,6 +43,7 @@ import net.sourceforge.cobertura.testutil.Util;
 import org.apache.log4j.Logger;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Java;
+import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Path.PathElement;
 import org.jdom.Attribute;
@@ -53,13 +54,15 @@ import org.jdom.JDOMException;
 import org.jdom.xpath.XPath;
 
 import org.junit.*;
-import test.condition.ConditionCalls;
+import org.junit.Ignore;
 
 import static net.sourceforge.cobertura.testutil.Util.createRequiredDirectories;
 import static net.sourceforge.cobertura.testutil.Util.removeRequiredDirectories;
 import static net.sourceforge.cobertura.testutil.Util.removeTestReportFiles;
 import static net.sourceforge.cobertura.util.ArchiveUtil.deleteDir;
 import static org.junit.Assert.*;
+
+
 
 /**
  * These tests generally exec ant to run a test.xml file.  A different target is used for
@@ -69,8 +72,16 @@ import static org.junit.Assert.*;
  * @author jwlewi
  */
 
+@Ignore("Replaced by a new test at CodeInstrumentationIntegrationTest")
 public class FunctionalConditionCoverageTest{
     private static final Logger log = Logger.getLogger(FunctionalConditionCoverageTest.class);
+
+    public static final int CALL_CONDITION_LINE_NUMBER = 17;
+    public static final int CALL_IGNORE_LINE_NUMBER = 21;
+    public static final int LOOKUP_SWITCH_LINE_NUMBER = 39;
+    public static final int TABLE_SWITCH_LINE_NUMBER = 56;
+    public static final int MULTI_CONDITION_LINE_NUMBER = 74;
+    public static final int MULTI_CONDITION2_LINE_NUMBER = 82;
 
 	private final static File BASEDIR = new File((System.getProperty("basedir") != null) ? System
 			.getProperty("basedir") : ".", "src/test/resources/integration/examples/functionalconditiontest");
@@ -87,6 +98,9 @@ public class FunctionalConditionCoverageTest{
 
     @Before
 	public void setUp(){
+
+        log.info("Base dir is: "+BASEDIR.getAbsolutePath());
+
         reports = new File(BASEDIR, "reports");
         instrumented = new File(BASEDIR, "instrumented");
         classes = new File(BASEDIR, "classes");
@@ -107,6 +121,11 @@ public class FunctionalConditionCoverageTest{
 		verify("condition-coverage");
 	}
 
+    @Test
+    public void testAntRunsOK() throws Exception{
+        runTestAntScript("help", "help");
+    }
+
     /*   Aux init methods   */
 
     private void initTestInfoMap(){
@@ -120,22 +139,22 @@ public class FunctionalConditionCoverageTest{
 		expectedConditions = new ConditionTestInfo[1];
 		expectedConditions[0] = new ConditionTestInfo("0", "jump", CONDITION_MISSING_FALSE);
 
-		info = new TestInfo(ConditionCalls.CALL_CONDITION_LINE_NUMBER, "50% (1/2)", expectedConditions);
-		info.setIgnoreLineNumber(ConditionCalls.CALL_IGNORE_LINE_NUMBER);
+		info = new TestInfo(CALL_CONDITION_LINE_NUMBER, "50% (1/2)", expectedConditions);
+		info.setIgnoreLineNumber(CALL_IGNORE_LINE_NUMBER);
 
 		testInfoMap.put("call", info);
 
 		expectedConditions = new ConditionTestInfo[1];
 		expectedConditions[0] = new ConditionTestInfo("0", "switch", "33%");
 
-		info = new TestInfo(ConditionCalls.LOOKUP_SWITCH_LINE_NUMBER, "33% (1/3)", expectedConditions);
+		info = new TestInfo(LOOKUP_SWITCH_LINE_NUMBER, "33% (1/3)", expectedConditions);
 
 		testInfoMap.put("callLookupSwitch", info);
 
 		expectedConditions = new ConditionTestInfo[1];
 		expectedConditions[0] = new ConditionTestInfo("0", "switch", "10%");
 
-		info = new TestInfo(ConditionCalls.TABLE_SWITCH_LINE_NUMBER, "10% (1/10)", expectedConditions);
+		info = new TestInfo(TABLE_SWITCH_LINE_NUMBER, "10% (1/10)", expectedConditions);
 
 		testInfoMap.put("callTableSwitch", info);
 
@@ -144,7 +163,7 @@ public class FunctionalConditionCoverageTest{
 		expectedConditions[1] = new ConditionTestInfo("1", "jump", "0%");
 		expectedConditions[2] = new ConditionTestInfo("2", "jump", CONDITION_MISSING_FALSE);
 
-		info = new TestInfo(ConditionCalls.MULTI_CONDITION_LINE_NUMBER, "33% (2/6)", expectedConditions);
+		info = new TestInfo(MULTI_CONDITION_LINE_NUMBER, "33% (2/6)", expectedConditions);
 
 		testInfoMap.put("callMultiCondition", info);
 
@@ -153,7 +172,7 @@ public class FunctionalConditionCoverageTest{
 		expectedConditions[1] = new ConditionTestInfo("1", "jump", CONDITION_MISSING_FALSE);
 		expectedConditions[2] = new ConditionTestInfo("2", "jump", "0%");
 
-		info = new TestInfo(ConditionCalls.MULTI_CONDITION2_LINE_NUMBER, "33% (2/6)", expectedConditions);
+		info = new TestInfo(MULTI_CONDITION2_LINE_NUMBER, "33% (2/6)", expectedConditions);
 
 		testInfoMap.put("callMultiCondition2", info);
     }
@@ -195,7 +214,7 @@ public class FunctionalConditionCoverageTest{
 	 * @return A list of JDOM Elements.
 	 */
 	private static List getClassElements() throws IOException, JDOMException{
-		File xmlFile = new File(BASEDIR, "reports/cobertura-xml/coverage.xml");
+		File xmlFile = new File(BASEDIR, "reports/cobertura-xml/coverage.ser");
 		Document document = JUnitXMLHelper.readXmlFile(xmlFile, true);
 		XPath xpath = XPath.newInstance("/coverage/packages/package/classes/class");
 		List classesList = xpath.selectNodes(document);
@@ -374,6 +393,13 @@ public class FunctionalConditionCoverageTest{
 	 */
 	private static void runTestAntScript(String testName, String target) throws IOException{
 		Java task = new Java();
+
+//        Environment.Variable var = new Environment.Variable();
+//        var.setKey("java.home");
+//        var.setValue(System.getProperty("java.home").replace("/jre", ""));
+
+//        task.addSysproperty(var);
+
 		task.setTaskName("java");
 		task.setProject(new Project());
 		task.init();
@@ -386,7 +412,7 @@ public class FunctionalConditionCoverageTest{
 
 		task.createArg().setValue("-f");
         log.info("Our base dir is: "+ BASEDIR.getAbsolutePath());
-        log.info("We are looking for "+ BASEDIR +"/build.xml");
+        log.info("We are looking for "+ new File(BASEDIR, "/build.xml").getAbsolutePath());
 		task.createArg().setValue(BASEDIR + "/build.xml");
 		task.createArg().setValue(target);
 
@@ -403,7 +429,9 @@ public class FunctionalConditionCoverageTest{
 
 		try{
 			task.execute();
-		}finally{
+		}catch(Exception e){
+             log.error(e);
+        }finally{
 			if (outputFile.exists()){
 				// Put the contents of the output file in the exception
 				log.info("\n\n\nOutput from Ant for " + testName

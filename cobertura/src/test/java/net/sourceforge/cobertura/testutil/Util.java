@@ -82,6 +82,7 @@ public class Util{
 
     public static void createRequiredDirectories(File[]files){
         for(File file : files){
+            log.info("Creating directory "+file.getAbsolutePath());
             file.mkdirs();
         }
     }

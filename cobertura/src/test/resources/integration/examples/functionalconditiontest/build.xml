@@ -11,6 +11,7 @@
     Cobertura comes with ABSOLUTELY NO WARRANTY
     </description>
 
+	<property name="build.compiler" value="extJavac"/>
 	<property file="build.properties" />
 
 	<path id="project.classpath">
@@ -19,9 +20,11 @@
 		The next two should only come into play when running this script directly as
 		opposed to being called by a functional test.
 		-->
+		<!--
 		<pathelement location="../../etc" />
 		<pathelement location="../../build/classes" />
-		<fileset dir="../../lib">
+		-->
+		<fileset dir="${basedir}/${lib.dir}">
 			<include name="*.jar" />
 		</fileset>
 	</path>
@@ -32,11 +35,20 @@
 		<echo>This example is only used for testing, and is not meant</echo>
 		<echo>to be run from the command line.  It requires certain </echo>
 		<echo>classes to be on the class path to work correctly.</echo>
+		<echo>Below we print all variables for debugging purposes:</echo>
+		<echo>Java classpath: ${java.class.path}</echo>
+		<echo>Classes dir: ${classes.dir}</echo>
+		<echo>src dir: ${src.dir}</echo>
+		<echo>Instrumented dir: ${instrumented.dir}</echo>
+		<echo>Base dir: ${basedir}</echo>
+		<echo>${coverage.xml.dir}</echo>
+		<echo>$JAVA_HOME/bin/javac</echo>
+		<echo>${lib.dir}</echo>
 	</target>
 
 	<target name="compile">
 		<mkdir dir="${classes.dir}" />
-		<javac srcdir="${src.dir}" destdir="${classes.dir}" debug="true" />
+		<javac srcdir="${src.dir}" destdir="${classes.dir}" debug="true" includeantruntime="false"/>
 	</target>
 
 	<target name="instrument-condition-coverage" depends="compile">
@@ -69,6 +81,7 @@
 
 	<target name="coverage-reports">
 		<mkdir dir="${coverage.xml.dir}" />
+		<echo>We are invoking coverage-reports task</echo>
 		<cobertura-report datafile="${basedir}/cobertura.ser" srcdir="${src.dir}" destdir="${coverage.xml.dir}" format="xml" />
 
 		<mkdir dir="${coverage.html.dir}" />
