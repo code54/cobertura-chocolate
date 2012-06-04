@@ -57,12 +57,12 @@ To present GenericReports data, we can implement IReportFormatStrategy interface
 Contributions are welcome!
 
 
-# COPYRIGHT
+# Copyright
 
 See the included file "COPYRIGHT"
 
 
-# LICENSE
+# License
 
 Cobertura is free software.  Most of it is licensed under the GNU
 GPL, and you can redistribute it and/or modify it under the terms
@@ -75,7 +75,7 @@ Parts of Cobertura are licensed under the Apache Software License,
 Version 1.1.
 
 
-# WARRANTY
+# Warranty
 
 Cobertura is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of
