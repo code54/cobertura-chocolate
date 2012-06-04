@@ -19,14 +19,11 @@ Original xml and html reports were not removed and old ant tasks can still be us
 
 	Arguments args =
         	         new Arguments().setBaseDirectory(origClassesDir.getAbsolutePath())
-                	        .setDataFile("cobertura.ser")
-                	        .setDestinationFile(intrumentedCodeDestDir.getAbsolutePath())
-                	        .setEncoding("UTF-8");
-	
+				.setDataFile("cobertura.ser")
+				.setDestinationFile(intrumentedCodeDestDir.getAbsolutePath())
+				.setEncoding("UTF-8");
 	new Cobertura(args).instrumentCode();
-	
 	//run tests
-	
 	cobertura.report().export(new XmlReportFormatStrategy());
 
 
