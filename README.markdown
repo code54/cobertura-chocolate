@@ -59,7 +59,7 @@ Contributions are welcome!
 
 # Copyright
 
-See the included file "COPYRIGHT"
+See Cobertura ["COPYRIGHT"](https://github.com/code54/cobertura-chocolate/blob/master/cobertura/COPYRIGHT) file
 
 
 # License
