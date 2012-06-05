@@ -10,6 +10,7 @@
  * Copyright (C) 2009 Ed Randall
  * Copyright (C) 2010 Charlie Squires
  * Copyright (C) 2010 Piotr Tabor
+ * Copyright (C) 2012 Jose M. Rozanec
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
