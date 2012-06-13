@@ -32,12 +32,6 @@ public class SourceFileDataBaseNameComparator implements Comparator, Serializabl
 	private static final long serialVersionUID = 0L;
 
 	public int compare(Object arg0, Object arg1){
-//		GenericReportEntry sourceFileData0 = (GenericReportEntry)arg0;
-//		GenericReportEntry sourceFileData1 = (GenericReportEntry)arg1;
-//		int comparison = sourceFileData0.getName().compareTo(sourceFileData1.getName());
-//		if (comparison != 0)
-//			return comparison;
-//		return sourceFileData0.getName().compareTo(sourceFileData1.getName());
         SourceFileData sourceFileData0 = (SourceFileData)arg0;
 		SourceFileData sourceFileData1 = (SourceFileData)arg1;
 		int comparison = sourceFileData0.getName().compareTo(sourceFileData1.getName());

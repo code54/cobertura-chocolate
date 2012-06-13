@@ -5,7 +5,7 @@ This repository aims to be a contribution to the Cobertura project.
 Our objectives
 
 * tests should run once. Due to original Cobertura design, users were forced to run instrumentation and tests immediately, and later run tests again to see if something was broken.
-* expose more data. Ex.: expose coverage thresholds and coverage data on reports, allow to build custom metrics.
+* expose more data. Ex.: expose coverage thresholds and coverage data on reports, allow to build custom metrics. Serialize data in a readable format.
 * decouple from Ant and provide a DSL to set parameters, run code instrumentation and provide programatic access to results
 * provide means to add new metrics
 * provide means to support multiple JVM languages
@@ -36,6 +36,8 @@ When using Cobertura, we
 * *aggregate collected data* according to the JVM language it belongs to, since a source file may be translated to multiple .class files at non-Java JVM languages. We use an IReportBuilderStrategy implementations for this. Aggregated data is presented in a GenericReport object.
 * *expose aggregated data* from a GenericReport in different formats by implementing an IReportFormatStrategy interface.
 
+Compile the code and run tests are requirements, not Cobertura's resposibility.
+
 New metrics can be defined implementing ICustomMetric interface.
 
 ## Status
@@ -44,14 +46,13 @@ New metrics can be defined implementing ICustomMetric interface.
 * a DSL was created. Arguments can be set and results can accessed programatically. 
 * code instrumentation, tests and report building phases were decoupled. User is no longer forced to run tests twice. Just needs to run code instrumentation, then run the tests, and build coverage reports after that.
 * project data information can be aggregated to build reports for other JVM languages
-* an interface (ICustomMetric) for custom metrics was created. Implementations are loaded by reflection and should automatically display on reports.
-* xml, threshold violations and html report strategies were implemented.
+* an interface (ICustomMetric) for custom metrics was created. Implementations are loaded by reflection and automatically display on reports.
+* xml and threshold violations report strategies were implemented.
 
 ## Todos
 
 * review parameters Cobertura accepts. See how to deal with classes inclusion/exclusion when receiving Ant like patterns (ex.: "**/A.class")
-* test html report strategy
-* refactor html report strategy using a library like http://code.google.com/p/jatl/
+* create and test html report strategy. Refactor html report strategy using a library like http://code.google.com/p/jatl/
 * allow to assign a name to a project (currently a hash is calculated, based on project files)
 * create a Maven plugin
 * make Jenkins plugin leverage this code

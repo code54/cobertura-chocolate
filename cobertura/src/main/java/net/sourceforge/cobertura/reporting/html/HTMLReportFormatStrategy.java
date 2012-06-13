@@ -1,17 +1,11 @@
 package net.sourceforge.cobertura.reporting.html;
 
-import net.sourceforge.cobertura.coveragedata.ClassData;
-import net.sourceforge.cobertura.coveragedata.LineData;
-import net.sourceforge.cobertura.coveragedata.PackageData;
-import net.sourceforge.cobertura.coveragedata.SourceFileData;
 import net.sourceforge.cobertura.reporting.generic.*;
 import net.sourceforge.cobertura.reporting.html.files.CopyFiles;
 import net.sourceforge.cobertura.util.Header;
 import net.sourceforge.cobertura.util.IOUtil;
-import net.sourceforge.cobertura.util.Source;
 import net.sourceforge.cobertura.util.StringUtil;
 import org.apache.log4j.Logger;
-import sun.reflect.generics.tree.Tree;
 
 import java.io.*;
 import java.text.DateFormat;
@@ -47,6 +41,7 @@ public class HTMLReportFormatStrategy  implements IReportFormatStrategy {
 
     @Override
     public void save(GenericReport report) {
+        log.info("Will save report to "+destinationDir.getAbsolutePath());
         try{
             CopyFiles.copy(destinationDir);
             generatePackageList();
@@ -160,7 +155,7 @@ public class HTMLReportFormatStrategy  implements IReportFormatStrategy {
 		Vector sortedSourceFiles = new Vector();
 		sortedSourceFiles.addAll(sourceFiles);
 		Collections.sort(sortedSourceFiles,
-                new SourceFileDataBaseNameComparator());
+                new SourceFileDataBaseNameComparator2());
 
 		File file = new File(destinationDir, filename);
 		PrintWriter out = null;
@@ -340,7 +335,9 @@ public class HTMLReportFormatStrategy  implements IReportFormatStrategy {
 		while (iter.hasNext()){
             GenericReportEntry clazz = iter.next();
 			try{
-				generateSourceFile(projectData.getSourceLinesByClass(clazz.getName()), clazz);
+                SourceFile sfile = (SourceFile)((Collection)
+                        projectData.getSourceLinesByClass(clazz.getName())).iterator().next();
+				generateSourceFile(sfile.getEntries(), clazz);
 			}catch (IOException e){
 				log.info("Could not generate HTML file for source file "
 						+ clazz.getName() + ": "
@@ -358,7 +355,8 @@ public class HTMLReportFormatStrategy  implements IReportFormatStrategy {
 					+ "data file contains the instrumentation information.");
 		}
 
-		String filename = clazz.getName() + ".html";
+        String[]className = clazz.getName().split("\\.");
+		String filename =  className[className.length-1].toLowerCase()+ ".html";
 		File file = new File(destinationDir, filename);
 		PrintWriter out = null;
 
@@ -439,7 +437,12 @@ public class HTMLReportFormatStrategy  implements IReportFormatStrategy {
 				ret.append("<tr>");
 				ret.append("  <td class=\"numLineCover\">&nbsp;"
 							+ entry.getLineNumber() + "</td>");
-                int hits = (int)lineMap.get(entry.getCodeLine()).getMetric(ReportConstants.metricName_hits).getValue();
+                GenericReportEntry codeLine = lineMap.get(entry.getCodeLine());
+
+                int hits = 0;
+                if(codeLine!=null){
+                    hits = (int) codeLine.getMetric(ReportConstants.metricName_hits).getValue();
+                }
 					if (hits>0){
 						ret.append("  <td class=\"nbHitsCovered\">"
 								+ generateBranchInfo(clazz, "&nbsp;" + hits)
@@ -675,4 +678,18 @@ public class HTMLReportFormatStrategy  implements IReportFormatStrategy {
 		}
 		return StringUtil.replaceAll(fullNameWithoutExtension, "/", ".");
 	}
+
+    private class SourceFileDataBaseNameComparator2 implements Comparator, Serializable{
+
+        private static final long serialVersionUID = 0L;
+
+        public int compare(Object arg0, Object arg1){
+            GenericReportEntry sourceFileData0 = (GenericReportEntry)arg0;
+            GenericReportEntry sourceFileData1 = (GenericReportEntry)arg1;
+            int comparison = sourceFileData0.getName().compareTo(sourceFileData1.getName());
+            if (comparison != 0)
+                return comparison;
+            return sourceFileData0.getName().compareTo(sourceFileData1.getName());
+        }
+    }
 }
