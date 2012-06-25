@@ -12,8 +12,9 @@ Our objectives
 
 Do we break compatibility?
 
+We want to keep this code backwards compatible.
 Original xml and html reports were not removed and old ant tasks can still be used.
-From the DSL we use another xml report format, and inclusion/exclusion ant-like patterns (ex.: "**/A.class") are not properly handled.
+From the DSL we currently use another xml report format, and inclusion/exclusion ant-like patterns (ex.: "**/A.class") are not properly handled.
 
 ## Quick example
 
@@ -36,7 +37,7 @@ When using Cobertura, we
 * *aggregate collected data* according to the JVM language it belongs to, since a source file may be translated to multiple .class files at non-Java JVM languages. We use an IReportBuilderStrategy implementations for this. Aggregated data is presented in a GenericReport object.
 * *expose aggregated data* from a GenericReport in different formats by implementing an IReportFormatStrategy interface.
 
-Compile the code and run tests are requirements, not Cobertura's resposibility.
+Compile the code and run tests are requirements, not Cobertura's responsibility.
 
 New metrics can be defined implementing ICustomMetric interface.
 
@@ -47,20 +48,20 @@ New metrics can be defined implementing ICustomMetric interface.
 * code instrumentation, tests and report building phases were decoupled. User is no longer forced to run tests twice. Just needs to run code instrumentation, then run the tests, and build coverage reports after that.
 * project data information can be aggregated to build reports for other JVM languages
 * an interface (ICustomMetric) for custom metrics was created. Implementations are loaded by reflection and automatically display on reports.
-* xml and threshold violations report strategies were implemented.
+* xml, html and threshold violations report strategies were implemented.
 
 ## Todos
 
 * review parameters Cobertura accepts. See how to deal with classes inclusion/exclusion when receiving Ant like patterns (ex.: "**/A.class")
-* create and test html report strategy. Refactor html report strategy using a library like http://code.google.com/p/jatl/
+* create report format strategies using jatl for previous xml formats
 * allow to assign a name to a project (currently a hash is calculated, based on project files)
 * create a Maven plugin
 * make Jenkins plugin leverage this code
 * see how to handle war/jar/ear files instrumentation
 * create IReportBuilderStrategies for other JVM languages
 
-Contributions are welcome!
-
+Contributions are welcome! You should be able to start working on this after cloning the repo and importing the Maven project to your IDE.
+You'll find the pom.xml file at cobertura_git/cobertura
 
 # Copyright
 
