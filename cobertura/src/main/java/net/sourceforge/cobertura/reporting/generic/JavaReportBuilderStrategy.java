@@ -236,6 +236,13 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
             ClassData classData;
             while(classes.hasNext()){
                 classData = classes.next();
+
+                //TODO we should iterate lines, and add SourceFileEntries per line.
+                //Some lines will correspond to methods, others to variables or comments, etc
+                //See how to parse the lines to extract data
+                //consider using http://code.google.com/p/javaparser/wiki/UsingThisParser#Changing_methods_from_a_class_with_a_visitor
+                //to parse the java files
+
                 Iterator<String>methods = classData.getMethodNamesAndDescriptors().iterator();
                 String method;
                 while(methods.hasNext()){
@@ -271,9 +278,8 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
             String lineStr;
             int lineNumber = 1;
             while ((lineStr = br.readLine()) != null) {
-                if (data.isValidSourceLineNumber(lineNumber)) {
-                    lines.put(lineNumber, lineStr);
-                }
+                //we want to retrieve all the lines...
+                lines.put(lineNumber, lineStr);
                 lineNumber++;
             }
         } catch (IOException e) {

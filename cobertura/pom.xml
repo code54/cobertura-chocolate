@@ -130,5 +130,11 @@
             			<version>0.9.6</version>
 		        </dependency>
 
+			<dependency>
+				<groupId>com.googlecode.jatl</groupId>
+				<artifactId>jatl</artifactId>
+				<version>0.2.1</version>
+			</dependency>
+
 		</dependencies>
 </project>

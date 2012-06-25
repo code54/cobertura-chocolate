@@ -51,16 +51,4 @@ public interface CoverageData{
      * @return
      */
     long getHits();
-
-    /**
-     * Should return an ID of the type
-     * getClass()+some instance specific data.
-     *
-     * @return
-     */
-    /* This id should be used as a key on children map,
-    * so we avoid mantaining some Integer and String maps
-    * and making code simpler
-    */
-//    String getId();
 }

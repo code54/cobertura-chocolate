@@ -1,5 +1,4 @@
 pre.src {
-    background: #ffffff;
     margin-top: 0px;
     margin-bottom: 0px;
 }
@@ -70,4 +69,12 @@ span.string {
 span.text_italic {
 	font-size: 12px;
     font-style: italic;
+}
+
+.red {
+	background-color: #ff9090;
+}
+
+.green {
+	background-color: #80ff80;
 }

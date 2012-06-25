@@ -26,6 +26,7 @@ public class Levels {
 
     public Levels(){
         levels = new String[]{
+                ReportConstants.level_line,
                 ReportConstants.level_method,
                 ReportConstants.level_class,
                 ReportConstants.level_sourcefile,

@@ -73,11 +73,6 @@ public class GenericReportEntry {
         childs.add(entry);
     }
 
-// should only access via getEntriesForLevel...
-// public Set<GenericReportEntry> getChilds(){
-//        return Collections.unmodifiableSet(childs);
-//    }
-
     /**
      * Returns level to which this information applies.
      *

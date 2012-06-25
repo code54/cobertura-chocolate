@@ -300,8 +300,7 @@ public class ClassData extends CoverageDataContainer<Integer>
 		try{
 			for (Iterator<LineData> i = branches.values().iterator(); 
 				i.hasNext(); 
-				number += (i.next()).getNumberOfValidBranches())
-				;
+				number += (i.next()).getNumberOfValidBranches());
 			return number;
 		}finally{
 			lock.unlock();
@@ -317,8 +316,7 @@ public class ClassData extends CoverageDataContainer<Integer>
 		try{
 			for (Iterator<LineData> i = branches.values().iterator(); 
 				i.hasNext(); 
-				number += (i.next()).getNumberOfCoveredBranches())
-				;
+				number += (i.next()).getNumberOfCoveredBranches());
 			return number;
 		}finally{
 			lock.unlock();
