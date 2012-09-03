@@ -15,6 +15,7 @@ import java.util.*;
 
 /**
  * Handles ProjectData information and puts it into a GenericReport object.
+ * Assumes ProjectData information corresponds to a Java project.
  */
 public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
 

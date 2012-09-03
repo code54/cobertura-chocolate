@@ -31,6 +31,11 @@ import java.util.Set;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  */
+
+/**
+ * Loads all classes implementing ICustomMetric interface
+ * using reflection
+ */
 public class MetricsLoader {
     private static final Logger log = Logger.getLogger(MetricsLoader.class);
 

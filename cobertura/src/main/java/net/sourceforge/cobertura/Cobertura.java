@@ -60,6 +60,12 @@ public class Cobertura {
         didApplyInstrumentationResults = false;
     }
 
+    /**
+     * Instruments the code. Should be invoked after compiling.
+     * Classes to be instrumented are taken from constructor args
+     * @return
+     * @throws Throwable
+     */
     public Cobertura instrumentCode() throws Throwable {
         instrumentationTask.instrument(args, getProjectDataInstance());
         return this;
@@ -74,11 +80,19 @@ public class Cobertura {
         didApplyInstrumentationResults = true;
     }
 
+    /**
+     * Checks metrics values against thresholds
+     * @return
+     */
     public ThresholdInformation checkThresholds(){
         checkThresholdsTask.checkThresholds(args,getProjectDataInstance());
         return new ThresholdInformation(checkThresholdsTask.getCheckThresholdsExitStatus());
     }
 
+    /**
+     * Creates a report with coverage and metrics data
+     * @return
+     */
     public GenericReport report(){
         if(!didApplyInstrumentationResults){
             applyInstrumentationResults();
@@ -94,6 +108,10 @@ public class Cobertura {
                 .getReport(projects, args.getEncoding(), fileFinder);
     }
 
+    /**
+     * Serializes project data to file specified in constructor args
+     * @return
+     */
     public Cobertura saveProjectData(){
         CoverageDataFileHandler.saveProjectData(getProjectDataInstance(), args.getDataFile());
         return this;

@@ -71,6 +71,12 @@ public abstract class ArchiveUtil {
         return (name.startsWith("meta-inf/") && (name.endsWith(".rsa") || name.endsWith(".sf")));
     }
 
+    /**
+     * Recursively deletes children files and directories,
+     * to remove the specified dir
+     * @param dir
+     * @return
+     */
     public static boolean deleteDir(File dir) {
         if (dir.isDirectory()) {
             String[] children = dir.list();

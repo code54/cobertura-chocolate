@@ -43,7 +43,8 @@
 		<echo>Base dir: ${basedir}</echo>
 		<echo>${coverage.xml.dir}</echo>
 		<echo>$JAVA_HOME/bin/javac</echo>
-		<echo>${lib.dir}</echo>
+		<echo>Lib dir: ${lib.dir}</echo>
+		<echo>Project classpath: ${project.classpath}</echo>
 	</target>
 
 	<target name="compile">
@@ -106,7 +107,7 @@
 		<delete file="cobertura.ser.lock" />
 	</target>
 
-	<target name="test-condition-coverage" depends="clean,compile,instrument-condition-coverage,test,coverage-reports" />
+	<target name="test-condition-coverage" depends="clean,compile,instrument-condition-coverage,test,coverage-reports"/>
 	<target name="all" depends="test-condition-coverage" />
 
 </project>

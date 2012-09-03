@@ -20,6 +20,7 @@ package net.sourceforge.cobertura.reporting.generic;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  */
+
 public class Levels {
 
     private String []levels;
@@ -35,6 +36,11 @@ public class Levels {
         };
     }
 
+    /**
+     * Returns the immediate higher level or null if is the highest one.
+     * @param currentLevel
+     * @return
+     */
     public String getHigherLevel(String currentLevel){
         for(int j=0;j<levels.length;j++){
             if(levels[j].equals(currentLevel)&&
@@ -45,6 +51,11 @@ public class Levels {
         return null;
     }
 
+    /**
+     * Returns the immediate lower level or null if is the lowest one.
+     * @param currentLevel
+     * @return
+     */
     public String getLowerLevel(String currentLevel){
         for(int j=0;j<levels.length;j++){
             if(levels[j].equals(currentLevel)&&

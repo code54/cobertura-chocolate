@@ -38,7 +38,11 @@ public class SourceFilesLookup {
     }
 
     public Set<SourceFileEntry> getSourceLinesByClass(String className){
-        return Collections.unmodifiableSet(sourcesByClass.get(className));
+        if(sourcesByClass.get(className)!=null){
+            return Collections.unmodifiableSet(sourcesByClass.get(className));
+        }else{
+            return Collections.unmodifiableSet(new HashSet<SourceFileEntry>());
+        }
     }
 
     public Set<SourceFileEntry> getSourceLinesByMethod(String className, String method){
@@ -61,7 +65,7 @@ public class SourceFilesLookup {
             if(map.get(fileEntry.getClassName())==null){
                 map.put(fileEntry.getClassName(), new HashSet<SourceFileEntry>());
             }
-            ((Set)map.get(fileEntry.getClassName())).add(entry);
+            ((Set)map.get(fileEntry.getClassName())).add(fileEntry);
         }
     }
 }

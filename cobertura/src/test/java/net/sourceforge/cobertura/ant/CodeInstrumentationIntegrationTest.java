@@ -65,6 +65,37 @@ public class CodeInstrumentationIntegrationTest {
     }
 
     @Test
+    public void testHtmlReport() throws Throwable {
+        File basedir = new File("./src/test/resources/integration/examples/functionaltest1/");
+        File instrumented = new File(basedir, "src");
+        instrumented.mkdirs();
+
+        compile(basedir, null);
+
+        Cobertura cobertura = instrumentCode(instrumented, instrumented);
+
+        //Custom classloader to load instrumented classes
+        ClassLoader classLoader = new DirectoryClassLoader(instrumented);
+
+        classLoader.loadClass("test.first.A");
+        classLoader.loadClass("test.first.B");
+        classLoader.loadClass("test.second.A");
+        classLoader.loadClass("test.second.B");
+        classLoader.loadClass("test.first.RemoteInterface");
+        classLoader.loadClass("test.first.RemoteListener");
+        classLoader.loadClass("net.sourceforge.cobertura.coveragedata.HasBeenInstrumented");
+
+        //run tests
+        Class testClass = classLoader.loadClass("test.first.FirstTest");
+        new JUnitCore().run(testClass);
+
+        GenericReport report = cobertura.report();
+        report.export(new HTMLReportFormatStrategy(new File("/tmp"), "UTF-8"));
+
+        cleanFiles(basedir);
+    }
+
+    @Test
     public void testConditionCoverage_withoutAnt() throws Throwable {
         File basedir = new File("./src/test/resources/integration/examples/functionalconditiontest/");
         File instrumented = new File(basedir, "src");

@@ -1,6 +1,7 @@
 package net.sourceforge.cobertura.reporting.html;
 
 import com.googlecode.jatl.Html;
+import net.sourceforge.cobertura.comparator.GRENameComparator;
 import net.sourceforge.cobertura.reporting.generic.*;
 import net.sourceforge.cobertura.reporting.html.files.CopyFiles;
 import net.sourceforge.cobertura.util.Header;
@@ -428,7 +429,7 @@ public class HTMLReportFormatStrategy implements IReportFormatStrategy {
                 end().end(); //end tr and thread
 
                 tbody();
-                SortedSet packages;
+                SortedSet packages = new TreeSet(new GRENameComparator());
                 if (packageData == null) {
                     // Output a summary line for all packages
                     GenericReportEntry project =
@@ -443,10 +444,10 @@ public class HTMLReportFormatStrategy implements IReportFormatStrategy {
                     end();
 
                     // Get packages
-                    packages = new TreeSet(projectData.getEntriesForLevel(ReportConstants.level_package));
+                    packages.addAll(projectData.getEntriesForLevel(ReportConstants.level_package));
                 } else {
                     // Get subpackages
-                    packages = new TreeSet(getSubPackages(packageData));
+                    packages.addAll(getSubPackages(packageData));
                 }
 
                 // Output a line for each package or subpackage
@@ -627,9 +628,10 @@ public class HTMLReportFormatStrategy implements IReportFormatStrategy {
         while (iter.hasNext()) {
             GenericReportEntry clazz = iter.next();
             try {
-                SourceFile sfile = (SourceFile) ((Collection)
-                        projectData.getSourceLinesByClass(clazz.getName())).iterator().next();
-                generateSourceFileAlt(sfile.getEntries(), clazz);
+                generateSourceFileAlt(projectData.getSourceLinesByClass(clazz.getName()), clazz);
+//                SourceFile sfile = (SourceFile) ((Collection)
+//                        projectData.getSourceLinesByClass(clazz.getName())).iterator().next();
+//                generateSourceFileAlt(sfile.getEntries(), clazz);
             } catch (IOException e) {
                 log.info("Could not generate HTML file for source file "
                         + clazz.getName() + ": "+ e.getLocalizedMessage());
