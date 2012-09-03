@@ -629,9 +629,6 @@ public class HTMLReportFormatStrategy implements IReportFormatStrategy {
             GenericReportEntry clazz = iter.next();
             try {
                 generateSourceFileAlt(projectData.getSourceLinesByClass(clazz.getName()), clazz);
-//                SourceFile sfile = (SourceFile) ((Collection)
-//                        projectData.getSourceLinesByClass(clazz.getName())).iterator().next();
-//                generateSourceFileAlt(sfile.getEntries(), clazz);
             } catch (IOException e) {
                 log.info("Could not generate HTML file for source file "
                         + clazz.getName() + ": "+ e.getLocalizedMessage());
@@ -724,6 +721,7 @@ public class HTMLReportFormatStrategy implements IReportFormatStrategy {
         };
 
         log.info("Exporting source file to: "+new File(destinationDir, filename).getAbsolutePath());
+        log.info(sw.getBuffer().toString());
         printToFile(new File(destinationDir, filename), sw.getBuffer().toString());
     }
 

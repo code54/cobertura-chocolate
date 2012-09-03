@@ -143,7 +143,7 @@ public class FileFinder {
 		// Correct file name
 		if( LOGGER.isDebugEnabled())
 			LOGGER.debug( "Searching for file, name=[" + fileName + "]");
-		fileName = getCorrectedPath( fileName);
+		fileName = getCorrectedPath(fileName);
 
 		// Check inside sourceDirectories
 		for( Iterator it=sourceDirectories.iterator(); it.hasNext();) {

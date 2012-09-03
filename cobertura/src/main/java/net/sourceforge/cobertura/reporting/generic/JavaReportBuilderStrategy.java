@@ -227,67 +227,27 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
         SourceFile sourceFile;
         while (sourceFiles.hasNext()){
             sourceFileData = sourceFiles.next();
-            sourceFile = new SourceFile(sourceFileData.getName());
-            this.sourceFiles.add(sourceFile);
-            //we need to get the file and parse its lines
-            Map<Integer, String> lines = getSourceFileLines(sourceFileData);
 
-            //get class, method and line data
-            Iterator<ClassData>classes = sourceFileData.getClasses().iterator();
-            ClassData classData;
+            Iterator<ClassData> classes = sourceFileData.getClasses().iterator();
+            Set<String>methodsAndDescriptors = new HashSet<String>();
             while(classes.hasNext()){
-                classData = classes.next();
-
-                //TODO we should iterate lines, and add SourceFileEntries per line.
-                //Some lines will correspond to methods, others to variables or comments, etc
-                //See how to parse the lines to extract data
-                //consider using http://code.google.com/p/javaparser/wiki/UsingThisParser#Changing_methods_from_a_class_with_a_visitor
-                //to parse the java files
-
-                Iterator<String>methods = classData.getMethodNamesAndDescriptors().iterator();
-                String method;
-                while(methods.hasNext()){
-                    Iterator<LineData>line = classData.getLines(method = methods.next()).iterator();
-                    while(line.hasNext()){
-                        int linenumber = line.next().getLineNumber();
-                        sourceFile.addEntry(
-                                new SourceFileEntry(
-                                        classData.getName(),
-                                        method,
-                                        linenumber,
-                                        lines.get(linenumber)));
-                    }
-                }
+                methodsAndDescriptors.addAll(classes.next().getMethodNamesAndDescriptors());
             }
+
+            try{
+                sourceFile = new JavaSourceFileBuilder().build(fileFinder,sourceFileData.getName(),encoding,
+                        methodsAndDescriptors);
+                this.sourceFiles.add(sourceFile);
+            }catch (Exception e){
+
+            }
+
+
+
         }
     }
 
-    private Map<Integer, String> getSourceFileLines(SourceFileData data) {
-        Map<Integer, String> lines = new HashMap<Integer, String>();
-        Source source = fileFinder.getSource(data.getName());
 
-        if (source == null) {
-            throw new RuntimeException("Unable to locate " + data.getName());
-        }
-        BufferedReader br;
-        try {
-            br = new BufferedReader(new InputStreamReader(source.getInputStream(), encoding));
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            String lineStr;
-            int lineNumber = 1;
-            while ((lineStr = br.readLine()) != null) {
-                //we want to retrieve all the lines...
-                lines.put(lineNumber, lineStr);
-                lineNumber++;
-            }
-        } catch (IOException e) {
-            //TODO see how to deal with this. We wont blow up just because of a singe file...
-        }
-        return lines;
-    }
 
     private double getRate(double first, double total){
         if(total==0){

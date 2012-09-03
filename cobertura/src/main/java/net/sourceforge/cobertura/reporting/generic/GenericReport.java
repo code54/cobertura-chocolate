@@ -83,8 +83,8 @@ public class GenericReport {
         return sourceFilesLookup.getSourceLinesByClass(className);
     }
 
-    public Set<SourceFileEntry> getSourceLinesByMethod(String className, String method){
-        return sourceFilesLookup.getSourceLinesByMethod(className, method);
+    public Set<SourceFileEntry> getSourceLinesByMethod(String methodName, String method){
+        return sourceFilesLookup.getSourceLinesByMethod(methodName, method);
     }
 
     /*   Aux init method   */

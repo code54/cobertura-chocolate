@@ -61,11 +61,11 @@ public class SourceFilesLookup {
     private void addEntry(Map map, SourceFile entry){
         Iterator<SourceFileEntry> entries = entry.getEntries().iterator();
         while(entries.hasNext()){
-            SourceFileEntry fileEntry = entries.next();
-            if(map.get(fileEntry.getClassName())==null){
-                map.put(fileEntry.getClassName(), new HashSet<SourceFileEntry>());
+            SourceFileEntry classEntry = entries.next();
+            if(map.get(classEntry.getClassName())==null){
+                map.put(classEntry.getClassName(), new HashSet<SourceFileEntry>());
             }
-            ((Set)map.get(fileEntry.getClassName())).add(fileEntry);
+            ((Set)map.get(classEntry.getClassName())).add(classEntry);
         }
     }
 }

@@ -4,6 +4,7 @@ import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 
+import java.io.File;
 import java.util.*;
 
 /*
@@ -34,7 +35,7 @@ public class SourceFile {
     @ElementList(inline=true)
     private Set<SourceFileEntry> entries;
 
-    public SourceFile(){
+    private SourceFile(){
         entries = new HashSet<SourceFileEntry>();
     }
 

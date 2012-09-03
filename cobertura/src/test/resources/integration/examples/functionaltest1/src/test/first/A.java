@@ -40,6 +40,10 @@ public class A{
 		someMethod();
 	}
 
+    public void hello(String s){
+        //
+    }
+
 	public void dontCall(){
 		someMethod();
 	}

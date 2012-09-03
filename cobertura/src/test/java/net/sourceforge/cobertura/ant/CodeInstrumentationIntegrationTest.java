@@ -92,7 +92,7 @@ public class CodeInstrumentationIntegrationTest {
         GenericReport report = cobertura.report();
         report.export(new HTMLReportFormatStrategy(new File("/tmp"), "UTF-8"));
 
-        cleanFiles(basedir);
+//        cleanFiles(basedir);
     }
 
     @Test
