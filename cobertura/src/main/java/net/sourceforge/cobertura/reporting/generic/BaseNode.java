@@ -31,8 +31,12 @@ public class BaseNode implements Node{
     protected String name;
     protected String content;//TODO see where needed and add to Node interface
 
-    public BaseNode(){
+    public BaseNode(){}
+
+    public BaseNode(String type, String name){
         nodes = new HashMap<String, Set<Node>>();
+        this.type = type;
+        this.name = name;
     }
 
     @Override
@@ -48,8 +52,11 @@ public class BaseNode implements Node{
     }
 
     @Override
-    public Set<? extends Node> getNodes() {
+    public Set<? extends Node> getNodes(boolean thisNodeIncluded) {
         Set<Node>immediateNodes = new HashSet<Node>();
+        if(thisNodeIncluded){
+            immediateNodes.add(this);
+        }
         Iterator<Set<Node>> iterator = nodes.values().iterator();
         while (iterator.hasNext()){
             Set<Node>nodes = iterator.next();
@@ -61,17 +68,16 @@ public class BaseNode implements Node{
     }
 
     @Override
-    public Set<? extends Node> getNodes(Filter filter) {
-        return filter.filter(this);
+    public Set<? extends Node> getNodes(boolean thisNodeIncluded, Filter filter) {
+        return filter.filter(getNodes(thisNodeIncluded));
     }
 
     @Override
-    public Set<? extends Node> getAllNodes(Filter filter) {
+    public Set<? extends Node> getAllNodes(boolean thisNodeIncluded, Filter filter) {
         Set<Node>filteredNodes = new HashSet<Node>();
-        if(!getNodes().isEmpty()){
-            filteredNodes.addAll(filter.filter(this));
-            for(Node entry : getNodes()){
-                filteredNodes.addAll(entry.getAllNodes(filter));
+        if(!getNodes(thisNodeIncluded).isEmpty()){
+            for(Node entry : getNodes(thisNodeIncluded)){
+                filteredNodes.addAll(entry.getAllNodes(thisNodeIncluded, filter));
             }
         }
         return filteredNodes;

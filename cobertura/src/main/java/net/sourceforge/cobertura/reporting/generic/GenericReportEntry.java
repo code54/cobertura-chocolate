@@ -61,7 +61,7 @@ public class GenericReportEntry extends BaseNode implements Node{
     private Map<String, IMetric>metrics;
 
     @ElementMap(key = "level", entry = "nodes")
-    private Map<String, Set<GenericReportEntry>> nodes;
+//    private Map<String, Set<GenericReportEntry>> nodes;
 
 
 
@@ -71,7 +71,7 @@ public class GenericReportEntry extends BaseNode implements Node{
                               CoverageData branchCoverage, CoverageData lineCoverage,
                               double cyclomaticCodeComplexity, long hits) {
         metrics = new HashMap<String, IMetric>();
-        nodes = new HashMap<String, Set<GenericReportEntry>>();
+        nodes = new HashMap<String, Set<Node>>();
 
         this.entryLevel = entryLevel;
         this.name = name;
@@ -90,31 +90,6 @@ public class GenericReportEntry extends BaseNode implements Node{
      */
     public String getEntryLevel() {
         return entryLevel;
-    }
-
-    @Override
-    public void addNode(String relation, Node node) {
-        if(nodes.get(relation)==null){
-            nodes.put(relation, new HashSet<GenericReportEntry>());
-        }
-        nodes.get(relation).add((GenericReportEntry)node);
-    }
-
-    @Override
-    public Set<? extends Node> getNodes(Filter filter) {
-        return filter.filter(this);
-    }
-
-    @Override
-    public Set<Node> getAllNodes(Filter filter) {
-        Set<Node>filteredNodes = new HashSet<Node>();
-        if(!getNodes().isEmpty()){
-            filteredNodes.addAll(filter.filter(this));
-            for(Node entry : getNodes()){
-                 filteredNodes.addAll(entry.getAllNodes(filter));
-            }
-        }
-        return filteredNodes;
     }
 
     @Override
@@ -154,9 +129,9 @@ public class GenericReportEntry extends BaseNode implements Node{
         if(ReportConstants.level_all.equals(level) ||
                 //my level is lower than the required, propagate to nodes
                 (new Levels().compare(entryLevel, level)==-1)){
-            for(Set<GenericReportEntry>reportEntriesSet : nodes.values()){
-                for(GenericReportEntry entry: reportEntriesSet){
-                    entry.getEntriesForLevel(entries, level);
+            for(Set<Node>reportEntriesSet : nodes.values()){
+                for(Node entry: reportEntriesSet){
+//                    entry.getEntriesForLevel(entries, level);
                 }
             }
         }

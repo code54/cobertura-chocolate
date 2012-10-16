@@ -1,8 +1,10 @@
 package net.sourceforge.cobertura.reporting.generic.filter;
 
+import net.sourceforge.cobertura.reporting.generic.BaseNode;
 import net.sourceforge.cobertura.reporting.generic.CoverageData;
 import net.sourceforge.cobertura.reporting.generic.GenericReportEntry;
 import net.sourceforge.cobertura.reporting.generic.Node;
+import net.sourceforge.cobertura.reporting.generic.filter.criteria.EqCriteria;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,29 +33,21 @@ public class FilterTest {
 
     @Before
     public void setUp(){
-        report = new GenericReportEntry(GenericReportEntry.report, REPORT_NAME,
-                mock(CoverageData.class), mock(CoverageData.class), 0, 0);
+        report = new BaseNode(GenericReportEntry.report, REPORT_NAME);
 
-        Node project = new GenericReportEntry(GenericReportEntry.project, PROJECT_NAME,
-                mock(CoverageData.class), mock(CoverageData.class), 0, 0);
+        Node project = new BaseNode(GenericReportEntry.project, PROJECT_NAME);
 
-        Node packag = new GenericReportEntry(GenericReportEntry.packag, PACKAGE_NAME,
-                mock(CoverageData.class), mock(CoverageData.class), 0, 0);
+        Node packag = new BaseNode(GenericReportEntry.packag, PACKAGE_NAME);
 
-        Node source = new GenericReportEntry(GenericReportEntry.sourcefile, SOURCE_NAME,
-                mock(CoverageData.class), mock(CoverageData.class), 0, 0);
+        Node source = new BaseNode(GenericReportEntry.sourcefile, SOURCE_NAME);
 
-        Node clazz = new GenericReportEntry(GenericReportEntry.clazz, CLASS_NAME,
-                mock(CoverageData.class), mock(CoverageData.class), 0, 0);
+        Node clazz = new BaseNode(GenericReportEntry.clazz, CLASS_NAME);
 
-        Node line01 = new GenericReportEntry(GenericReportEntry.line, LINE01_NAME,
-                mock(CoverageData.class), mock(CoverageData.class), 0, 0);
+        Node line01 = new BaseNode(GenericReportEntry.line, LINE01_NAME);
 
-        Node line02 = new GenericReportEntry(GenericReportEntry.line, LINE02_NAME,
-                mock(CoverageData.class), mock(CoverageData.class), 0, 0);
+        Node line02 = new BaseNode(GenericReportEntry.line, LINE02_NAME);
 
-        Node line03 = new GenericReportEntry(GenericReportEntry.line, LINE03_NAME,
-                mock(CoverageData.class), mock(CoverageData.class), 0, 0);
+        Node line03 = new BaseNode(GenericReportEntry.line, LINE03_NAME);
 
         report.addNode(GenericReportEntry.project, project);
         project.addNode(GenericReportEntry.packag, packag);
@@ -66,8 +60,17 @@ public class FilterTest {
 
     @Test
     public void testNameFilter(){
-        Set<? extends Node>nodes = report.getNodes(new NameFilter(REPORT_NAME));
-        assertTrue("Did not return any node", nodes.isEmpty());
+        Set<? extends Node>nodes = report.getNodes(true, new NameFilter(new EqCriteria(REPORT_NAME)));
+        assertTrue("Did not return any node", !nodes.isEmpty());
         assertEquals("Did not return expected node", nodes.iterator().next(), report);
+    }
+
+    @Test
+    public void testTypeFilter(){
+        Set<? extends Node>nodes = report.getNodes(true, new TypeFilter(new EqCriteria(GenericReportEntry.line)));
+        assertTrue("Did not return the expected nodes: "+nodes.size(), nodes.isEmpty());
+
+        nodes = report.getAllNodes(true, new TypeFilter(new EqCriteria(GenericReportEntry.line)));
+        assertTrue("Did not return the expected nodes: "+nodes.size(), nodes.size()==3);
     }
 }

@@ -338,12 +338,12 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
             bindToLineNodeForRelation(data, getRelation(Level.clazz));
             bindToLineNodeForRelation(data, getRelation(Level.method));
 
-            Set<Node> lines = data.getAllNodes(new RelationFilter(new EqCriteria(getRelation(Level.line))));
+            Set<? extends Node> lines = data.getAllNodes(false, new RelationFilter(new EqCriteria(getRelation(Level.line))));
             for (Node line : lines) {
                 data.addNode(getRelation(Level.line), line);
             }
         } else {
-            Set<Node> sources = data.getAllNodes(new RelationFilter(new EqCriteria(getRelation(Level.line))));
+            Set<? extends Node> sources = data.getAllNodes(false, new RelationFilter(new EqCriteria(getRelation(Level.line))));
             for (Node source : sources) {
                 bindToLineNodes((GenericReportEntry) source);
             }
