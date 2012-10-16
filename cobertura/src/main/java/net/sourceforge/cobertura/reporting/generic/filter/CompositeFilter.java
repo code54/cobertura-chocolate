@@ -3,6 +3,7 @@ package net.sourceforge.cobertura.reporting.generic.filter;
 import net.sourceforge.cobertura.reporting.generic.Node;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /*
@@ -27,14 +28,11 @@ import java.util.Set;
  */
 public class CompositeFilter implements Filter{
 
-    private Set<Filter>filters;
-    private Filter firstFilter;
+    private List<Filter>filters;
 
     private CompositeFilter(){}
 
-    public CompositeFilter(Set<Filter>filters){
-        firstFilter = filters.iterator().next();
-        filters.remove(firstFilter);
+    public CompositeFilter(List<Filter> filters){
         this.filters = filters;
     }
 
