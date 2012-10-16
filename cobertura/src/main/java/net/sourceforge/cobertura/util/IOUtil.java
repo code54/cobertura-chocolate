@@ -34,8 +34,7 @@ import java.io.*;
  * 
  * @author Grzegorz Lukasik
  */
-public abstract class IOUtil
-{
+public abstract class IOUtil {
 
 	/**
 	 * Copies bytes from input stream into the output stream.  Stops

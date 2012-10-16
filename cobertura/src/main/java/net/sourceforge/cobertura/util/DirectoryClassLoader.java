@@ -6,11 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.List;
-
-import static net.sourceforge.cobertura.util.ArchiveUtil.getFiles;
 
 //Some code extracted from http://kalanir.blogspot.com.ar/2010/01/how-to-write-custom-class-loader-to.html
 

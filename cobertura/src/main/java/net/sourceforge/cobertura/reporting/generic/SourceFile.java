@@ -1,11 +1,11 @@
 package net.sourceforge.cobertura.reporting.generic;
 
 import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 
-import java.io.File;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /*
  * Cobertura - http://cobertura.sourceforge.net/

@@ -1,9 +1,13 @@
 package net.sourceforge.cobertura.reporting.generic;
 
+import net.sourceforge.cobertura.reporting.generic.filter.Filter;
+import net.sourceforge.cobertura.reporting.generic.filter.NameFilter;
+import net.sourceforge.cobertura.reporting.generic.filter.RelationFilter;
 import org.apache.log4j.Logger;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
+import org.simpleframework.xml.ElementMap;
 
 import java.util.*;
 
@@ -27,9 +31,17 @@ import java.util.*;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  */
-public class GenericReportEntry {
+public class GenericReportEntry extends BaseNode implements Node{
 
     private static final Logger log = Logger.getLogger(GenericReportEntry.class);
+
+    public static final String report = "report";
+    public static final String project = "project";
+    public static final String packag = "package";
+    public static final String sourcefile = "sourcefile";
+    public static final String clazz = "class";
+    public static final String method = "method";
+    public static final String line = "line";
 
     @Attribute
     private String entryLevel;
@@ -48,8 +60,10 @@ public class GenericReportEntry {
     //exposes customMetric and basicMetric data
     private Map<String, IMetric>metrics;
 
-    @ElementList(inline = true)
-    private Set<GenericReportEntry> childs;
+    @ElementMap(key = "level", entry = "nodes")
+    private Map<String, Set<GenericReportEntry>> nodes;
+
+
 
     public GenericReportEntry() {}
 
@@ -57,7 +71,7 @@ public class GenericReportEntry {
                               CoverageData branchCoverage, CoverageData lineCoverage,
                               double cyclomaticCodeComplexity, long hits) {
         metrics = new HashMap<String, IMetric>();
-        childs = new HashSet<GenericReportEntry>();
+        nodes = new HashMap<String, Set<GenericReportEntry>>();
 
         this.entryLevel = entryLevel;
         this.name = name;
@@ -69,10 +83,6 @@ public class GenericReportEntry {
         buildMetricsMap();
     }
 
-    public void addChild(GenericReportEntry entry) {
-        childs.add(entry);
-    }
-
     /**
      * Returns level to which this information applies.
      *
@@ -82,31 +92,77 @@ public class GenericReportEntry {
         return entryLevel;
     }
 
+    @Override
+    public void addNode(String relation, Node node) {
+        if(nodes.get(relation)==null){
+            nodes.put(relation, new HashSet<GenericReportEntry>());
+        }
+        nodes.get(relation).add((GenericReportEntry)node);
+    }
+
+    @Override
+    public Set<? extends Node> getNodes(Filter filter) {
+        return filter.filter(this);
+    }
+
+    @Override
+    public Set<Node> getAllNodes(Filter filter) {
+        Set<Node>filteredNodes = new HashSet<Node>();
+        if(!getNodes().isEmpty()){
+            filteredNodes.addAll(filter.filter(this));
+            for(Node entry : getNodes()){
+                 filteredNodes.addAll(entry.getAllNodes(filter));
+            }
+        }
+        return filteredNodes;
+    }
+
+    @Override
+    public Set<? extends Node> getNodesForRelation(String relation) {
+        return nodes.get(relation);
+    }
+
+    //TODO remove
+//    @Override
+//    @Deprecated
+//    public void getAllNodesForRelation(Set<Node> nodes, String relation) {
+//        nodes.addAll(getAllNodes(new RelationFilter(relation)));
+//        Iterator<Map.Entry<String, Set<GenericReportEntry>>> iterator = this.nodes.entrySet().iterator();
+//        while(iterator.hasNext()){
+//            Map.Entry<String, Set<GenericReportEntry>> entry = iterator.next();
+//            if(entry.getKey().equals(relation)){
+//                nodes.addAll(getNodesForRelation(relation));
+//            }else{
+//                for(GenericReportEntry node:entry.getValue()){
+//                    node.getAllNodesForRelation(nodes, relation);
+//                }
+//            }
+//        }
+//    }
+
     public String getName() {
         return name;
     }
 
+    @Override
+    public String getType() {
+        return entryLevel;
+    }
+
+    //TODO review if this can be reformulated using filters: TypeFilter with ORListedCriteria with level_all or required level
     public void getEntriesForLevel(List<GenericReportEntry> entries, String level){
-        if(ReportConstants.level_all.equals(level)){
-            entries.add(this);
-            for(GenericReportEntry entry: childs){
+        if(ReportConstants.level_all.equals(level) ||
+                //my level is lower than the required, propagate to nodes
+                (new Levels().compare(entryLevel, level)==-1)){
+            for(Set<GenericReportEntry>reportEntriesSet : nodes.values()){
+                for(GenericReportEntry entry: reportEntriesSet){
                     entry.getEntriesForLevel(entries, level);
+                }
             }
-        }else{
-            switch (new Levels().compare(entryLevel, level)){
-                case 0:
-                    entries.add(this);
-                    break;
-                case 1:
-                    //my level is higher than the requested, stop here
-                    break;
-                case -1:
-                    //my level is lower than the required, propagate to childs
-                    for(GenericReportEntry entry: childs){
-                        entry.getEntriesForLevel(entries, level);
-                    }
-                    break;
-            }
+        }
+        if(ReportConstants.level_all.equals(level) ||
+                new Levels().compare(entryLevel, level)==0){
+            entries.add(this);
         }
     }
 

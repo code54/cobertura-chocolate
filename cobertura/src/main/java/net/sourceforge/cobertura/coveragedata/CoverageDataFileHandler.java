@@ -24,19 +24,13 @@
 
 package net.sourceforge.cobertura.coveragedata;
 
-import net.sourceforge.cobertura.reporting.ComplexityCalculator;
-import net.sourceforge.cobertura.reporting.generic.GenericReport;
 import net.sourceforge.cobertura.util.ConfigurationUtil;
-import net.sourceforge.cobertura.util.FileFinder;
 import org.apache.log4j.Logger;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 /**
  * This contains methods used for reading and writing the

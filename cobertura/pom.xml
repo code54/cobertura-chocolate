@@ -134,6 +134,13 @@
 				<artifactId>groovy-all</artifactId>
 				<version>1.8.6</version>
 			</dependency>
+
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>13.0.1</version>
+			</dependency>
+            
 			
 			<!-- Add a library that makes reflection easy to use -->
 			<!-- This is used to dynamically load classes implementing some interface provided as extension point -->
@@ -155,6 +162,13 @@
     				<artifactId>javaparser</artifactId>
     				<version>1.0.8</version>
 			</dependency>
+
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-all</artifactId>
+				<version>1.9.0</version>
+			</dependency>
+            
 
 		</dependencies>
 </project>

@@ -33,7 +33,7 @@ import java.util.HashSet;
 
 /**
  * This class represents a collection of regular expressions that will be used to see
- * if a classname matches them.
+ * if a classname filter them.
  * 
  * Regular expressions are specified by calling add methods.  If no add methods are
  * called, this class will match any classname.
@@ -51,7 +51,7 @@ public class ClassPattern{
 
 	/**
 	 * Returns true if any regular expressions have been specified by calling the
-	 * add methods.  If none are specified, this class matches anything.
+	 * add methods.  If none are specified, this class filter anything.
 	 * 
 	 * @return true if any regular expressions have been specified
 	 */
@@ -60,15 +60,15 @@ public class ClassPattern{
 	}
 
 	/**
-	 * Check to see if a class matches this ClassPattern
+	 * Check to see if a class filter this ClassPattern
 	 * 
-	 * If a pattern has not been specified, this matches anything.
+	 * If a pattern has not been specified, this filter anything.
 	 * 
 	 * This method also looks for "WEB-INF/classes" at the beginning of the
 	 * classname.  It is removed before checking for a match.
 	 * 
 	 * @param filename Either a full classname or a full class filename
-	 * @return true if the classname matches this ClassPattern or if this ClassPattern
+	 * @return true if the classname filter this ClassPattern or if this ClassPattern
 	 * has not been specified.
 	 */
 	boolean matches(String filename){

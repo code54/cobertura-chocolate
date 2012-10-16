@@ -57,7 +57,7 @@ public class CoberturaFile extends File{
 	}
 
 	/**
-	 * @return True if file has an extension that matches one of the
+	 * @return True if file has an extension that filter one of the
 	 *         standard java archives, false otherwise.
 	 */
 	boolean isArchive(){

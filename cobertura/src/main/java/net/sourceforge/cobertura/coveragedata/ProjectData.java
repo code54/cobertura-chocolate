@@ -30,12 +30,10 @@
 
 package net.sourceforge.cobertura.coveragedata;
 
-import net.sourceforge.cobertura.util.FileLocker;
 import org.apache.log4j.Logger;
 import org.simpleframework.xml.ElementMap;
 import org.simpleframework.xml.Root;
 
-import java.io.File;
 import java.util.*;
 
 @Root(name="projectdata")

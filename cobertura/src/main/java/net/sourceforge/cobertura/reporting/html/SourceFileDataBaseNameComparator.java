@@ -22,7 +22,6 @@
 package net.sourceforge.cobertura.reporting.html;
 
 import net.sourceforge.cobertura.coveragedata.SourceFileData;
-import net.sourceforge.cobertura.reporting.generic.GenericReportEntry;
 
 import java.io.Serializable;
 import java.util.Comparator;

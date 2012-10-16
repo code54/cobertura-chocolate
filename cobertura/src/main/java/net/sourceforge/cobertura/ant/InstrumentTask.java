@@ -63,10 +63,8 @@
 
 package net.sourceforge.cobertura.ant;
 
-import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.util.CommandLineBuilder;
 import net.sourceforge.cobertura.util.Constants;
-import net.sourceforge.cobertura.util.ShutdownHooks;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileSet;

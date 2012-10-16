@@ -66,7 +66,7 @@ public class FileFinder {
 	/**
 	 * Adds directory that is a root of sources. A source file
 	 * that is under this directory will be found if relative
-	 * path to the file from root matches package name.
+	 * path to the file from root filter package name.
 	 * <p>
 	 * Example:
 	 * <pre>

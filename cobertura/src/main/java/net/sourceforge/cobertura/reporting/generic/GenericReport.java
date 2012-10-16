@@ -1,9 +1,7 @@
 package net.sourceforge.cobertura.reporting.generic;
 
-import net.sourceforge.cobertura.coveragedata.*;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.ElementList;
-import org.simpleframework.xml.ElementMap;
 
 import java.util.*;
 

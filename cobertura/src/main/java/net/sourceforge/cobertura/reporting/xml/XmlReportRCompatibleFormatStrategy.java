@@ -1,19 +1,6 @@
 package net.sourceforge.cobertura.reporting.xml;
 
-import com.googlecode.jatl.Html;
-import net.sourceforge.cobertura.coveragedata.*;
-import net.sourceforge.cobertura.reporting.ComplexityCalculator;
-import net.sourceforge.cobertura.util.FileFinder;
-import net.sourceforge.cobertura.util.Header;
-import net.sourceforge.cobertura.util.IOUtil;
-import net.sourceforge.cobertura.util.StringUtil;
 import org.apache.log4j.Logger;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.*;
 
 /**
  * XmlReportStrategy that produces the same output as the XMLReport class.
