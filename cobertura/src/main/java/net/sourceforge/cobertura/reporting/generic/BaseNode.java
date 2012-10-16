@@ -27,13 +27,13 @@ import java.util.*;
 public class BaseNode implements Node{
 
     protected Map<String, Set<Node>> nodes;
-    protected String type;
+    protected NodeType type;
     protected String name;
     protected String content;//TODO see where needed and add to Node interface
 
     public BaseNode(){}
 
-    public BaseNode(String type, String name){
+    public BaseNode(NodeType type, String name){
         nodes = new HashMap<String, Set<Node>>();
         this.type = type;
         this.name = name;
@@ -75,10 +75,11 @@ public class BaseNode implements Node{
     @Override
     public Set<? extends Node> getAllNodes(boolean thisNodeIncluded, Filter filter) {
         Set<Node>filteredNodes = new HashSet<Node>();
-        if(!getNodes(thisNodeIncluded).isEmpty()){
-            for(Node entry : getNodes(thisNodeIncluded)){
-                filteredNodes.addAll(entry.getAllNodes(thisNodeIncluded, filter));
-            }
+        if(thisNodeIncluded || getType().equals(NodeType.LINE)){
+            filteredNodes.addAll(filter.filter(this));
+        }
+        for(Node entry : getNodes(false)){
+            filteredNodes.addAll(entry.getAllNodes(false, filter));
         }
         return filteredNodes;
     }
@@ -94,7 +95,7 @@ public class BaseNode implements Node{
     }
 
     @Override
-    public String getType() {
+    public NodeType getType() {
         return type;
     }
 }

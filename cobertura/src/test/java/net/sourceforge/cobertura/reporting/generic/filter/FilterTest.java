@@ -1,9 +1,6 @@
 package net.sourceforge.cobertura.reporting.generic.filter;
 
-import net.sourceforge.cobertura.reporting.generic.BaseNode;
-import net.sourceforge.cobertura.reporting.generic.CoverageData;
-import net.sourceforge.cobertura.reporting.generic.GenericReportEntry;
-import net.sourceforge.cobertura.reporting.generic.Node;
+import net.sourceforge.cobertura.reporting.generic.*;
 import net.sourceforge.cobertura.reporting.generic.filter.criteria.EqCriteria;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,14 +29,14 @@ public class FilterTest {
     public void setUp(){
         nodes = new HashMap<String, Node>();
 
-        nodes.put(REPORT_NAME, new BaseNode(GenericReportEntry.report, REPORT_NAME));
-        nodes.put(PROJECT_NAME, new BaseNode(GenericReportEntry.project, PROJECT_NAME));
-        nodes.put(PACKAGE_NAME, new BaseNode(GenericReportEntry.packag, PACKAGE_NAME));
-        nodes.put(SOURCE_NAME, new BaseNode(GenericReportEntry.sourcefile, SOURCE_NAME));
-        nodes.put(CLASS_NAME, new BaseNode(GenericReportEntry.clazz, CLASS_NAME));
-        nodes.put(LINE01_NAME, new BaseNode(GenericReportEntry.line, LINE01_NAME));
-        nodes.put(LINE02_NAME, new BaseNode(GenericReportEntry.line, LINE02_NAME));
-        nodes.put(LINE03_NAME, new BaseNode(GenericReportEntry.line, LINE03_NAME));
+        nodes.put(REPORT_NAME, new BaseNode(NodeType.REPORT, REPORT_NAME));
+        nodes.put(PROJECT_NAME, new BaseNode(NodeType.PROJECT, PROJECT_NAME));
+        nodes.put(PACKAGE_NAME, new BaseNode(NodeType.PACKAGE, PACKAGE_NAME));
+        nodes.put(SOURCE_NAME, new BaseNode(NodeType.SOURCE, SOURCE_NAME));
+        nodes.put(CLASS_NAME, new BaseNode(NodeType.CLASS, CLASS_NAME));
+        nodes.put(LINE01_NAME, new BaseNode(NodeType.LINE, LINE01_NAME));
+        nodes.put(LINE02_NAME, new BaseNode(NodeType.LINE, LINE02_NAME));
+        nodes.put(LINE03_NAME, new BaseNode(NodeType.LINE, LINE03_NAME));
 
         nodes.get(REPORT_NAME).addNode(GenericReportEntry.project, nodes.get(PROJECT_NAME));
         nodes.get(PROJECT_NAME).addNode(GenericReportEntry.packag, nodes.get(PACKAGE_NAME));
@@ -59,10 +56,10 @@ public class FilterTest {
 
     @Test
     public void testTypeFilter(){
-        Set<? extends Node>nodes = this.nodes.get(REPORT_NAME).getNodes(true, new TypeFilter(new EqCriteria(GenericReportEntry.line)));
+        Set<? extends Node>nodes = this.nodes.get(REPORT_NAME).getNodes(true, new TypeFilter(new EqCriteria(NodeType.LINE)));
         assertTrue("Did not return the expected nodes: "+nodes.size(), nodes.isEmpty());
 
-        nodes = this.nodes.get(REPORT_NAME).getAllNodes(true, new TypeFilter(new EqCriteria(GenericReportEntry.line)));
+        nodes = this.nodes.get(REPORT_NAME).getAllNodes(true, new TypeFilter(new EqCriteria(NodeType.LINE)));
         assertTrue("Did not return the expected nodes: " + nodes.size(), nodes.size() == 3);
     }
 
@@ -71,7 +68,7 @@ public class FilterTest {
         Set<? extends Node>nodes = this.nodes.get(REPORT_NAME).getNodes(true, new RelationFilter(new EqCriteria(GenericReportEntry.line)));
         assertTrue("Did not return the expected nodes: "+nodes.size(), nodes.isEmpty());
 
-        nodes = this.nodes.get(REPORT_NAME).getAllNodes(true, new TypeFilter(new EqCriteria(GenericReportEntry.line)));
+        nodes = this.nodes.get(REPORT_NAME).getAllNodes(true, new TypeFilter(new EqCriteria(NodeType.LINE)));
         assertTrue("Did not return the expected nodes: "+nodes.size(), nodes.size()==3);
     }
 

@@ -120,8 +120,26 @@ public class GenericReportEntry extends BaseNode implements Node{
     }
 
     @Override
-    public String getType() {
-        return entryLevel;
+    public NodeType getType() {
+        if(entryLevel.equals(ReportConstants.level_project)){
+            return NodeType.CLASS;
+        }
+        if(entryLevel.equals(ReportConstants.level_package)){
+            return NodeType.PACKAGE;
+        }
+        if(entryLevel.equals(ReportConstants.level_sourcefile)){
+            return NodeType.SOURCE;
+        }
+        if(entryLevel.equals(ReportConstants.level_class)){
+            return NodeType.CLASS;
+        }
+        if(entryLevel.equals(ReportConstants.level_method)){
+            return NodeType.METHOD;
+        }
+        if(entryLevel.equals(ReportConstants.level_line)){
+            return NodeType.LINE;
+        }
+        return null;
     }
 
     //TODO review if this can be reformulated using filters: TypeFilter with ORListedCriteria with level_all or required level

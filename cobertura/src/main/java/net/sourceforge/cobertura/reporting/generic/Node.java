@@ -51,6 +51,6 @@ public interface Node {
      * What does it represent. Ex.: class, method, line.
      * @return
      */
-    String getType();
+    NodeType getType();
 
 }
