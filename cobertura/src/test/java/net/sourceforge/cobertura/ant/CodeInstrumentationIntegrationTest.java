@@ -119,9 +119,9 @@ public class CodeInstrumentationIntegrationTest {
         GenericReportEntry report = cobertura.report().getEntriesForLevel(ReportConstants.level_project).get(0);
 
         assertEquals("Branch coverage violation", 0.25925925925925924,
-                report.getMetric(ReportConstants.metricName_branchCoverageRate).getValue());
+                report.getPayload().getMetric(ReportConstants.metricName_branchCoverageRate).getValue());
         assertEquals("Line coverage violation", 0.723404255319149,
-                report.getMetric(ReportConstants.metricName_lineCoverageRate).getValue());
+                report.getPayload().getMetric(ReportConstants.metricName_lineCoverageRate).getValue());
         //assertEquals("Cyclomatic complexity", 0.,
         //      report.getMetric(ReportConstants.metricName_ccn));
 

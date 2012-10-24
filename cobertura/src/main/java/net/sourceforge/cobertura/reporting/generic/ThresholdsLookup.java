@@ -31,14 +31,14 @@ public class ThresholdsLookup {
     /*   thresholdsLookup: Map<level+name, Map<metricName, Threshold>>   */
     private Map<String, Map<String, Threshold>> thresholdsLookup;
     private Map<String, Set<ICustomMetric>> metricsLookup;
-    private Levels levels;
+    private JavaNodeTypeHierarchy levels;
 
     private ThresholdsLookup(){}
 
     public ThresholdsLookup(Set<ICustomMetric>metrics){
         thresholdsLookup = new HashMap<String, Map<String, Threshold>>();
         metricsLookup = new HashMap<String, Set<ICustomMetric>>();
-        levels = new Levels();
+        levels = new JavaNodeTypeHierarchy();
         Iterator<ICustomMetric>it = metrics.iterator();
         while(it.hasNext()){
             addMetric(it.next());
@@ -61,8 +61,8 @@ public class ThresholdsLookup {
      * @param level
      * @param levelName
      */
-    public Set<Threshold> getThresholds(String level, String levelName){
-        String key = buildKey(level, levelName);
+    public Set<Threshold> getThresholds(NodeType level, String levelName){
+        String key = buildKey(level.toString(), levelName);
         Set<Threshold>thresholds = new HashSet<Threshold>();
         thresholds.addAll(thresholdsLookup.get(key).values());
         Set<ICustomMetric>levelMetrics;
@@ -77,7 +77,7 @@ public class ThresholdsLookup {
                     Threshold threshold = getThresholdForMetric(metric, level);
                     if(threshold==null){
                         //if not, create a default threshold
-                        threshold = new Threshold(levelName, level, ReportConstants.threshold_criteria_all,0);
+                        threshold = new Threshold(levelName, level.toString(), ReportConstants.threshold_criteria_all,0);
                     }
                     thresholds.add(threshold);
                 }
@@ -96,14 +96,15 @@ public class ThresholdsLookup {
     }
 
     private void addMetric(ICustomMetric metric){
-        if(ReportConstants.level_all.equals(metric.getApplicableLevel())){
+        if(ReportConstants.level_all.equals(metric.getApplicableType())){
             addMetric(metric, ReportConstants.level_project);
             addMetric(metric, ReportConstants.level_package);
             addMetric(metric, ReportConstants.level_sourcefile);
             addMetric(metric, ReportConstants.level_class);
             addMetric(metric, ReportConstants.level_method);
         }else{
-            addMetric(metric, metric.getApplicableLevel());
+            //TODO
+//            addMetric(metric, metric.getApplicableType());
         }
     }
 
@@ -124,18 +125,18 @@ public class ThresholdsLookup {
      * @param currentLevel
      * @return
      */
-    private Threshold getThresholdForMetric(ICustomMetric metric, String currentLevel){
+    private Threshold getThresholdForMetric(ICustomMetric metric, NodeType currentLevel){
         Threshold threshold = null;
         //check the metric applies to all levels.
         //If so, is safe to search for some definition at upper levels.
-        if(ReportConstants.level_all.equals(metric.getApplicableLevel())){
+        if(ReportConstants.level_all.equals(metric.getApplicableType())){
             String levelName = ReportConstants.threshold_criteria_all;
             do{
-                if(thresholdsLookup.get(buildKey(currentLevel, levelName))!=null &&
-                        thresholdsLookup.get(buildKey(currentLevel, levelName)).containsKey(metric.getName())){
-                    threshold = thresholdsLookup.get(buildKey(currentLevel, levelName)).get(metric.getName());
+                if(thresholdsLookup.get(buildKey(currentLevel.toString(), levelName))!=null &&
+                        thresholdsLookup.get(buildKey(currentLevel.toString(), levelName)).containsKey(metric.getName())){
+                    threshold = thresholdsLookup.get(buildKey(currentLevel.toString(), levelName)).get(metric.getName());
                 }
-            }while(threshold==null && ((currentLevel=levels.getHigherLevel(currentLevel))!=null));
+            }while(threshold==null && ((currentLevel=levels.getHigher(currentLevel))!=null));
         }
         return threshold;
     }

@@ -3,6 +3,10 @@ package net.sourceforge.cobertura.reporting.html;
 import com.googlecode.jatl.Html;
 import net.sourceforge.cobertura.comparator.GRENameComparator;
 import net.sourceforge.cobertura.reporting.generic.*;
+import net.sourceforge.cobertura.reporting.generic.filter.TypeFilter;
+import net.sourceforge.cobertura.reporting.generic.filter.criteria.Criteria;
+import net.sourceforge.cobertura.reporting.generic.filter.criteria.EqCriteria;
+import net.sourceforge.cobertura.reporting.generic.filter.criteria.ORListedCriteria;
 import net.sourceforge.cobertura.reporting.html.files.CopyFiles;
 import net.sourceforge.cobertura.util.Header;
 import net.sourceforge.cobertura.util.IOUtil;
@@ -264,9 +268,9 @@ public class HTMLReportFormatStrategy implements IReportFormatStrategy {
                 for (Iterator iter = sortedSourceFiles.iterator(); iter.hasNext(); ) {
                     GenericReportEntry sourceFileData = (GenericReportEntry) iter.next();
                     String percentCovered;
-                    if (sourceFileData.getMetric(ReportConstants.metricName_lineCoverageRate).getValue() > 0) {
+                    if (sourceFileData.getPayload().getMetric(ReportConstants.metricName_lineCoverageRate).getValue() > 0) {
                         percentCovered = getPercentValue(
-                                sourceFileData.getMetric(ReportConstants.metricName_lineCoverageRate).getValue()
+                                sourceFileData.getPayload().getMetric(ReportConstants.metricName_lineCoverageRate).getValue()
                         );
                     } else {
                         percentCovered = "N/A";
@@ -338,9 +342,9 @@ public class HTMLReportFormatStrategy implements IReportFormatStrategy {
                     GenericReportEntry sourceFileData = (GenericReportEntry) iter.next();
                     out.println("<tr>");
                     String percentCovered;
-                    if (sourceFileData.getMetric(ReportConstants.metricName_lineCoverageRate).getValue() > 0)
+                    if (sourceFileData.getPayload().getMetric(ReportConstants.metricName_lineCoverageRate).getValue() > 0)
                         percentCovered = getPercentValue(
-                                sourceFileData.getMetric(ReportConstants.metricName_lineCoverageRate).getValue()
+                                sourceFileData.getPayload().getMetric(ReportConstants.metricName_lineCoverageRate).getValue()
                         );
                     else
                         percentCovered = "N/A";
@@ -728,11 +732,11 @@ public class HTMLReportFormatStrategy implements IReportFormatStrategy {
     @Deprecated
     private String generateBranchInfo(GenericReportEntry lineData, String content) {
         boolean hasBranch = (lineData != null) &&
-                lineData.getMetric(ReportConstants.metricName_totalBranches).getValue() > 0;
+                lineData.getPayload().getMetric(ReportConstants.metricName_totalBranches).getValue() > 0;
         if (hasBranch) {
             StringBuffer ret = new StringBuffer();
             ret.append("<a title=\"Line ").append(lineData.getName()).append(": Conditional coverage ")
-                    .append(lineData.getMetric(ReportConstants.metricName_lineCoverageRate));
+                    .append(lineData.getPayload().getMetric(ReportConstants.metricName_lineCoverageRate));
 
             ret.append(".\">").append(content).append("</a>");
             return ret.toString();
@@ -741,12 +745,12 @@ public class HTMLReportFormatStrategy implements IReportFormatStrategy {
         }
     }
 
-    private void generateBranchInfoAlt(Html html, GenericReportEntry lineData, String content) {
+    private void generateBranchInfoAlt(Html html, Node lineData, String content) {
         boolean hasBranch = (lineData != null) &&
-                lineData.getMetric(ReportConstants.metricName_totalBranches).getValue() > 0;
+                lineData.getPayload().getMetric(ReportConstants.metricName_totalBranches).getValue() > 0;
         if (hasBranch) {
             html.a().title("line"+lineData.getName()+": Conditional coverage "+
-                    lineData.getMetric(ReportConstants.metricName_branchCoverageRate).getValue()).
+                    lineData.getPayload().getMetric(ReportConstants.metricName_branchCoverageRate).getValue()).
                     text(content).end();
         } else {
             html.text(content);
@@ -762,13 +766,16 @@ public class HTMLReportFormatStrategy implements IReportFormatStrategy {
                     + ".  Have you specified the source directory?</p>";
         }
 
-        List<GenericReportEntry> lines = new ArrayList<GenericReportEntry>();
-        clazz.getEntriesForLevel(lines, ReportConstants.level_line);
-        Iterator<GenericReportEntry> it = lines.iterator();
-        Map<String, GenericReportEntry> lineMap = new HashMap<String, GenericReportEntry>();
-        while (it.hasNext()) {
-            GenericReportEntry entry = it.next();
-            lineMap.put(entry.getName(), entry);
+        //TODO remove
+//        List<GenericReportEntry> lines = new ArrayList<GenericReportEntry>();
+//        clazz.getEntriesForLevel(lines, ReportConstants.level_line);
+//        Iterator<GenericReportEntry> it = lines.iterator();
+//
+        Map<String, Node> lineMap = new HashMap<String, Node>();
+        Set<? extends Node>lines = getEntriesForType(clazz, NodeType.LINE);
+
+        for (Node line : lines) {
+            lineMap.put(line.getName(), line);
         }
 
         StringBuffer ret = new StringBuffer();
@@ -779,11 +786,11 @@ public class HTMLReportFormatStrategy implements IReportFormatStrategy {
             ret.append("<tr>");
             ret.append("  <td class=\"numLineCover\">&nbsp;"
                     + entry.getLineNumber() + "</td>");
-            GenericReportEntry codeLine = lineMap.get(entry.getCodeLine());
+            Node codeLine = lineMap.get(entry.getCodeLine());
 
             int hits = 0;
             if (codeLine != null) {
-                hits = (int) codeLine.getMetric(ReportConstants.metricName_hits).getValue();
+                hits = (int) codeLine.getPayload().getMetric(ReportConstants.metricName_hits).getValue();
             }
             if (hits > 0) {
                 ret.append("  <td class=\"nbHitsCovered\">"
@@ -814,23 +821,21 @@ public class HTMLReportFormatStrategy implements IReportFormatStrategy {
             return;
         }
 
-        List<GenericReportEntry> lines = new ArrayList<GenericReportEntry>();
-        clazz.getEntriesForLevel(lines, ReportConstants.level_line);
-        Iterator<GenericReportEntry> it = lines.iterator();
-        Map<String, GenericReportEntry> lineMap = new HashMap<String, GenericReportEntry>();
-        while (it.hasNext()) {
-            GenericReportEntry entry = it.next();
-            lineMap.put(entry.getName(), entry);
+        Map<String, Node> lineMap = new HashMap<String, Node>();
+        Set<? extends Node>lines = getEntriesForType(clazz, NodeType.LINE);
+
+        for (Node line : lines) {
+            lineMap.put(line.getName(), line);
         }
 
         html.table().cellspacing("0").cellpadding("0").classAttr("src");
 
         while (entries.hasNext()) {
             SourceFileEntry entry = entries.next();
-            GenericReportEntry codeLine = lineMap.get(""+entry.getLineNumber());
+            Node codeLine = lineMap.get(""+entry.getLineNumber());
             int hits = 0;
             if (codeLine != null) {
-                hits = (int) codeLine.getMetric(ReportConstants.metricName_hits).getValue();
+                hits = (int) codeLine.getPayload().getMetric(ReportConstants.metricName_hits).getValue();
             }
             String classString;
             html.tr();
@@ -973,10 +978,10 @@ public class HTMLReportFormatStrategy implements IReportFormatStrategy {
         StringBuffer ret = new StringBuffer();
         String url1 = "frame-summary-" + packageData.getName() + ".html";
         String url2 = "frame-sourcefiles-" + packageData.getName() + ".html";
-        double ccn = packageData.getMetric(ReportConstants.metricName_ccn).getValue();
-        List<GenericReportEntry> childs = new ArrayList<GenericReportEntry>();
-        packageData.getEntriesForLevel(childs,
-                new Levels().getLowerLevel(packageData.getEntryLevel()));
+        double ccn = packageData.getPayload().getMetric(ReportConstants.metricName_ccn).getValue();
+
+        Set<? extends Node>childs =
+                getEntriesForType(packageData, new JavaNodeTypeHierarchy().getLower(packageData.getType()));
 
         ret.append("  <tr>");
         ret.append("<td><a href=\"" + url1
@@ -993,10 +998,10 @@ public class HTMLReportFormatStrategy implements IReportFormatStrategy {
         StringBuffer ret = new StringBuffer();
         String url1 = "frame-summary-" + packageData.getName() + ".html";
         String url2 = "frame-sourcefiles-" + packageData.getName() + ".html";
-        double ccn = packageData.getMetric(ReportConstants.metricName_ccn).getValue();
-        List<GenericReportEntry> childs = new ArrayList<GenericReportEntry>();
-        packageData.getEntriesForLevel(childs,
-                new Levels().getLowerLevel(packageData.getEntryLevel()));
+        double ccn = packageData.getPayload().getMetric(ReportConstants.metricName_ccn).getValue();
+
+        Set<? extends Node>childs =
+                getEntriesForType(packageData, new JavaNodeTypeHierarchy().getLower(packageData.getType()));
 
         html.tr().
                 td().
@@ -1013,32 +1018,27 @@ public class HTMLReportFormatStrategy implements IReportFormatStrategy {
         StringBuffer ret = new StringBuffer();
         String sourceFileName = getNormalizedName(entry.getName());
 
-        List<GenericReportEntry> childs = new ArrayList<GenericReportEntry>();
-        entry.getEntriesForLevel(childs,
-                new Levels().getLowerLevel(entry.getEntryLevel()));
-        Iterator<GenericReportEntry> iter = childs.iterator();
+        Set<? extends Node>childs = getEntriesForType(entry, new JavaNodeTypeHierarchy().getLower(entry.getType()));
 
-        while (iter.hasNext()) {
-            ret.append(generateTableRowForClass(iter.next(), sourceFileName));
+        for (Node child : childs) {
+            ret.append(generateTableRowForClass(child, sourceFileName));
         }
+
         return ret.toString();
     }
 
     private void generateTableRowsForSourceFileAlt(Html html, GenericReportEntry entry) {
         String sourceFileName = getNormalizedName(entry.getName());
 
-        List<GenericReportEntry> childs = new ArrayList<GenericReportEntry>();
-        entry.getEntriesForLevel(childs,
-                new Levels().getLowerLevel(entry.getEntryLevel()));
-        Iterator<GenericReportEntry> iter = childs.iterator();
+        Set<? extends Node>childs = getEntriesForType(entry, new JavaNodeTypeHierarchy().getLower(entry.getType()));
 
-        while (iter.hasNext()) {
-            generateTableRowForClassAlt(html, iter.next());
+        for (Node child : childs) {
+            generateTableRowForClassAlt(html, child);
         }
     }
 
     @Deprecated
-    private String generateTableRowForClass(GenericReportEntry classData,
+    private String generateTableRowForClass(Node classData,
                                             String sourceFileName) {
         StringBuffer ret = new StringBuffer();
 
@@ -1051,7 +1051,7 @@ public class HTMLReportFormatStrategy implements IReportFormatStrategy {
         return ret.toString();
     }
 
-    private void generateTableRowForClassAlt(Html html, GenericReportEntry classData) {
+    private void generateTableRowForClassAlt(Html html, Node classData) {
         String className = classData.getName().replaceAll("/","\\.");
         html.tr().
                 td().a().href( className+ ".html").text(classData.getName()).end().end();
@@ -1068,11 +1068,11 @@ public class HTMLReportFormatStrategy implements IReportFormatStrategy {
      * @return A string containing the HTML for three table cells.
      */
     @Deprecated
-    private String generateTableColumnsFromData(GenericReportEntry entry) {
-        int numLinesCovered = (int) entry.getMetric(ReportConstants.metricName_coveredLines).getValue();
-        int numLinesValid = (int) entry.getMetric(ReportConstants.metricName_totalLines).getValue();
-        int numBranchesCovered = (int) entry.getMetric(ReportConstants.metricName_coveredBranches).getValue();
-        int numBranchesValid = (int) entry.getMetric(ReportConstants.metricName_totalLines).getValue();
+    private String generateTableColumnsFromData(Node entry) {
+        int numLinesCovered = (int) entry.getPayload().getMetric(ReportConstants.metricName_coveredLines).getValue();
+        int numLinesValid = (int) entry.getPayload().getMetric(ReportConstants.metricName_totalLines).getValue();
+        int numBranchesCovered = (int) entry.getPayload().getMetric(ReportConstants.metricName_coveredBranches).getValue();
+        int numBranchesValid = (int) entry.getPayload().getMetric(ReportConstants.metricName_totalLines).getValue();
 
         // The "hidden" CSS class is used below to write the ccn without
         // any formatting so that the table column can be sorted correctly
@@ -1080,9 +1080,9 @@ public class HTMLReportFormatStrategy implements IReportFormatStrategy {
                 + "</td><td>"
                 + generatePercentResult(numBranchesCovered, numBranchesValid)
                 + "</td><td class=\"value\"><span class=\"hidden\">"
-                + entry.getMetric(ReportConstants.metricName_ccn).getValue()
+                + entry.getPayload().getMetric(ReportConstants.metricName_ccn).getValue()
                 + ";</span>"
-                + getDoubleValue(entry.getMetric(ReportConstants.metricName_ccn).getValue())
+                + getDoubleValue(entry.getPayload().getMetric(ReportConstants.metricName_ccn).getValue())
                 + "</td>";
     }
 
@@ -1094,11 +1094,11 @@ public class HTMLReportFormatStrategy implements IReportFormatStrategy {
      *
      * @return A string containing the HTML for three table cells.
      */
-    private void generateTableColumnsFromDataAlt(Html html, GenericReportEntry entry) {
-        int numLinesCovered = (int) entry.getMetric(ReportConstants.metricName_coveredLines).getValue();
-        int numLinesValid = (int) entry.getMetric(ReportConstants.metricName_totalLines).getValue();
-        int numBranchesCovered = (int) entry.getMetric(ReportConstants.metricName_coveredBranches).getValue();
-        int numBranchesValid = (int) entry.getMetric(ReportConstants.metricName_totalLines).getValue();
+    private void generateTableColumnsFromDataAlt(Html html, Node entry) {
+        int numLinesCovered = (int) entry.getPayload().getMetric(ReportConstants.metricName_coveredLines).getValue();
+        int numLinesValid = (int) entry.getPayload().getMetric(ReportConstants.metricName_totalLines).getValue();
+        int numBranchesCovered = (int) entry.getPayload().getMetric(ReportConstants.metricName_coveredBranches).getValue();
+        int numBranchesValid = (int) entry.getPayload().getMetric(ReportConstants.metricName_totalLines).getValue();
 
         // The "hidden" CSS class is used below to write the ccn without
         // any formatting so that the table column can be sorted correctly
@@ -1109,8 +1109,8 @@ public class HTMLReportFormatStrategy implements IReportFormatStrategy {
             generatePercentResultAlt(html, numBranchesCovered, numBranchesValid);
         html.end();
         html.td().classAttr("value").
-                span().classAttr("hidden").text("" + entry.getMetric(ReportConstants.metricName_ccn).getValue()).end().
-                text("" + getDoubleValue(entry.getMetric(ReportConstants.metricName_ccn).getValue())).end();
+                span().classAttr("hidden").text("" + entry.getPayload().getMetric(ReportConstants.metricName_ccn).getValue()).end().
+                text("" + getDoubleValue(entry.getPayload().getMetric(ReportConstants.metricName_ccn).getValue())).end();
     }
 
     /**
@@ -1234,5 +1234,15 @@ public class HTMLReportFormatStrategy implements IReportFormatStrategy {
                 return comparison;
             return sourceFileData0.getName().compareTo(sourceFileData1.getName());
         }
+    }
+
+    private Set<? extends Node>getEntriesForType(Node entry, NodeType type){
+        Criteria all = new EqCriteria(NodeType.ALL);
+        Criteria thisLevel = new EqCriteria(entry.getType());
+        Set<Criteria>criterias = new HashSet<Criteria>();
+        criterias.add(all);
+        criterias.add(thisLevel);
+        Criteria orCriteria = new ORListedCriteria(criterias);
+        return entry.getNodes(true, new TypeFilter(orCriteria));
     }
 }

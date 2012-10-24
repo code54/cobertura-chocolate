@@ -32,6 +32,9 @@ import java.util.*;
  */
 public class GenericReport {
 
+    //TODO refactor GenericReport into a Node with a custom payload
+    //which holds additional data: date and thresholds
+
     @Attribute
     private Date created;
 
@@ -65,16 +68,17 @@ public class GenericReport {
         thresholdsLookup.add(threshold);
     }
 
+    @Deprecated
     public List<GenericReportEntry>getEntriesForLevel(String level){
         List<GenericReportEntry>entries = new ArrayList<GenericReportEntry>();
         for(GenericReportEntry entry : this.entries){
-            entry.getEntriesForLevel(entries, level);
+//            entry.getEntriesForLevel(entries, level);//TODO replace this method for aux
         }
         return entries;
     }
 
     public Set<Threshold> getThresholds(GenericReportEntry entry){
-        return thresholdsLookup.getThresholds(entry.getEntryLevel(), entry.getName());
+        return thresholdsLookup.getThresholds(entry.getType(), entry.getName());
     }
 
     public Set<SourceFileEntry> getSourceLinesByClass(String className){

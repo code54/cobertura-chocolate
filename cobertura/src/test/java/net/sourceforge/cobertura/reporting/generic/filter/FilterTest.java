@@ -38,25 +38,27 @@ public class FilterTest {
         nodes.put(LINE02_NAME, new BaseNode(NodeType.LINE, LINE02_NAME));
         nodes.put(LINE03_NAME, new BaseNode(NodeType.LINE, LINE03_NAME));
 
-        nodes.get(REPORT_NAME).addNode(GenericReportEntry.project, nodes.get(PROJECT_NAME));
-        nodes.get(PROJECT_NAME).addNode(GenericReportEntry.packag, nodes.get(PACKAGE_NAME));
-        nodes.get(PACKAGE_NAME).addNode(GenericReportEntry.sourcefile, nodes.get(SOURCE_NAME));
-        nodes.get(SOURCE_NAME).addNode(GenericReportEntry.clazz, nodes.get(CLASS_NAME));
-        nodes.get(CLASS_NAME).addNode(GenericReportEntry.line, nodes.get(LINE01_NAME));
-        nodes.get(CLASS_NAME).addNode(GenericReportEntry.line, nodes.get(LINE02_NAME));
-        nodes.get(CLASS_NAME).addNode(GenericReportEntry.line, nodes.get(LINE03_NAME));
+        nodes.get(REPORT_NAME).addNode(NodeType.PROJECT.toString(), nodes.get(PROJECT_NAME));
+        nodes.get(PROJECT_NAME).addNode(NodeType.PACKAGE.toString(), nodes.get(PACKAGE_NAME));
+        nodes.get(PACKAGE_NAME).addNode(NodeType.SOURCE.toString(), nodes.get(SOURCE_NAME));
+        nodes.get(SOURCE_NAME).addNode(NodeType.CLASS.toString(), nodes.get(CLASS_NAME));
+        nodes.get(CLASS_NAME).addNode(NodeType.LINE.toString(), nodes.get(LINE01_NAME));
+        nodes.get(CLASS_NAME).addNode(NodeType.LINE.toString(), nodes.get(LINE02_NAME));
+        nodes.get(CLASS_NAME).addNode(NodeType.LINE.toString(), nodes.get(LINE03_NAME));
     }
 
     @Test
     public void testNameFilter(){
-        Set<? extends Node>nodes = this.nodes.get(REPORT_NAME).getNodes(true, new NameFilter(new EqCriteria(REPORT_NAME)));
+        Set<? extends Node>nodes = this.nodes.get(REPORT_NAME).getNodes(true,
+                new NameFilter(new EqCriteria(REPORT_NAME)));
         assertTrue("Did not return any node", !nodes.isEmpty());
         assertEquals("Did not return expected node", nodes.iterator().next(), this.nodes.get(REPORT_NAME));
     }
 
     @Test
     public void testTypeFilter(){
-        Set<? extends Node>nodes = this.nodes.get(REPORT_NAME).getNodes(true, new TypeFilter(new EqCriteria(NodeType.LINE)));
+        Set<? extends Node>nodes = this.nodes.get(REPORT_NAME).getNodes(true,
+                new TypeFilter(new EqCriteria(NodeType.LINE)));
         assertTrue("Did not return the expected nodes: "+nodes.size(), nodes.isEmpty());
 
         nodes = this.nodes.get(REPORT_NAME).getAllNodes(true, new TypeFilter(new EqCriteria(NodeType.LINE)));
@@ -65,7 +67,8 @@ public class FilterTest {
 
     @Test
     public void testRelationFilter(){
-        Set<? extends Node>nodes = this.nodes.get(REPORT_NAME).getNodes(true, new RelationFilter(new EqCriteria(GenericReportEntry.line)));
+        Set<? extends Node>nodes = this.nodes.get(REPORT_NAME).getNodes(true,
+                new RelationFilter(new EqCriteria(NodeType.LINE.toString())));
         assertTrue("Did not return the expected nodes: "+nodes.size(), nodes.isEmpty());
 
         nodes = this.nodes.get(REPORT_NAME).getAllNodes(true, new TypeFilter(new EqCriteria(NodeType.LINE)));
@@ -77,7 +80,7 @@ public class FilterTest {
         List<Filter> filters = new ArrayList<Filter>();
         Filter nameFilter = new NameFilter(new EqCriteria(REPORT_NAME));
         filters.add(nameFilter);
-        Filter relationFilter = new RelationFilter(new EqCriteria(GenericReportEntry.project));
+        Filter relationFilter = new RelationFilter(new EqCriteria(NodeType.PROJECT.toString()));
         filters.add(relationFilter);
 
         Set<? extends Node>nodes = this.nodes.get(REPORT_NAME).getNodes(true, nameFilter);

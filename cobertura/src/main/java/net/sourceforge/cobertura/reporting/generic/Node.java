@@ -53,4 +53,16 @@ public interface Node {
      */
     NodeType getType();
 
+    /**
+     * Returns nodes Payload
+     * @return
+     */
+    Payload getPayload();
+
+    /**
+     * Sets nodes Payload
+     * @param payload
+     */
+    void setPayload(Payload payload);
+
 }

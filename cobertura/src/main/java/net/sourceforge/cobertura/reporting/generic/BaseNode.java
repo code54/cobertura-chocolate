@@ -1,6 +1,9 @@
 package net.sourceforge.cobertura.reporting.generic;
 
 import net.sourceforge.cobertura.reporting.generic.filter.Filter;
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.ElementMap;
 
 import java.util.*;
 
@@ -26,10 +29,14 @@ import java.util.*;
  */
 public class BaseNode implements Node{
 
+    @ElementMap(key = "relation", entry = "nodes")
     protected Map<String, Set<Node>> nodes;
+    @Attribute
     protected NodeType type;
+    @Attribute
     protected String name;
-    protected String content;//TODO see where needed and add to Node interface
+    @Element
+    protected Payload payload;
 
     public BaseNode(){}
 
@@ -97,5 +104,15 @@ public class BaseNode implements Node{
     @Override
     public NodeType getType() {
         return type;
+    }
+
+    @Override
+    public Payload getPayload() {
+        return payload;
+    }
+
+    @Override
+    public void setPayload(Payload payload) {
+        this.payload = payload;
     }
 }

@@ -29,14 +29,14 @@ public class ThresholdReportEntry {
     @Attribute
     private String metricName;
     @Attribute
-    private String level;
+    private NodeType level;
     @Attribute
     private double thresholdValue;
     @Attribute
     private double metricValue;
 
     public ThresholdReportEntry(
-            String metricName, String level,
+            String metricName, NodeType level,
             double thresholdValue, double metricValue){
         this.metricName = metricName;
         this.level = level;

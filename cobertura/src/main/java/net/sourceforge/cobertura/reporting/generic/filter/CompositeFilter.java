@@ -2,6 +2,7 @@ package net.sourceforge.cobertura.reporting.generic.filter;
 
 import net.sourceforge.cobertura.reporting.generic.Node;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,6 +35,18 @@ public class CompositeFilter implements Filter{
 
     public CompositeFilter(List<Filter> filters){
         this.filters = filters;
+    }
+
+    public CompositeFilter(Filter filter){
+        this.filters = new ArrayList<Filter>();
+        filters.add(filter);
+    }
+
+    //TODO check this! is not a correct composite!
+    public CompositeFilter addFilter(Filter filter){
+        ArrayList filters = new ArrayList(this.filters);
+        filters.add(filter);
+        return new CompositeFilter(filters);
     }
 
     @Override

@@ -24,7 +24,7 @@ import org.simpleframework.xml.Root;
  * USA
  */
 @Root(name="metric")
-public class CustomMetricWrapper {
+public class MetricWrapper {
 
     @Attribute
     private String name;
@@ -32,32 +32,23 @@ public class CustomMetricWrapper {
     private double value;
     @Attribute
     private String metricDescription;
-    @Attribute
-    private String applicableLevel;
 
-    public CustomMetricWrapper(){}
-    public CustomMetricWrapper(ICustomMetric metric){
+    public MetricWrapper(){}
+    public MetricWrapper(IMetric metric){
         this.name = metric.getName();
         this.value = metric.getValue();
         this.metricDescription = metric.getMetricDescription();
-        this.applicableLevel = metric.getApplicableType().name();
     }
 
     public String getName() {
         return name;
     }
 
-
     public double getValue() {
         return value;
     }
 
-
     public String getMetricDescription() {
         return metricDescription;
-    }
-
-    public String getApplicableLevel() {
-        return applicableLevel;
     }
 }

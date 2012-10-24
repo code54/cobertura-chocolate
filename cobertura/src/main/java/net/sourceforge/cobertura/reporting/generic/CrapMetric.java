@@ -22,12 +22,17 @@ public class CrapMetric implements ICustomMetric {
                 "See http://googletesting.blogspot.com.ar/2011/02/this-code-is-crap.html";
     }
 
-    @Override
-    public String getApplicableLevel() {
-        return level_method;
+    @Override      //TODO
+    public NodeType getApplicableType() {
+        return null;
     }
 
-    @Override
+    @Override            //TODO
+    public void setMetricRegistry(MetricRegistry registry) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+//    @Override
     public void setBasicMetricData(BasicMetricData data) {
         crapMetric = Math.pow(data.getCyclomaticCodeComplexity(),2) *
                 Math.pow((1-(data.getLineCoverage().getCoverageRate())),3)+

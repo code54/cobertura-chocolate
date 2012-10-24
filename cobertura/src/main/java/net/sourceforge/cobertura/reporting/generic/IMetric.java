@@ -38,4 +38,20 @@ public interface IMetric {
      * @return
      */
     String getMetricDescription();
+
+    public enum BasicMetricsEnum{
+        hits("Hits"), branch_coverage_rate("Branch coverage rate"), total_branches("Total branches"),
+        covered_branches("Covered branches"), line_coverage_rate("Line coverage rate"),
+        total_lines("Total lines"), covered_lines("Covered lines"), cnn("Cyclic Complexity Number");
+
+        private String desc;
+
+        BasicMetricsEnum(String desc){
+            this.desc = desc;
+        }
+
+        public String desc(){
+            return desc;
+        }
+    }
 }

@@ -51,4 +51,8 @@ public class SourceFile {
     public Set<SourceFileEntry>getEntries(){
         return Collections.unmodifiableSet(entries);
     }
+
+    public String getName(){
+        return sourceFileName;
+    }
 }

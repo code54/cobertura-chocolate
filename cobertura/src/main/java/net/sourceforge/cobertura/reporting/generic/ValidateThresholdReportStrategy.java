@@ -52,13 +52,13 @@ public class ValidateThresholdReportStrategy implements IReportFormatStrategy {
             while (thresholds.hasNext()){
                 Threshold t = thresholds.next();
                 //if does not pass, add to result
-                if(t.isBelowThreshold(e.getMetric(t.getMetricName()).getValue())){
+                if(t.isBelowThreshold(e.getPayload().getMetric(t.getMetricName()).getValue())){
                     reportEntries.add(
                             new ThresholdReportEntry(
                                     e.getName(),
-                                    e.getEntryLevel(),
+                                    e.getType(),
                                     t.getThreshold(),
-                                    e.getMetric(t.getMetricName()).getValue()));
+                                    e.getPayload().getMetric(t.getMetricName()).getValue()));
                 }
             }
         }
