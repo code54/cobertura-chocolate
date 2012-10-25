@@ -1,4 +1,6 @@
-package net.sourceforge.cobertura.reporting.generic;
+package net.sourceforge.cobertura.reporting.generic.filter;
+
+import net.sourceforge.cobertura.reporting.generic.IMetric;
 
 /*
  * Cobertura - http://cobertura.sourceforge.net/
@@ -20,12 +22,7 @@ package net.sourceforge.cobertura.reporting.generic;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  */
-public interface Payload<T> {
-
-    T getContent();
-    void setContent(T content);
-
-    //TODO split into two interfaces? Payload and MetricPayload?
+public interface MetricPayload {
     IMetric getMetric(String name);
     void putMetric(IMetric metric);
 }

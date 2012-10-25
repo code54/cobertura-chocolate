@@ -1,6 +1,7 @@
 package net.sourceforge.cobertura.reporting.generic;
 
 import net.sourceforge.cobertura.reporting.generic.filter.Filter;
+import net.sourceforge.cobertura.reporting.generic.filter.Relation;
 
 import java.util.Set;
 
@@ -10,9 +11,9 @@ public interface Node {
      * @param relation
      * @param node
      */
-    void addNode(String relation, Node node);
+    void addNode(Relation relation, Node node);
 
-    Set<String>getRelations();
+    Set<Relation>getRelations();
 
     /**
      * Returns all nodes this node is immediately related to;
@@ -39,7 +40,7 @@ public interface Node {
      * @param relation
      * @return
      */
-    Set<? extends Node> getNodesForRelation(String relation);
+    Set<? extends Node> getNodesForRelation(Relation relation);
 
     /**
      * Get nodes name.

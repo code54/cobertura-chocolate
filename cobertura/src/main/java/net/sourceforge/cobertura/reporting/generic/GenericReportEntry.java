@@ -1,5 +1,6 @@
 package net.sourceforge.cobertura.reporting.generic;
 
+import net.sourceforge.cobertura.reporting.generic.filter.Relation;
 import org.apache.log4j.Logger;
 
 import java.util.*;
@@ -33,7 +34,7 @@ public class GenericReportEntry extends BaseNode implements Node{
     public GenericReportEntry(NodeType level, String name,
                               CoverageData branchCoverage, CoverageData lineCoverage,
                               double cyclomaticCodeComplexity, long hits) {
-        nodes = new HashMap<String, Set<Node>>();
+        nodes = new HashMap<Relation, Set<Node>>();
 
         super.type = level;
         super.name = name;

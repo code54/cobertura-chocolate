@@ -35,66 +35,54 @@ public class GenericReport {
     //TODO refactor GenericReport into a Node with a custom payload
     //which holds additional data: date and thresholds
 
+    //we should be able to add thresholds: this is a separate graph
+    //provide an utility to check thresholds against metrics
+
     @Attribute
     private Date created;
 
     @ElementList(inline=true)
     private Set<Threshold>thresholds;
-    //create a thresholds lookup object; not persisted, loaded on initialization
-    private ThresholdsLookup thresholdsLookup;
 
     @ElementList(inline=true)
-    private List<GenericReportEntry> entries;
-
-    @ElementList(inline=true)
-    private Set<SourceFile> sourceFiles;
-
-    private SourceFilesLookup sourceFilesLookup;
+    private Set<Node> entries;
 
     public GenericReport(){
-        init();
+        thresholds = new HashSet<Threshold>();
+        entries = new HashSet<Node>();
     }
 
-    public GenericReport(List<GenericReportEntry> entries, Set<SourceFile> sourceFiles){
-        init();
+    public GenericReport(Set<Node> entries){
         created = new Date();
-        this.entries = Collections.unmodifiableList(entries);
-        this.sourceFiles = Collections.unmodifiableSet(sourceFiles);
-        sourceFilesLookup = new SourceFilesLookup(this.sourceFiles);
+        thresholds = new HashSet<Threshold>();
+        this.entries = Collections.unmodifiableSet(entries);
     }
 
     public void addThreshold(Threshold threshold){
+        //TODO build a thresholds graph: each threshold is encapsulated in a Node with a ThresholdPayload
         thresholds.add(threshold);
-        thresholdsLookup.add(threshold);
     }
 
     @Deprecated
     public List<GenericReportEntry>getEntriesForLevel(String level){
-        List<GenericReportEntry>entries = new ArrayList<GenericReportEntry>();
-        for(GenericReportEntry entry : this.entries){
-//            entry.getEntriesForLevel(entries, level);//TODO replace this method for aux
-        }
-        return entries;
+//        List<GenericReportEntry>entries = new ArrayList<GenericReportEntry>();
+//        for(GenericReportEntry entry : this.entries){
+////            entry.getEntriesForLevel(entries, level);//TODO replace this method for aux
+//        }
+//        return entries;
+        throw new RuntimeException("Deprecated!");
     }
 
+    @Deprecated
     public Set<Threshold> getThresholds(GenericReportEntry entry){
-        return thresholdsLookup.getThresholds(entry.getType(), entry.getName());
+//        return thresholdsLookup.getThresholds(entry.getType(), entry.getName());
+        throw new RuntimeException("Deprecated!");
     }
 
+    @Deprecated
     public Set<SourceFileEntry> getSourceLinesByClass(String className){
-        return sourceFilesLookup.getSourceLinesByClass(className);
-    }
-
-    public Set<SourceFileEntry> getSourceLinesByMethod(String methodName, String method){
-        return sourceFilesLookup.getSourceLinesByMethod(methodName, method);
-    }
-
-    /*   Aux init method   */
-    private void init(){
-        entries = new ArrayList<GenericReportEntry>();
-        sourceFiles = new HashSet<SourceFile>();
-        thresholds = new HashSet<Threshold>();
-        thresholdsLookup = new ThresholdsLookup(new MetricsLoader().getMetrics());
+//        return sourceFilesLookup.getSourceLinesByClass(className);
+        throw new RuntimeException("Deprecated!");
     }
 
     public void export(IReportFormatStrategy reportFormat){

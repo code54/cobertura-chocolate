@@ -1,6 +1,7 @@
 package net.sourceforge.cobertura.reporting.generic;
 
 import net.sourceforge.cobertura.reporting.generic.filter.Filter;
+import net.sourceforge.cobertura.reporting.generic.filter.Relation;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementMap;
@@ -30,7 +31,7 @@ import java.util.*;
 public class BaseNode implements Node{
 
     @ElementMap(key = "relation", entry = "nodes")
-    protected Map<String, Set<Node>> nodes;
+    protected Map<Relation, Set<Node>> nodes;
     @Attribute
     protected NodeType type;
     @Attribute
@@ -41,20 +42,20 @@ public class BaseNode implements Node{
     public BaseNode(){}
 
     public BaseNode(NodeType type, String name){
-        nodes = new HashMap<String, Set<Node>>();
+        nodes = new HashMap<Relation, Set<Node>>();
         this.type = type;
         this.name = name;
     }
 
     @Override
-    public void addNode(String relation, Node node) {
+    public void addNode(Relation relation, Node node) {
         if(nodes.get(relation)==null){
             nodes.put(relation, new HashSet<Node>());
         }
         nodes.get(relation).add(node);
     }
 
-    public Set<String>getRelations(){
+    public Set<Relation>getRelations(){
         return nodes.keySet();
     }
 
@@ -92,7 +93,7 @@ public class BaseNode implements Node{
     }
 
     @Override
-    public Set<? extends Node> getNodesForRelation(String relation) {
+    public Set<? extends Node> getNodesForRelation(Relation relation) {
         return nodes.get(relation);
     }
 

@@ -4,6 +4,7 @@ import net.sourceforge.cobertura.coveragedata.*;
 import net.sourceforge.cobertura.reporting.ComplexityCalculator;
 import net.sourceforge.cobertura.reporting.generic.filter.CompositeFilter;
 import net.sourceforge.cobertura.reporting.generic.filter.NameFilter;
+import net.sourceforge.cobertura.reporting.generic.filter.Relation;
 import net.sourceforge.cobertura.reporting.generic.filter.criteria.EqCriteria;
 import net.sourceforge.cobertura.reporting.generic.filter.RelationFilter;
 import net.sourceforge.cobertura.util.Constants;
@@ -31,18 +32,16 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
             String sourceEncoding, FileFinder finder) {
         this.encoding = sourceEncoding;
         this.fileFinder = finder;
-        List<GenericReportEntry> projectEntries = new ArrayList<GenericReportEntry>();
         sourceFiles = new HashSet<SourceFile>();
         ComplexityCalculator complexity = new ComplexityCalculator(fileFinder);
 
+        Set<Node>nodes = new HashSet<Node>();
         for (ProjectData project : projects) {
             processSourceFileData(project);
 //            buildMetricsForProject(projectEntries);//TODO complete this!
             GenericReportEntry proj = buildRecursively(project, complexity);
+            nodes.add(proj);
             bindToLineNodes(proj);
-
-
-            //TODO add all lines from sourceFiles and complete the missing data
 
             for (SourceFile sourceFile : sourceFiles) {
                 Node sourceEntry = proj.getNodes(false,
@@ -54,18 +53,19 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
                     for (SourceFileEntry line : sourceFile.getEntries()) {
                         Node lineEntry = sourceEntry.getNodes(false, filter.addFilter(
                                 new NameFilter(new EqCriteria(line.getLineNumber())))).iterator().next();
+                        //complete missing lines with sourcefile data
                         if(lineEntry==null){
-                            //TODO add to source entry and class (we do no support methods by now!)
-//                            sourceEntry.addNode(GenericReportEntry.line, );
+                            Node node = new GenericReportEntry(NodeType.LINE, ""+line.getLineNumber(),
+                                    new CoverageData(), new CoverageData(),0, 0);
+                            node.getPayload().setContent(line.getCodeLine());
+                            sourceEntry.addNode(Relation.LINE, node);
                         }
                     }
                 }
             }
         }
 
-        //TODO remove source files from GenericReport: the report must just hold the graph and creation date.
-        //TODO remove the rest of the structures and provide a good graph API
-        return new GenericReport(null, sourceFiles);
+        return new GenericReport(nodes);
     }
 
     @Override
@@ -137,14 +137,14 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
                             data.getName(), branchCoverage, lineCoverage,
                             complexity.getCCNForPackage(data),
                             data.getHits());
-            projectEntry.addNode(NodeType.PACKAGE.toString(), packageEntry);
+            projectEntry.addNode(Relation.PACKAGE, packageEntry);
 
             /*   Extract source files for package   */
             Iterator<SourceFileData> sourceFiles = data.getSourceFiles().iterator();
             while (sourceFiles.hasNext()) {
                 SourceFileData sfdata = sourceFiles.next();
                 GenericReportEntry sfentry = buildSourceFileReportEntry(sfdata, complexity);
-                packageEntry.addNode(NodeType.SOURCE.toString(), sfentry);
+                packageEntry.addNode(Relation.SOURCE, sfentry);
 
                 /*  Extract classes for source file    */
                 Iterator<ClassData> classes = sfdata.getClasses().iterator();
@@ -199,7 +199,7 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
                         complexity.getCCNForClass(data),
                         data.getHits());
 
-        sfentry.addNode(NodeType.CLASS.toString(), entry);
+        sfentry.addNode(Relation.CLASS, entry);
 
         Iterator<String> methodNames = data.getMethodNamesAndDescriptors().iterator();
 
@@ -249,10 +249,10 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
                                     getRate(methodCoveredLines, methodValidLines)),
                             -1, methodHits);
 
-            entry.addNode(NodeType.METHOD.toString(), methodLevelEntry);
+            entry.addNode(Relation.METHOD, methodLevelEntry);
 
             for (GenericReportEntry lineLevelEntry : lineEntries) {
-                methodLevelEntry.addNode(NodeType.LINE.toString(), lineLevelEntry);
+                methodLevelEntry.addNode(Relation.LINE, lineLevelEntry);
             }
         }
     }
@@ -314,7 +314,7 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
                     newChild = buildRecursively(castedChild, complexity);
                     break;
             }
-            newNode.addNode(getLevel(child).toString(), newChild);
+            newNode.addNode(getRelation(child), newChild);
         }
         return newNode;
     }
@@ -360,14 +360,14 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
                 data.getType().equals(NodeType.CLASS.toString()) ||
                 data.getType().equals(NodeType.METHOD.toString())) {
 
-            bindToLineNodeForRelation(data, NodeType.SOURCE.toString());
-            bindToLineNodeForRelation(data, NodeType.CLASS.toString());
-            bindToLineNodeForRelation(data, NodeType.METHOD.toString());
+            bindToLineNodeForRelation(data, Relation.SOURCE);
+            bindToLineNodeForRelation(data, Relation.CLASS);
+            bindToLineNodeForRelation(data, Relation.METHOD);
 
             Set<? extends Node> lines = data.getAllNodes(false,
                     new RelationFilter(new EqCriteria(NodeType.LINE.toString())));
             for (Node line : lines) {
-                data.addNode(NodeType.LINE.toString(), line);
+                data.addNode(Relation.LINE, line);
             }
         } else {
             Set<? extends Node> sources = data.getAllNodes(false,
@@ -378,7 +378,7 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
         }
     }
 
-    private void bindToLineNodeForRelation(GenericReportEntry data, String relation) {
+    private void bindToLineNodeForRelation(GenericReportEntry data, Relation relation) {
         Set<? extends Node> sources = data.getNodesForRelation(relation);
         for (Node source : sources) {
             bindToLineNodes((GenericReportEntry) source);
@@ -418,5 +418,24 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
             return NodeType.LINE;
         }
         return NodeType.METHOD;
+    }
+
+    private Relation getRelation(CoverageData data) {
+        if (data.getClass().equals(ProjectData.class)) {
+            return Relation.PROJECT;
+        }
+        if (data.getClass().equals(PackageData.class)) {
+            return Relation.PACKAGE;
+        }
+        if (data.getClass().equals(SourceFileData.class)) {
+            return Relation.SOURCE;
+        }
+        if (data.getClass().equals(ClassData.class)) {
+            return Relation.CLASS;
+        }
+        if (data.getClass().equals(LineData.class)) {
+            return Relation.LINE;
+        }
+        return Relation.METHOD;
     }
 }

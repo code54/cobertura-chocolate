@@ -34,7 +34,7 @@ public class Threshold {
     @Attribute
     private String level;
     @Attribute
-    private String criteria;//all or a level name (ex. some method name)
+    private String criteria;//all or a level name (ex. some method name)//TODO see if we should set a Filter here
     @Attribute
     private double threshold;
 
@@ -47,6 +47,9 @@ public class Threshold {
         this.threshold = threshold;
     }
 
+    //TODO change to accept a Node as parameter
+    //Should check if it matches and has a MetricPayload
+    //otherwise throws a RuntimeException
     public boolean isBelowThreshold(double value){
         return value<threshold;
     }
@@ -55,10 +58,12 @@ public class Threshold {
         return metricName;
     }
 
+    @Deprecated
     public String getLevel() {
         return level;
     }
 
+    @Deprecated
     public String getCriteria() {
         return criteria;
     }

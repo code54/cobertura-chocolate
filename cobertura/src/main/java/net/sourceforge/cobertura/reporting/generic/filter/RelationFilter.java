@@ -38,16 +38,15 @@ public class RelationFilter implements Filter{
 
     @Override
     public Set<? extends Node> filter(Node node) {
-        Set<String>relations = new HashSet<String>();
-        for(String relation: node.getRelations()){
+        Set<Relation>relations = new HashSet<Relation>();
+        for(Relation relation: node.getRelations()){
             if(criteria.matches(relation)){
                 relations.add(relation);
             }
         }
-        Iterator<String> iterator = relations.iterator();
         Set<Node>nodes = new HashSet<Node>();
-        while(iterator.hasNext()){
-            nodes.addAll(node.getNodesForRelation(iterator.next()));
+        for(Relation relation : relations){
+            nodes.addAll(node.getNodesForRelation(relation));
         }
         return nodes;
     }
