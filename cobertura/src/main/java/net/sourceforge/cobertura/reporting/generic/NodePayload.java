@@ -1,6 +1,5 @@
 package net.sourceforge.cobertura.reporting.generic;
 
-import com.sun.istack.internal.NotNull;
 import org.simpleframework.xml.Element;
 
 /*
@@ -60,7 +59,7 @@ public class NodePayload implements Payload{
     }
 
     @Override
-    public void putMetric(@NotNull IMetric metric) {
+    public void putMetric(IMetric metric) {
         metrics.register(metric);
     }
 

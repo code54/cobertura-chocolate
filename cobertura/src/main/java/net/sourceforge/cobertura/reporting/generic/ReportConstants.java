@@ -20,6 +20,7 @@ package net.sourceforge.cobertura.reporting.generic;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  */
+@Deprecated
 public class ReportConstants {
     public static final String level_project = "project";
     public static final String level_package = "package";
