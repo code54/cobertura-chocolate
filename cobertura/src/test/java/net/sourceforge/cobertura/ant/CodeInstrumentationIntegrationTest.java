@@ -131,6 +131,9 @@ public class CodeInstrumentationIntegrationTest {
 
 
     @Test
+    /**
+     * Temporarily does not test nothing, just creates the xml report.
+     */
     public void testExportXml() throws Throwable {
         File basedir = new File("./src/test/resources/integration/examples/functionalconditiontest/");
         File instrumented = new File(basedir, "src");
