@@ -6,9 +6,9 @@ Our objectives
 
 * tests should run once. Due to original Cobertura design, users were forced to run instrumentation and tests immediately, and later run tests again to see if something was broken.
 * expose more data. Ex.: expose coverage thresholds and coverage data on reports, allow to build custom metrics. Serialize data in a readable format.
+* provide a report where all metrics, thresholds and sourcelines are stored. New reports in different formats can be created from it without need to access the code again.
 * decouple from Ant and provide a DSL to set parameters, run code instrumentation and provide programatic access to results
 * provide means to add new metrics
-* provide a report where all metrics, thresholds and sourcelines are stored. New reports in different formats can be created from it without need to access the code again. 
 * provide means to support multiple JVM languages
 
 Do we break compatibility?
