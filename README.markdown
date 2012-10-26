@@ -51,8 +51,8 @@ New metrics can be defined implementing ICustomMetric interface.
 * an interface (ICustomMetric) for custom metrics was created. Implementations are loaded by reflection and automatically display on reports.
 * a GenericReport is created.
 * xml, html and threshold violations report strategies were implemented.
-** for xml reports we use SimpleXML
-** for html reports we introduced jatl
+ * for xml reports we use SimpleXML
+ * for html reports we introduced jatl
 
 ## Todos
 
