@@ -9,6 +9,7 @@ import net.sourceforge.cobertura.reporting.generic.filter.criteria.EqCriteria;
 import net.sourceforge.cobertura.reporting.generic.filter.RelationFilter;
 import net.sourceforge.cobertura.util.Constants;
 import net.sourceforge.cobertura.util.FileFinder;
+import org.apache.log4j.Logger;
 
 import java.util.*;
 
@@ -17,8 +18,7 @@ import java.util.*;
  * Assumes ProjectData information corresponds to a Java project.
  */
 public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
-
-    //    private List<GenericReportEntry> entries;
+    private static final Logger log = Logger.getLogger(JavaReportBuilderStrategy.class);
     private Set<SourceFile> sourceFiles;
 
     private String encoding;
@@ -44,27 +44,26 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
             bindToLineNodes(proj);
 
             for (SourceFile sourceFile : sourceFiles) {
-                Node sourceEntry = proj.getNodes(false,
-                        new NameFilter(new EqCriteria(sourceFile.getName()))).iterator().next();
-
-                if(sourceEntry!=null){
-                    CompositeFilter filter =
-                            new CompositeFilter(new RelationFilter(new EqCriteria(NodeType.LINE)));
-                    for (SourceFileEntry line : sourceFile.getEntries()) {
-                        Node lineEntry = sourceEntry.getNodes(false, filter.addFilter(
-                                new NameFilter(new EqCriteria(line.getLineNumber())))).iterator().next();
-                        //complete missing lines with sourcefile data
-                        if(lineEntry==null){
-                            Node node = new GenericReportEntry(NodeType.LINE, ""+line.getLineNumber(),
-                                    new CoverageData(), new CoverageData(),0, 0);
-                            node.getPayload().setContent(line.getCodeLine());
-                            sourceEntry.addNode(Relation.LINE, node);
+                log.info("Building entries for "+sourceFile.getName());
+                for(Node sourceEntry: proj.getAllNodes(false, new NameFilter(new EqCriteria(sourceFile.getName())))){
+                        CompositeFilter filter =
+                                new CompositeFilter(new RelationFilter(new EqCriteria(NodeType.LINE)));
+                        for (SourceFileEntry line : sourceFile.getEntries()) {
+                            Node lineEntry = sourceEntry.getNodes(false, filter.addFilter(
+                                    new NameFilter(new EqCriteria(line.getLineNumber())))).iterator().next();
+                            //complete missing lines with sourcefile data
+                            if(lineEntry==null){
+                                Node node = new GenericReportEntry(NodeType.LINE, ""+line.getLineNumber(),
+                                        new CoverageData(), new CoverageData(),0, 0);
+                                sourceEntry.addNode(Relation.LINE, node);
+                            }else{
+                                lineEntry.getPayload().setContent(line.getCodeLine());
+                            }
+                            log.info("Added code line: "+line.getCodeLine());
                         }
                     }
                 }
             }
-        }
-
         return new GenericReport(nodes);
     }
 
@@ -87,6 +86,7 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
     }
 
     /*  Aux methods to extract data from model object   */
+    @Deprecated
     private GenericReportEntry buildProjectReportEntry(
             ProjectData project, ComplexityCalculator complexity, List<GenericReportEntry> projects) {
         CoverageData branchCoverage =
@@ -111,6 +111,7 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
         return entry;
     }
 
+    @Deprecated
     private void buildPackageAndSourceFilesAndClassesReportEntries(
             ProjectData project, ComplexityCalculator complexity,
             GenericReportEntry projectEntry) {
@@ -155,6 +156,7 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
         }
     }
 
+    @Deprecated
     private GenericReportEntry buildSourceFileReportEntry(
             SourceFileData data, ComplexityCalculator complexity) {
         CoverageData branchCoverage =
@@ -178,6 +180,7 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
         return entry;
     }
 
+    @Deprecated
     private void buildClassReportEntry(
             ClassData data, ComplexityCalculator complexity,
             GenericReportEntry sfentry) {
@@ -257,6 +260,10 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
         }
     }
 
+    /**
+     * Builds source file data. Retrieves all lines from source files and builds SourceFile instances.
+     * @param project
+     */
     private void processSourceFileData(ProjectData project) {
         Iterator<SourceFileData> sourceFiles = project.getSourceFiles().iterator();
         SourceFileData sourceFileData;
@@ -275,7 +282,7 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
                         methodsAndDescriptors);
                 this.sourceFiles.add(sourceFile);
             } catch (Exception e) {
-                //TODO
+                log.error(e);
             }
         }
     }
@@ -300,17 +307,18 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
     }
 
     private GenericReportEntry buildRecursively(CoverageDataContainer data, ComplexityCalculator complexity) {
-        Iterator<CoverageData> childs = data.getChildrenValues().iterator();
+        log.info("*** Building recursively: "+data.getClass());
+        Iterator<net.sourceforge.cobertura.coveragedata.CoverageData> childs = data.getChildrenValues().iterator();
         GenericReportEntry newNode = buildNode(data, complexity);
         while (childs.hasNext()) {
-            CoverageData child = childs.next();
+            net.sourceforge.cobertura.coveragedata.CoverageData child = childs.next();
             GenericReportEntry newChild = null;
             switch (getLevel(child)) {
                 case LINE:
-                    newChild = buildLineNode((LineData) (Object) child, complexity);
+                    newChild = buildLineNode(child);
                     break;
                 default:
-                    CoverageDataContainer castedChild = (CoverageDataContainer) (Object) child;
+                    CoverageDataContainer castedChild = (CoverageDataContainer) child;
                     newChild = buildRecursively(castedChild, complexity);
                     break;
             }
@@ -335,7 +343,7 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
                         data.getLineCoverageRate());
 
         GenericReportEntry entry =
-                new GenericReportEntry(getLevel((CoverageData) (Object) data),
+                new GenericReportEntry(getLevel(data),
                         data.getName(), branchCoverage, lineCoverage,
                         getComplexity(data, complexity),
                         data.getHits());
@@ -343,7 +351,7 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
         return entry;
     }
 
-    private GenericReportEntry buildLineNode(LineData data, ComplexityCalculator complexity) {
+    private GenericReportEntry buildLineNode(LineData data) {
         return new GenericReportEntry(NodeType.LINE,
                 "" + data.getLineNumber(),
                 new CoverageData(data.getNumberOfCoveredBranches(),
@@ -353,6 +361,11 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
                         data.getNumberOfValidLines(),
                         data.getLineCoverageRate()),
                 0, data.getHits());
+    }
+
+
+    private GenericReportEntry buildLineNode(net.sourceforge.cobertura.coveragedata.CoverageData data) {
+        return buildLineNode((LineData)data);
     }
 
     private void bindToLineNodes(GenericReportEntry data) {
@@ -387,21 +400,21 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
 
     private double getComplexity(CoverageDataContainer data, ComplexityCalculator complexity) {
         if (data.getClass().equals(ProjectData.class)) {
-            return complexity.getCCNForSourceFile((SourceFileData) data);
+            return complexity.getCCNForProject((ProjectData) data);
         }
         if (data.getClass().equals(PackageData.class)) {
-            return complexity.getCCNForSourceFile((SourceFileData) data);
+            return complexity.getCCNForPackage((PackageData) data);
         }
         if (data.getClass().equals(SourceFileData.class)) {
             return complexity.getCCNForSourceFile((SourceFileData) data);
         }
         if (data.getClass().equals(ClassData.class)) {
-            return complexity.getCCNForSourceFile((SourceFileData) data);
+            return complexity.getCCNForClass((ClassData) data);
         }
         return -1;
     }
 
-    private NodeType getLevel(CoverageData data) {
+    private NodeType getLevel(Object data) {
         if (data.getClass().equals(ProjectData.class)) {
             return NodeType.PROJECT;
         }
@@ -420,7 +433,7 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
         return NodeType.METHOD;
     }
 
-    private Relation getRelation(CoverageData data) {
+    private Relation getRelation(net.sourceforge.cobertura.coveragedata.CoverageData data) {
         if (data.getClass().equals(ProjectData.class)) {
             return Relation.PROJECT;
         }
@@ -437,5 +450,9 @@ public class JavaReportBuilderStrategy implements IReportBuilderStrategy {
             return Relation.LINE;
         }
         return Relation.METHOD;
+    }
+
+    private CoverageData castToCoverageData(Object object){
+        return (CoverageData)object;
     }
 }

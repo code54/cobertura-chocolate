@@ -2,6 +2,7 @@ package net.sourceforge.cobertura.reporting.generic;
 
 import net.sourceforge.cobertura.reporting.generic.filter.Filter;
 import net.sourceforge.cobertura.reporting.generic.filter.Relation;
+import net.sourceforge.cobertura.reporting.xml.SetWrapper;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementMap;
@@ -31,7 +32,7 @@ import java.util.*;
 public class BaseNode implements Node{
 
     @ElementMap(key = "relation", entry = "nodes")
-    protected Map<Relation, Set<Node>> nodes;
+    protected Map<Relation, SetWrapper> nodes;
     @Attribute
     protected NodeType type;
     @Attribute
@@ -42,7 +43,7 @@ public class BaseNode implements Node{
     public BaseNode(){}
 
     public BaseNode(NodeType type, String name){
-        nodes = new HashMap<Relation, Set<Node>>();
+        nodes = new HashMap<Relation, SetWrapper>();
         this.type = type;
         this.name = name;
     }
@@ -50,7 +51,7 @@ public class BaseNode implements Node{
     @Override
     public void addNode(Relation relation, Node node) {
         if(nodes.get(relation)==null){
-            nodes.put(relation, new HashSet<Node>());
+            nodes.put(relation, new SetWrapper());
         }
         nodes.get(relation).add(node);
     }
@@ -65,7 +66,7 @@ public class BaseNode implements Node{
         if(thisNodeIncluded){
             immediateNodes.add(this);
         }
-        Iterator<Set<Node>> iterator = nodes.values().iterator();
+        Iterator<SetWrapper> iterator = nodes.values().iterator();
         while (iterator.hasNext()){
             Set<Node>nodes = iterator.next();
             for(Node node: nodes){

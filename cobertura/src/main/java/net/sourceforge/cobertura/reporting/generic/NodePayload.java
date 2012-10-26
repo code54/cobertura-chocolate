@@ -1,9 +1,7 @@
 package net.sourceforge.cobertura.reporting.generic;
 
-import net.sourceforge.cobertura.reporting.generic.filter.MetricPayload;
-
-import java.util.HashMap;
-import java.util.Map;
+import com.sun.istack.internal.NotNull;
+import org.simpleframework.xml.Element;
 
 /*
  * Cobertura - http://cobertura.sourceforge.net/
@@ -25,9 +23,11 @@ import java.util.Map;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  */
-public class NodePayload<T> implements Payload<T>, MetricPayload {
+public class NodePayload implements Payload{
 
-    private T content;
+    @Element(required = false)
+    private Object content;
+    @Element
     private MetricRegistry metrics;
 
     public NodePayload(CoverageData branchCoverage, CoverageData lineCoverage,
@@ -37,7 +37,7 @@ public class NodePayload<T> implements Payload<T>, MetricPayload {
         IMetric.BasicMetricsEnum metric = IMetric.BasicMetricsEnum.hits;
         putMetric(new BasicMetric(metric.toString(), metric.desc(), hits));
 
-        metric = IMetric.BasicMetricsEnum.cnn;
+        metric = IMetric.BasicMetricsEnum.ccn;
         putMetric(new BasicMetric(metric.toString(), metric.desc(), cyclomaticCodeComplexity));
 
         buildBranchMetrics(branchCoverage);
@@ -45,12 +45,12 @@ public class NodePayload<T> implements Payload<T>, MetricPayload {
     }
 
     @Override
-    public T getContent() {
+    public Object getContent() {
         return content;
     }
 
     @Override
-    public void setContent(T content) {
+    public void setContent(Object content) {
         this.content = content;
     }
 
@@ -60,7 +60,7 @@ public class NodePayload<T> implements Payload<T>, MetricPayload {
     }
 
     @Override
-    public void putMetric(IMetric metric) {
+    public void putMetric(@NotNull IMetric metric) {
         metrics.register(metric);
     }
 

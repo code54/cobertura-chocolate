@@ -1,5 +1,8 @@
 package net.sourceforge.cobertura.reporting.generic;
 
+import net.sourceforge.cobertura.reporting.generic.filter.Relation;
+import net.sourceforge.cobertura.reporting.generic.filter.TypeFilter;
+import net.sourceforge.cobertura.reporting.generic.filter.criteria.EqCriteria;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.ElementList;
 
@@ -32,11 +35,9 @@ import java.util.*;
  */
 public class GenericReport {
 
-    //TODO refactor GenericReport into a Node with a custom payload
-    //which holds additional data: date and thresholds
-
-    //we should be able to add thresholds: this is a separate graph
-    //provide an utility to check thresholds against metrics
+    //TODO refactor GenericReport
+    //holds date, code graph and a thresholds tree
+    //provide means to check thresholds against metrics
 
     @Attribute
     private Date created;
@@ -65,27 +66,47 @@ public class GenericReport {
 
     @Deprecated
     public List<GenericReportEntry>getEntriesForLevel(String level){
-//        List<GenericReportEntry>entries = new ArrayList<GenericReportEntry>();
-//        for(GenericReportEntry entry : this.entries){
-////            entry.getEntriesForLevel(entries, level);//TODO replace this method for aux
-//        }
-//        return entries;
-        throw new RuntimeException("Deprecated!");
+        List<GenericReportEntry>entries = new ArrayList<GenericReportEntry>();
+        for(Node entry : this.entries){
+            Collections.addAll((Collection)entries,
+                    (entry.getAllNodes(true, new TypeFilter(new EqCriteria(getType(level))))).toArray());
+        }
+        return entries;
     }
 
-    @Deprecated
     public Set<Threshold> getThresholds(GenericReportEntry entry){
-//        return thresholdsLookup.getThresholds(entry.getType(), entry.getName());
-        throw new RuntimeException("Deprecated!");
+        return new HashSet<Threshold>();
     }
 
     @Deprecated
     public Set<SourceFileEntry> getSourceLinesByClass(String className){
-//        return sourceFilesLookup.getSourceLinesByClass(className);
-        throw new RuntimeException("Deprecated!");
+        return new HashSet<SourceFileEntry>();
     }
 
     public void export(IReportFormatStrategy reportFormat){
         reportFormat.save(this);
+    }
+
+    @Deprecated//kept for refactoring
+    private NodeType getType(String level){
+        if(ReportConstants.level_project.equals(level)){
+            return NodeType.PROJECT;
+        }
+        if(ReportConstants.level_package.equals(level)){
+            return NodeType.PACKAGE;
+        }
+        if(ReportConstants.level_sourcefile.equals(level)){
+            return NodeType.SOURCE;
+        }
+        if(ReportConstants.level_class.equals(level)){
+            return NodeType.CLASS;
+        }
+        if(ReportConstants.level_method.equals(level)){
+            return NodeType.METHOD;
+        }
+        if(ReportConstants.level_line.equals(level)){
+            return NodeType.LINE;
+        }
+            return NodeType.ALL;
     }
 }

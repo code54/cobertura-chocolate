@@ -38,13 +38,13 @@ public class FilterTest {
         nodes.put(LINE02_NAME, new BaseNode(NodeType.LINE, LINE02_NAME));
         nodes.put(LINE03_NAME, new BaseNode(NodeType.LINE, LINE03_NAME));
 
-        nodes.get(REPORT_NAME).addNode(NodeType.PROJECT.toString(), nodes.get(PROJECT_NAME));
-        nodes.get(PROJECT_NAME).addNode(NodeType.PACKAGE.toString(), nodes.get(PACKAGE_NAME));
-        nodes.get(PACKAGE_NAME).addNode(NodeType.SOURCE.toString(), nodes.get(SOURCE_NAME));
-        nodes.get(SOURCE_NAME).addNode(NodeType.CLASS.toString(), nodes.get(CLASS_NAME));
-        nodes.get(CLASS_NAME).addNode(NodeType.LINE.toString(), nodes.get(LINE01_NAME));
-        nodes.get(CLASS_NAME).addNode(NodeType.LINE.toString(), nodes.get(LINE02_NAME));
-        nodes.get(CLASS_NAME).addNode(NodeType.LINE.toString(), nodes.get(LINE03_NAME));
+        nodes.get(REPORT_NAME).addNode(Relation.PROJECT, nodes.get(PROJECT_NAME));
+        nodes.get(PROJECT_NAME).addNode(Relation.PACKAGE, nodes.get(PACKAGE_NAME));
+        nodes.get(PACKAGE_NAME).addNode(Relation.SOURCE, nodes.get(SOURCE_NAME));
+        nodes.get(SOURCE_NAME).addNode(Relation.CLASS, nodes.get(CLASS_NAME));
+        nodes.get(CLASS_NAME).addNode(Relation.LINE, nodes.get(LINE01_NAME));
+        nodes.get(CLASS_NAME).addNode(Relation.LINE, nodes.get(LINE02_NAME));
+        nodes.get(CLASS_NAME).addNode(Relation.LINE, nodes.get(LINE03_NAME));
     }
 
     @Test

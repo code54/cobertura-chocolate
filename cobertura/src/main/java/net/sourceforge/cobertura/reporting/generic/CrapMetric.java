@@ -3,6 +3,7 @@ package net.sourceforge.cobertura.reporting.generic;
 public class CrapMetric implements ICustomMetric {
 
     private double crapMetric;
+    private MetricRegistry registry;
 
     public CrapMetric(){}
 
@@ -13,6 +14,7 @@ public class CrapMetric implements ICustomMetric {
 
     @Override
     public double getValue() {
+        //TODO perform calculation retrieving required data from registry
         return crapMetric;
     }
 
@@ -22,14 +24,14 @@ public class CrapMetric implements ICustomMetric {
                 "See http://googletesting.blogspot.com.ar/2011/02/this-code-is-crap.html";
     }
 
-    @Override      //TODO
+    @Override
     public NodeType getApplicableType() {
-        return null;
+        return NodeType.METHOD;
     }
 
-    @Override            //TODO
+    @Override
     public void setMetricRegistry(MetricRegistry registry) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        this.registry = registry;
     }
 
 //    @Override

@@ -19,21 +19,21 @@ public interface Node {
      * Returns all nodes this node is immediately related to;
      * @return
      */
-    Set<? extends Node>getNodes(boolean thiNodeIncluded);
+    Set<? extends Node>getNodes(boolean thisNodeIncluded);
 
     /**
      * Applies filter to current node and returns filtering result;
      * @param filter
      * @return
      */
-    Set<? extends Node> getNodes(boolean thiNodeIncluded, Filter filter);
+    Set<? extends Node> getNodes(boolean thisNodeIncluded, Filter filter);
 
     /**
      * Applies filter to current node and recursively to all referenced nodes;
      * @param filter
      * @return
      */
-    Set<? extends Node>getAllNodes(boolean thiNodeIncluded, Filter filter);
+    Set<? extends Node>getAllNodes(boolean thisNodeIncluded, Filter filter);
 
     /**
      * Returns all immediate nodes for specified relation;

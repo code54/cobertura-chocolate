@@ -20,12 +20,11 @@ package net.sourceforge.cobertura.reporting.generic;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  */
-public interface Payload<T> {
+public interface Payload {
 
-    T getContent();
-    void setContent(T content);
+    Object getContent();
+    void setContent(Object content);
 
-    //TODO split into two interfaces? Payload and MetricPayload?
     IMetric getMetric(String name);
     void putMetric(IMetric metric);
 }

@@ -65,6 +65,7 @@ public class CodeInstrumentationIntegrationTest {
     }
 
     @Test
+    //Just creates an HTML report
     public void testHtmlReport() throws Throwable {
         File basedir = new File("./src/test/resources/integration/examples/functionaltest1/");
         File instrumented = new File(basedir, "src");
@@ -127,6 +128,36 @@ public class CodeInstrumentationIntegrationTest {
 
         cleanFiles(basedir);
     }
+
+
+    @Test
+    public void testExportXml() throws Throwable {
+        File basedir = new File("./src/test/resources/integration/examples/functionalconditiontest/");
+        File instrumented = new File(basedir, "src");
+        instrumented.mkdirs();
+
+        compile(basedir, null);
+
+        Cobertura cobertura = instrumentCode(instrumented, instrumented);
+
+        //Custom classloader to load instrumented classes
+        ClassLoader classLoader = new DirectoryClassLoader(instrumented);
+
+        classLoader.loadClass("test.condition.ConditionCalls");
+        classLoader.loadClass("net.sourceforge.cobertura.coveragedata.HasBeenInstrumented");
+
+        //run tests
+        Class testClass = classLoader.loadClass("test.condition.Test");
+        new JUnitCore().run(testClass);
+
+        //get report
+        GenericReportEntry report = cobertura.report().getEntriesForLevel(ReportConstants.level_project).get(0);
+
+        cobertura.report().export(new XmlReportFormatStrategy());
+
+//        cleanFiles(basedir);
+    }
+
 
     /*   Aux methods   */
     private static void compile(File basedir, CompilerOptions compilerOptions){

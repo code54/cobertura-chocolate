@@ -34,7 +34,8 @@ public class Threshold {
     @Attribute
     private String level;
     @Attribute
-    private String criteria;//all or a level name (ex. some method name)//TODO see if we should set a Filter here
+    //TODO this should be turned into a Criteria and be applied as a TypeFilter to find matching nodes
+    private String criteria;//all or a level name (ex. some method name)
     @Attribute
     private double threshold;
 
@@ -48,8 +49,9 @@ public class Threshold {
     }
 
     //TODO change to accept a Node as parameter
-    //Should check if it matches and has a MetricPayload
-    //otherwise throws a RuntimeException
+    //Should check if it matches:
+    // - if so, returns the result of testing metric value against threshold,
+    // - otherwise throws a RuntimeException
     public boolean isBelowThreshold(double value){
         return value<threshold;
     }
